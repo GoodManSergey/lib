@@ -101,7 +101,7 @@ class Library
     
     //Возвращаем -1, если полученный указатель пуст
     //Возвращаем -3, если next_author_id оказался занят
-    int add_author(std::shared_ptr<Author> author)
+    int add_author(std::unique_ptr<Author> author)
     {
         if (author == nullptr)
         {
@@ -115,20 +115,32 @@ class Library
         }
         
         author->set_author_id(m_next_author_id);
+
         
         m_next_author_id++;
-
-        m_author_list[author->get_author_id()] = author;
         
-        return author->get_author_id();
+        int author_id = author->get_author_id();
+
+        m_author_list[author_id] = std::move(author);
+        
+        return author_id;
     }
 
+    //Если автора нет, возвращаем пустой shared_ptr
     std::shared_ptr<const Author> get_author_by_id(int author_id)
-    {   //Убрать at, добавить провеерку, что такой автор есть, если нет, то отдавать пустой shared_ptr 
-        return m_author_list.at(author_id);
+    { 
+        if (m_author_list.find(author_id) != m_author_list.end())
+        {   
+            return m_author_list[author_id];
+        }
+        
+        std::shared_ptr<Author> none_author;
+        
+        return none_author;
     }
 
-    std::vector<std::shared_ptr<const Book>> get_authors_books(int author_id)
+    
+    std::vector<std::shared_ptr<const Book>> get_authors_books(int author_id, bool& have_list)
     {   //так же проверять существует ли такой автор, принимать дополнительную переменную, которая будет говорить, есть ли такой автор, если нет, то она будет менять значение а возвращать мы будем пустой вектор
         return m_authors_books.at(author_id);
     }
@@ -210,10 +222,14 @@ int main()
     Storage* store = new Storage();
     Library lib(store);
     
-    std::shared_ptr<Author> author(1, "Oruell");
+    std::unique_ptr<Author> author(new Author(1, "Oruell"));
 
     //Добавляем автора
-    int auth_id = lib.add_author(author);
+    int auth_id = lib.add_author(std::move(author));
+    
+    //Получаем несущ автора
+    std::shared_ptr<const Author> none_author = lib.get_author_by_id(100);
+    std::cout<<none_author<<std::endl;
     
     //Получаем автора
     std::shared_ptr<const Author> author_2 = lib.get_author_by_id(auth_id);
@@ -221,14 +237,13 @@ int main()
     Book book = Book(1, "1984", author_2);
     //Добавляем книгу
     int book_id = lib.add_book(book);
-
-    author.set_name("Ne Pushkin");
     
     //Получаем книгу
     std::shared_ptr<const Book> gotten_book= lib.get_book_by_id(book_id);
     
+    Author author_3(1, "Ne Pushkin");
     //Изменяем автора
-    lib.change_author(author);
+    lib.change_author(author_3);
 
     //Изменяеи книгу(название)
     book.set_title("ne ev on");
