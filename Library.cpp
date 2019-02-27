@@ -3,32 +3,32 @@
 #include<iostream>
 #include<map>
 #include<vector>
-#include <algorithm>
+#include<algorithm>
 
 
 
 class Author
 {
     public:
-    Author(int id, std::string name): author_id(id), name(name)
+    Author(int id, const std::string& name): m_author_id(id), m_name(name)
     {}
     
-    int get_author_id() const {return author_id;}
-    std::string get_name() const {return name;}
+    int get_author_id() const {return m_author_id;}
+    const std::string& get_name() const {return m_name;}
 
     void set_author_id(int id)
     {
-        this->author_id = id;
+        this->m_author_id = id;
     }
 
-    void set_name(std::string name)
-    {
-        this->name = name;
+    void set_name(const std::string& name)
+    {   
+        this->m_name = name;
     }
 
     private:
-    std::string name;
-    int author_id;
+    std::string m_name;
+    int m_author_id;
 
 };
 
@@ -37,41 +37,50 @@ class Book
 {   
     public:
     Book(int book_id, std::string title, std::shared_ptr<const Author> author): 
-        book_id(book_id), title(title), author(author)
+        m_book_id(book_id), m_title(title), m_author(author)
     {}        
     
-    int get_book_id() const {return book_id;}
-    std::string get_book_title() const {return title;}
-    std::shared_ptr<const Author> get_author() const {return author;}
+    int get_book_id() const {return m_book_id;}
+    const std::string& get_book_title() const {return m_title;}
+    std::shared_ptr<const Author> get_author() const {return m_author;}
 
-    int get_author_id() const {return this->author->get_author_id();}
-    std::string get_author_name() const {return this->author->get_name();}
+    int get_author_id() const 
+    {
+        if (this->m_author != nullptr)
+        {
+            return this->m_author->get_author_id();
+        }
+        else
+        {
+            return -1;
+        }
+    }
 
     void set_book_id(int new_book_id)
     {
-        this->book_id = new_book_id;
+        this->m_book_id = new_book_id;
     }
 
-    void set_title(std::string new_title)
+    void set_title(const std::string& new_title)
     {
-        this->title = new_title;
+        this->m_title = new_title;
     }
 
     void set_author(const std::shared_ptr<Author> new_author)
     {
-        this->author = new_author;
+        this->m_author = new_author;
     }
 
     private:
-    int book_id;
-    std::string title;
-    std::shared_ptr<const Author> author;    
+    int m_book_id;
+    std::string m_title;
+    std::shared_ptr<const Author> m_author;    
 };
 
 
 class Storage
 {
-    public:
+   /* public:
     virtual get_books() = 0;
     virtual get_authors() = 0;
     virtual add_book() = 0;
@@ -79,84 +88,93 @@ class Storage
     virtual change_book() = 0;
     virtual change_author() = 0;
     virtual delete_book() = 0;
-    virtual delete_author() = 0;
+    virtual delete_author() = 0;*/
 };
 
 
 class Library
 {
     public:
-    Library(Storage* storage): storage(storage), next_author_id(1), next_book_id(1)
+    Library(Storage* storage): m_storage(storage), m_next_author_id(1), m_next_book_id(1)
     {
     }
     
     int add_author(const Author& author)
-    {
-        std::shared_ptr<Author> new_author(new Author(next_author_id, author.get_name()));
-        next_author_id++;
-
-        author_list.insert(std::pair<int, std::shared_ptr<Author>>(new_author->get_author_id(), new_author));
-        //Как тебе такое, Илон Маск?
-        //authors_books.insert(std::pair<int, std::shared_ptr<std::vector<std::shared_ptr<const Book>>>>(new_author->get_author_id(), std::shared_ptr<std::vector<std::shared_ptr<const Book>>>(new std::vector<std::shared_ptr<const Book>>)));
+    { //Принимать указатель шаред птр и возвращать -1, если он пустой
+        std::shared_ptr<Author> new_author(new Author(m_next_author_id, author.get_name()));
+        //Проверять, что автора с next_author_id еще нет, если есть, то возвращаем -3
+        m_next_author_id++;
+        //убрать инсерт
+        m_author_list.insert(std::pair<int, std::shared_ptr<Author>>(new_author->get_author_id(), new_author));
+        
         return new_author->get_author_id();
     }
 
-    std::shared_ptr<const Author> get_author_by_id(const int& author_id)
-    {   
-        return author_list.at(author_id);
+    std::shared_ptr<const Author> get_author_by_id(int author_id)
+    {   //Убрать at, добавить провеерку, что такой автор есть, если нет, то отдавать пустой shared_ptr 
+        return m_author_list.at(author_id);
     }
 
-    std::vector<std::shared_ptr<const Book>> get_authors_books(const int& author_id)
-    {
-        return authors_books.at(author_id);
+    std::vector<std::shared_ptr<const Book>> get_authors_books(int author_id)
+    {   //так же проверять существует ли такой автор, принимать дополнительную переменную, которая будет говорить, есть ли такой автор, если нет, то она будет менять значение а возвращать мы будем пустой вектор
+        return m_authors_books.at(author_id);
     }
 
     int add_book(const Book& book)
-    {   
-        std::shared_ptr<Author> author = author_list.at(book.get_author_id());
-        std::shared_ptr<Book> new_book(new Book(next_book_id, book.get_book_title(), author));
-        next_book_id++;
-
-        book_list.insert(std::pair<int, std::shared_ptr<Book>>(new_book->get_book_id(), new_book));
+    {   //Принимать указатель шаред птр и возвращать -1, если он пустой
+        //Проверять, что автор существует, не получать его с помощью at и если его нет, то возвращать -2
+        std::shared_ptr<Author> author = m_author_list.at(book.get_author_id());
+        std::shared_ptr<Book> new_book(new Book(m_next_book_id, book.get_book_title(), author));
+        //проверять что книги с next book id еще нет, если есть, то возвращаем -3
+        m_next_book_id++;
         
-        authors_books[new_book->get_author_id()].push_back(new_book);
+        //убрать инсерт
+        m_book_list.insert(std::pair<int, std::shared_ptr<Book>>(new_book->get_book_id(), new_book));
+        
+        m_authors_books[new_book->get_author_id()].push_back(new_book);
 
         return new_book->get_book_id();
            
     }
 
-    std::shared_ptr<const Book> get_book_by_id(const int& book_id)
-    {
-        return book_list[book_id];
+    std::shared_ptr<const Book> get_book_by_id(int book_id)
+    {   //проверять, что такая книга существует, если нет, то возвращаем пустой shared_ptr
+        return m_book_list[book_id];
     }
 
     int change_author(const Author& author)
-    {
+    {//принимать shared_ptr
+     //Првоерять, что автор с таким id существует, если нет , то возвращаем -2
         std::vector<std::shared_ptr<const Book>> new_authors_books;
         std::shared_ptr<Author> new_author(new Author(author.get_author_id(), author.get_name()));
-        
-        for (auto iter = authors_books.at(new_author->get_author_id()).begin(); iter != authors_books.at(new_author->get_author_id()).end(); iter++)
+        //убрать at
+        for (auto iter = m_authors_books.at(new_author->get_author_id()).begin(); iter != m_authors_books.at(new_author->get_author_id()).end(); iter++)
         {
             std::shared_ptr<Book> new_book(new Book((*iter)->get_book_id(), (*iter)->get_book_title(), new_author));
             new_authors_books.push_back(new_book);
-            book_list[(*iter)->get_book_id()] = new_book;
+            m_book_list[(*iter)->get_book_id()] = new_book;
         }
         
-        author_list[new_author->get_author_id()] = new_author;
-        authors_books[new_author->get_author_id()] = new_authors_books;
+        m_author_list[new_author->get_author_id()] = new_author;
+        m_authors_books[new_author->get_author_id()] = new_authors_books;
 
         return new_author->get_author_id();
     }
 
     int change_book(const Book& book)
-    {	
-	    std::shared_ptr<Author> author = author_list.at(book.get_author_id());
-	    std::shared_ptr<Book> old_book = book_list.at(book.get_book_id());
+    {	//принимать shared_ptr
+        //Проверять, что книга с таким id существует, если нет, то возвращать -4
+        //Проверить, что автор с таким id существует, если нет, то возвращать -2
+        //Убрать at
+	    std::shared_ptr<Author> author = m_author_list.at(book.get_author_id());
+	    //убрать at добавить проверку
+	    std::shared_ptr<Book> old_book = m_book_list.at(book.get_book_id());
 	    std::shared_ptr<Book> new_book(new Book(book.get_book_id(), book.get_book_title(), author));
         
-        book_list[book.get_book_id()] = new_book;
+        m_book_list[book.get_book_id()] = new_book;
         
-        std::vector<std::shared_ptr<const Book>> & author_books = authors_books.at(book.get_book_id());
+        //убрать at
+        std::vector<std::shared_ptr<const Book>>& author_books = m_authors_books.at(book.get_book_id());
         
         author_books.erase(std::remove(author_books.begin(), author_books.end(), old_book), author_books.end());
         
@@ -164,13 +182,13 @@ class Library
     }
 
     private:
-    int next_author_id;
-    int next_book_id;
-    std::map<int, std::shared_ptr<Author>> author_list;
-    std::map<int, std::shared_ptr<Book>> book_list;
-    //std::map<int, std::shared_ptr<std::vector<std::shared_ptr<const Book>>>> authors_books;
-    std::map<int, std::vector<std::shared_ptr<const Book>>> authors_books;
-    Storage* storage;
+    int m_next_author_id;
+    int m_next_book_id;
+    //вместо map unordered_map 
+    std::map<int, std::shared_ptr<Author>> m_author_list;
+    std::map<int, std::shared_ptr<Book>> m_book_list;
+    std::map<int, std::vector<std::shared_ptr<const Book>>> m_authors_books;
+    Storage* m_storage;
     
 };
 
@@ -210,11 +228,11 @@ int main()
     
     
     std::cout<<gotten_book->get_book_id()<<std::endl;
-    std::cout<<gotten_book->get_author_name()<<std::endl;
+    std::cout<<gotten_book->get_author()->get_name()<<std::endl;
     std::cout<<gotten_book->get_book_title()<<std::endl;
     std::cout<<"-------------------"<<std::endl;
     std::cout<<gotten_book_2->get_book_id()<<std::endl;
-    std::cout<<gotten_book_2->get_author_name()<<std::endl;
+    std::cout<<gotten_book_2->get_author()->get_name()<<std::endl;
     std::cout<<gotten_book_2->get_book_title()<<std::endl;
 
 
