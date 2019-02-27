@@ -1,7 +1,7 @@
 #include<memory>
 #include<string>
 #include<iostream>
-#include<map>
+#include<unordered_map>
 #include<vector>
 #include<algorithm>
 
@@ -36,7 +36,7 @@ class Author
 class Book
 {   
     public:
-    Book(int book_id, std::string title, std::shared_ptr<const Author> author): 
+    Book(int book_id, const std::string& title, std::shared_ptr<const Author> author): 
         m_book_id(book_id), m_title(title), m_author(author)
     {}        
     
@@ -99,15 +99,28 @@ class Library
     {
     }
     
-    int add_author(const Author& author)
-    { //Принимать указатель шаред птр и возвращать -1, если он пустой
-        std::shared_ptr<Author> new_author(new Author(m_next_author_id, author.get_name()));
-        //Проверять, что автора с next_author_id еще нет, если есть, то возвращаем -3
-        m_next_author_id++;
-        //убрать инсерт
-        m_author_list.insert(std::pair<int, std::shared_ptr<Author>>(new_author->get_author_id(), new_author));
+    //Возвращаем -1, если полученный указатель пуст
+    //Возвращаем -3, если next_author_id оказался занят
+    int add_author(std::shared_ptr<Author> author)
+    {
+        if (author == nullptr)
+        {
+            return -1;
+        }
         
-        return new_author->get_author_id();
+        if (m_author_list.find(author->get_author_id()) != m_author_list.end())
+        {   
+            std::cout<<"Something go wrong, next_author_id is busy"<<std::endl;
+            return -3;
+        }
+        
+        author->set_author_id(m_next_author_id);
+        
+        m_next_author_id++;
+
+        m_author_list[author->get_author_id()] = author;
+        
+        return author->get_author_id();
     }
 
     std::shared_ptr<const Author> get_author_by_id(int author_id)
@@ -184,10 +197,9 @@ class Library
     private:
     int m_next_author_id;
     int m_next_book_id;
-    //вместо map unordered_map 
-    std::map<int, std::shared_ptr<Author>> m_author_list;
-    std::map<int, std::shared_ptr<Book>> m_book_list;
-    std::map<int, std::vector<std::shared_ptr<const Book>>> m_authors_books;
+    std::unordered_map<int, std::shared_ptr<Author>> m_author_list;
+    std::unordered_map<int, std::shared_ptr<Book>> m_book_list;
+    std::unordered_map<int, std::vector<std::shared_ptr<const Book>>> m_authors_books;
     Storage* m_storage;
     
 };
@@ -198,7 +210,7 @@ int main()
     Storage* store = new Storage();
     Library lib(store);
     
-    Author author(1, "Oruell");
+    std::shared_ptr<Author> author(1, "Oruell");
 
     //Добавляем автора
     int auth_id = lib.add_author(author);
