@@ -139,10 +139,18 @@ class Library
         return none_author;
     }
 
-    
+    //Если автора не уществует, то вернется пустой лист и переменнная have_list будет установлена в false
     std::vector<std::shared_ptr<const Book>> get_authors_books(int author_id, bool& have_list)
-    {   //так же проверять существует ли такой автор, принимать дополнительную переменную, которая будет говорить, есть ли такой автор, если нет, то она будет менять значение а возвращать мы будем пустой вектор
-        return m_authors_books.at(author_id);
+    {
+        if (m_authors_books.find(author_id) == m_authors_books.end())
+        {   
+            have_list = false;
+            std::vector<std::shared_ptr<const Book>> empty_vector;
+            return empty_vector;
+        }
+        
+        have_list = true;
+        return m_authors_books[author_id];
     }
 
     int add_book(const Book& book)
@@ -227,9 +235,19 @@ int main()
     //Добавляем автора
     int auth_id = lib.add_author(std::move(author));
     
+    bool have_books;
+    std::vector<std::shared_ptr<const Book>> auth_books = lib.get_authors_books(auth_id, have_books);
+    if (have_books)
+    {
+        std::cout<<auth_books.size()<<std::endl;
+    }
+    else
+    {
+        std::cout<<"No books"<<std::endl;
+    }
     //Получаем несущ автора
     std::shared_ptr<const Author> none_author = lib.get_author_by_id(100);
-    std::cout<<none_author<<std::endl;
+    std::cout<<"EMPTY AUTHOR: "<<none_author<<std::endl;
     
     //Получаем автора
     std::shared_ptr<const Author> author_2 = lib.get_author_by_id(auth_id);
@@ -237,6 +255,16 @@ int main()
     Book book = Book(1, "1984", author_2);
     //Добавляем книгу
     int book_id = lib.add_book(book);
+    
+    auth_books = lib.get_authors_books(auth_id, have_books);
+    if (have_books)
+    {
+        std::cout<<"Books: "<<auth_books.size()<<std::endl;
+    }
+    else
+    {
+        std::cout<<"No books"<<std::endl;
+    }
     
     //Получаем книгу
     std::shared_ptr<const Book> gotten_book= lib.get_book_by_id(book_id);
