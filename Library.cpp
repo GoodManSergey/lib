@@ -152,21 +152,49 @@ class Library
         have_list = true;
         return m_authors_books[author_id];
     }
-
-    int add_book(const Book& book)
-    {   //Принимать указатель шаред птр и возвращать -1, если он пустой
-        //Проверять, что автор существует, не получать его с помощью at и если его нет, то возвращать -2
-        std::shared_ptr<Author> author = m_author_list.at(book.get_author_id());
-        std::shared_ptr<Book> new_book(new Book(m_next_book_id, book.get_book_title(), author));
-        //проверять что книги с next book id еще нет, если есть, то возвращаем -3
+    
+    //Возвращаем -1, если получили пустой указатель
+    //-2, если такого автора нет
+    //Если такая книга уже есть -3
+    int add_book(std::unique_ptr<Book> book)
+    {    
+        if (book == nullptr)
+        {
+            return -1;
+        }
+        
+        int author_id = book->get_author_id();
+        
+        if (author_id < 1)
+        {
+            return -2;
+        }
+        
+        if (m_author_list.find(author_id) == m_author_list.end())
+        {   
+            return -2;
+        }
+        
+        std::shared_ptr<Author> author = m_author_list[author_id];
+        
+        book->set_author(author);
+        
+        int book_id = m_next_book_id;
+        
+        if (m_book_list.find(book_id) != m_book_list.end())
+        {   
+            std::cout<<"Something go wrong, next_book_id is busy"<<std::endl;
+            return -3;
+        }
+        
+        book->set_book_id(book_id);
         m_next_book_id++;
         
-        //убрать инсерт
-        m_book_list.insert(std::pair<int, std::shared_ptr<Book>>(new_book->get_book_id(), new_book));
+        m_book_list[book_id] = std::move(book);
         
-        m_authors_books[new_book->get_author_id()].push_back(new_book);
+        m_authors_books[author_id].push_back(m_book_list[book_id]);
 
-        return new_book->get_book_id();
+        return book_id;
            
     }
 
@@ -252,9 +280,9 @@ int main()
     //Получаем автора
     std::shared_ptr<const Author> author_2 = lib.get_author_by_id(auth_id);
 
-    Book book = Book(1, "1984", author_2);
+    std::unique_ptr<Book> book(new Book(1, "1984", author_2));
     //Добавляем книгу
-    int book_id = lib.add_book(book);
+    int book_id = lib.add_book(std::move(book));
     
     auth_books = lib.get_authors_books(auth_id, have_books);
     if (have_books)
@@ -274,8 +302,8 @@ int main()
     lib.change_author(author_3);
 
     //Изменяеи книгу(название)
-    book.set_title("ne ev on");
-    lib.change_book(book);
+    //gotten_book->set_title("ne ev on");
+    //lib.change_book(book);
 
     //Получаем ту же книгу
     std::shared_ptr<const Book> gotten_book_2 = lib.get_book_by_id(book_id);
