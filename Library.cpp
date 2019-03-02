@@ -325,8 +325,8 @@ int main()
     lib.change_author(std::move(author_3));
 
     //Изменяеи книгу(название)
-    //gotten_book->set_title("ne ev on");
-    //lib.change_book(book);
+    std::unique_ptr<Book> new_book(new Book(1, "ne ev on", author_2));
+    lib.change_book(std::move(new_book));
 
     //Получаем ту же книгу
     std::shared_ptr<const Book> gotten_book_2 = lib.get_book_by_id(book_id);
