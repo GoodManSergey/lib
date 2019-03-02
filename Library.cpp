@@ -95,7 +95,7 @@ class Storage
 class Library
 {
     public:
-    Library(Storage* storage): m_storage(storage), m_next_author_id(1), m_next_book_id(1)
+    Library(Storage* storage): pm_storage(storage), m_next_author_id(1), m_next_book_id(1)
     {
     }
     
@@ -271,7 +271,7 @@ class Library
     std::unordered_map<int, std::shared_ptr<Author>> m_author_list;
     std::unordered_map<int, std::shared_ptr<Book>> m_book_list;
     std::unordered_map<int, std::vector<std::shared_ptr<const Book>>> m_authors_books;
-    Storage* m_storage;
+    Storage* pm_storage;
     
 };
 
