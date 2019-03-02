@@ -235,24 +235,34 @@ class Library
         return auth_id;
     }
 
-    int change_book(const Book& book)
-    {	//принимать shared_ptr
-        //Проверять, что книга с таким id существует, если нет, то возвращать -4
-        //Проверить, что автор с таким id существует, если нет, то возвращать -2
-        //Убрать at
-	    std::shared_ptr<Author> author = m_author_list.at(book.get_author_id());
-	    //убрать at добавить проверку
-	    std::shared_ptr<Book> old_book = m_book_list.at(book.get_book_id());
-	    std::shared_ptr<Book> new_book(new Book(book.get_book_id(), book.get_book_title(), author));
+    //Если автора нет, то -2
+    //Если нет книги с таким id, то -4
+    int change_book(std::unique_ptr<Book> book)
+    {	
+        if (m_author_list.find(book->get_author_id()) == m_author_list.end())
+        {
+            return -2;
+        }
         
-        m_book_list[book.get_book_id()] = new_book;
+        if (m_book_list.find(book->get_book_id()) == m_book_list.end())
+        {
+            return -4;
+        }
         
-        //убрать at
-        std::vector<std::shared_ptr<const Book>>& author_books = m_authors_books.at(book.get_book_id());
+	    book->set_author(m_author_list[book->get_author_id()]);
+        
+        int book_id = book->get_book_id();
+	    std::shared_ptr<Book> old_book = m_book_list[book_id];
+        
+        m_book_list[book_id] = std::move(book);
+        
+        std::vector<std::shared_ptr<const Book>>& author_books = m_authors_books[book_id];
         
         author_books.erase(std::remove(author_books.begin(), author_books.end(), old_book), author_books.end());
         
-        return new_book->get_book_id();
+        author_books.push_back(m_book_list[book_id]);
+        
+        return book_id;
     }
 
     private:
