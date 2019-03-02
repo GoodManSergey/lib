@@ -194,32 +194,45 @@ class Library
         
         m_authors_books[author_id].push_back(m_book_list[book_id]);
 
-        return book_id;
-           
+        return book_id;    
     }
-
+    
+    //Если книги не существует возвращаем пустой указатель 
     std::shared_ptr<const Book> get_book_by_id(int book_id)
-    {   //проверять, что такая книга существует, если нет, то возвращаем пустой shared_ptr
-        return m_book_list[book_id];
+    {
+        if (m_book_list.find(book_id) != m_book_list.end())
+        {   
+            return m_book_list[book_id];
+        }
+        
+        std::shared_ptr<Book> none_book;
+        
+        return none_book;
     }
-
-    int change_author(const Author& author)
-    {//принимать shared_ptr
-     //Првоерять, что автор с таким id существует, если нет , то возвращаем -2
-        std::vector<std::shared_ptr<const Book>> new_authors_books;
-        std::shared_ptr<Author> new_author(new Author(author.get_author_id(), author.get_name()));
-        //убрать at
-        for (auto iter = m_authors_books.at(new_author->get_author_id()).begin(); iter != m_authors_books.at(new_author->get_author_id()).end(); iter++)
+    
+    //Если автора с таким id нет, то возвращаем -2
+    int change_author(std::unique_ptr<Author> author)
+    {
+        if (m_author_list.find(author->get_author_id()) == m_author_list.end())
         {
-            std::shared_ptr<Book> new_book(new Book((*iter)->get_book_id(), (*iter)->get_book_title(), new_author));
+            return -2;
+        }
+        
+        std::vector<std::shared_ptr<const Book>> new_authors_books;
+        
+        int auth_id = author->get_author_id();
+        m_author_list[auth_id] = std::move(author);
+
+        for (auto iter = m_authors_books[auth_id].begin(); iter != m_authors_books[auth_id].end(); iter++)
+        {
+            std::shared_ptr<Book> new_book(new Book((*iter)->get_book_id(), (*iter)->get_book_title(), m_author_list[auth_id]));
             new_authors_books.push_back(new_book);
             m_book_list[(*iter)->get_book_id()] = new_book;
         }
         
-        m_author_list[new_author->get_author_id()] = new_author;
-        m_authors_books[new_author->get_author_id()] = new_authors_books;
+        m_authors_books[auth_id] = new_authors_books;
 
-        return new_author->get_author_id();
+        return auth_id;
     }
 
     int change_book(const Book& book)
@@ -297,9 +310,9 @@ int main()
     //Получаем книгу
     std::shared_ptr<const Book> gotten_book= lib.get_book_by_id(book_id);
     
-    Author author_3(1, "Ne Pushkin");
+    std::unique_ptr<Author> author_3(new Author(1, "Ne Pushkin"));
     //Изменяем автора
-    lib.change_author(author_3);
+    lib.change_author(std::move(author_3));
 
     //Изменяеи книгу(название)
     //gotten_book->set_title("ne ev on");
