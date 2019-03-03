@@ -7,6 +7,26 @@
 
 
 
+enum class result_code: int
+{
+    OK,
+    BOOK_NOT_FOUND,
+    AUTHOR_NOT_FOUND,
+    INVALID_INPUT_PARAMS,
+    INTERNAL_ERROR,
+    AUTHOR_NOT_PRESENT,
+    BOOK_NOT_PRESENT
+};
+
+
+template<typename T>
+struct result
+{
+    result_code m_code;
+    T m_object;
+};
+
+
 class Author
 {
     public:
@@ -44,10 +64,16 @@ class Book
     const std::string& get_book_title() const {return m_title;}
     std::shared_ptr<const Author> get_author() const {return m_author;}
 
-    int get_author_id() const 
+    result<int> get_author_id() const 
     {
-        //у shared_ptr есть cast к bool(), поэтому не нужно проверять != nullptr, есть более лаконичная запись
-        return m_author ? m_author->get_author_id() : -1;
+        if (m_author)
+        {
+            return {result_code::OK, m_author->get_author_id()};
+        }
+        else
+        {
+            return {result_code::AUTHOR_NOT_FOUND, 0};
+        }
     }
 
     void set_book_id(int new_book_id)
@@ -122,12 +148,6 @@ class Storage
  *  то какой угодно способ.
  */
 
-enum Error {
-    invalid_input_params = -1,
-    author_not_present = -2,
-    internal_error = -3,
-    author_not_found = -4,
-};
 
 class Library
 {
@@ -136,186 +156,160 @@ class Library
     {
     }
     
-    //Возвращаем -1, если полученный указатель пуст
-    //Возвращаем -3, если next_author_id оказался занят
-    int add_author(std::unique_ptr<Author> author)
+    result<int> add_author(std::unique_ptr<Author> author)
     {
         if (!author)
         {
-            return invalid_input_params;
-        }
-
-        //TODO : странная проверка, логичнее проверять, что у автора id должен быть не задан
-        if (m_author_list.find(author->get_author_id()) != m_author_list.end())
-        {   
-            std::cout<<"Something go wrong, next_author_id is busy"<<std::endl;
-            return invalid_input_params;
+            return {result_code::INVALID_INPUT_PARAMS, 0};
         }
         
         author->set_author_id(m_next_author_id++);
-        //TODO : посмотри что возвращает insert, вот тут как раз будет проверка при вставке, что такой id не был занят
         auto insert_result = m_author_list.insert({author->get_author_id(), std::move(author)});
-        if (!insert_result.second) {
+        
+        if (!insert_result.second) 
+        {
             std::cout<< "Something go wrong, next_author_id is busy" << std::endl;
-            return internal_error;
-        }
-        return insert_result.first->first;
-    }
-
-    //Если автора нет, возвращаем пустой shared_ptr
-    std::shared_ptr<const Author> get_author_by_id(int author_id)
-    {
-        //TODO : дважды делается поиск, сперва в find, поток в operator []
-        //если ты уже нашел и find вернул итератор - так верни объект :
-        // return it->second;
-        if (m_author_list.find(author_id) != m_author_list.end())
-        {   
-            return m_author_list[author_id];
-        }
-        //TODO : чтобы вернуть пустой объект можно сразу написать его конструктор в return, незачем объявляеть его
-        return {};
-    }
-
-    //Если автора не уществует, то вернется пустой лист и переменнная have_list будет установлена в false
-    std::vector<std::shared_ptr<const Book>> get_authors_books(int author_id, bool& have_list)
-    {
-        //TODO : оже самое, поиск идет дважды
-        if (m_authors_books.find(author_id) == m_authors_books.end())
-        {   
-            have_list = false;
-            return {};
+            return {result_code::INTERNAL_ERROR, 0};
         }
         
-        have_list = true;
-        return m_authors_books[author_id];
+        return {result_code::OK, insert_result.first->first};
+    }
+
+    result<std::shared_ptr<const Author>> get_author_by_id(int author_id)
+    {
+        auto iter = m_author_list.find(author_id);
+        
+        if (iter != m_author_list.end())
+        {   
+            return {result_code::OK, iter->second};
+        }
+        
+        return {result_code::AUTHOR_NOT_FOUND, {}};
+    }
+
+    result<std::vector<std::shared_ptr<const Book>>> get_authors_books(int author_id)
+    {
+        auto iter = m_authors_books.find(author_id);
+        
+        if (iter == m_authors_books.end())
+        {   
+            return {result_code::AUTHOR_NOT_FOUND, {}};
+        }
+        
+        return {result_code::OK, iter->second};
     }
     
-    //Возвращаем -1, если получили пустой указатель
-    //-2, если такого автора нет
-    //Если такая книга уже есть -3
-    int add_book(std::unique_ptr<Book> book)
+    result<int> add_book(std::unique_ptr<Book> book)
     {    
         if (!book)
         {
-            return invalid_input_params;
+            return {result_code::INVALID_INPUT_PARAMS, 0};
         }
         
-        int author_id = book->get_author_id();
+        result<int> get_author_id_res = book->get_author_id();
         
-        if (author_id < 1)
+        if (get_author_id_res.m_code == result_code::AUTHOR_NOT_FOUND)
         {
-            return author_not_present;
+            return {result_code::AUTHOR_NOT_PRESENT, 0};
         }
+        
+        auto iter_author = m_author_list.find(get_author_id_res.m_object);
 
-        //TODO : дважды поиск автора (find / operator [] ниже)
-        if (m_author_list.find(author_id) == m_author_list.end())
+        if (iter_author == m_author_list.end())
         {   
-            return -2;
+            return {result_code::AUTHOR_NOT_FOUND, 0};
         }
         
-        std::shared_ptr<Author> author = m_author_list[author_id];
+        book->set_author(iter_author->second);
+        book->set_book_id(m_next_book_id++);
         
-        book->set_author(author);
-        
-        int book_id = m_next_book_id;
-
-        //TODO : опять странная проверка, лучше проверить что id не задан
-        if (m_book_list.find(book_id) != m_book_list.end())
+        auto insert_result = m_book_list.insert({book->get_book_id(), std::move(book)});
+        if (!insert_result.second)
         {   
             std::cout<<"Something go wrong, next_book_id is busy"<<std::endl;
-            return -3;
+            return {result_code::INTERNAL_ERROR, 0};
         }
         
-        book->set_book_id(book_id);
-        m_next_book_id++;
+        m_authors_books[get_author_id_res.m_object].push_back(insert_result.first->second);
 
-        //TODO : а вот тут проверка, что в хранилище id не задан можно сделать через insert, как в примере с автором выше
-        m_book_list[book_id] = std::move(book);
-        
-        m_authors_books[author_id].push_back(m_book_list[book_id]);
-
-        return book_id;    
+        return {result_code::OK, insert_result.first->first};    
     }
     
-    //Если книги не существует возвращаем пустой указатель 
-    std::shared_ptr<const Book> get_book_by_id(int book_id)
+    result<std::shared_ptr<const Book>> get_book_by_id(int book_id)
     {
-        //TODO : дважды поиск
-        if (m_book_list.find(book_id) != m_book_list.end())
+        auto iter = m_book_list.find(book_id);
+        
+        if (iter != m_book_list.end())
         {   
-            return m_book_list[book_id];
+            return {result_code::OK, iter->second};
         }
-        return {};
+        return {result_code::BOOK_NOT_FOUND, {}};
     }
     
-    //Если автора с таким id нет, то возвращаем -2
-    int change_author(std::unique_ptr<Author> author)
+    result<int> change_author(std::unique_ptr<Author> author)
     {
-        //TODO : опять двойной поиск find / ниже operator []
-        if (m_author_list.find(author->get_author_id()) == m_author_list.end())
+        auto iter_author = m_author_list.find(author->get_author_id());
+        if (iter_author == m_author_list.end())
         {
-            return author_not_found;
+            return {result_code::AUTHOR_NOT_FOUND, 0};
         }
         
         std::vector<std::shared_ptr<const Book>> new_authors_books;
 
-        //TODO : каждый раз обращаясь по operator [] в map ты делаешь поиск, это не очень хорошо
-
-        int auth_id = author->get_author_id();
-        m_author_list[auth_id] = std::move(author);
-
-        /*
-        for (auto && book_ptr : m_authors_books[auth_id]) {
-            //конструктор копирования, сколько бы не добавлялось потом полей все будет работать и не придется переписывать код
+        iter_author->second = std::move(author);
+        
+        for (auto && book_ptr : m_authors_books[iter_author->first]) 
+        {
             auto new_book_ptr = std::make_shared<Book>(*book_ptr);
-            new_book_ptr->set_author(m_author_list[auth_id]);
+            new_book_ptr->set_author(iter_author->second);
             new_authors_books.push_back(new_book_ptr);
             m_book_list[book_ptr->get_book_id()] = new_book_ptr;
         }
-         */
 
-        //TODO : можно переписать цикл проще и универсальнее (пример выше)
-        for (auto iter = m_authors_books[auth_id].begin(); iter != m_authors_books[auth_id].end(); iter++)
-        {
-            std::shared_ptr<Book> new_book(new Book((*iter)->get_book_id(), (*iter)->get_book_title(), m_author_list[auth_id]));
-            new_authors_books.push_back(new_book);
-            m_book_list[(*iter)->get_book_id()] = new_book;
-        }
-        
-        m_authors_books[auth_id] = new_authors_books;
+        m_authors_books[iter_author->first] = new_authors_books;
 
-        return auth_id;
+        return {result_code::OK, iter_author->first};
     }
 
-    //Если автора нет, то -2
-    //Если нет книги с таким id, то -4
-    int change_book(std::unique_ptr<Book> book)
-    {
-        //TODO : не смотрел, перепиши с учетом всех замечаний выше
-        if (m_author_list.find(book->get_author_id()) == m_author_list.end())
+    result<int> change_book(std::unique_ptr<Book> book)
+    {   
+        if (!book)
         {
-            return -2;
+            return {result_code::INVALID_INPUT_PARAMS, 0};
         }
         
-        if (m_book_list.find(book->get_book_id()) == m_book_list.end())
+        result<int> get_author_id_res = book->get_author_id();
+        
+        if (get_author_id_res.m_code == result_code::AUTHOR_NOT_FOUND)
         {
-            return -4;
+            return {result_code::AUTHOR_NOT_PRESENT, 0};
         }
         
-	    book->set_author(m_author_list[book->get_author_id()]);
+        auto iter_author = m_author_list.find(get_author_id_res.m_object);
         
-        int book_id = book->get_book_id();
-	    std::shared_ptr<Book> old_book = m_book_list[book_id];
+        if (iter_author == m_author_list.end())
+        {
+            return {result_code::AUTHOR_NOT_PRESENT, 0};;
+        }
         
-        m_book_list[book_id] = std::move(book);
+        auto iter_book = m_book_list.find(book->get_book_id());
         
-        std::vector<std::shared_ptr<const Book>>& author_books = m_authors_books[book_id];
+        if (iter_book == m_book_list.end())
+        {
+            return {result_code::BOOK_NOT_PRESENT, 0};
+        }
         
-        author_books.erase(std::remove(author_books.begin(), author_books.end(), old_book), author_books.end());
+	    book->set_author(iter_author->second);
         
-        author_books.push_back(m_book_list[book_id]);
+        std::vector<std::shared_ptr<const Book>>& author_books = m_authors_books[iter_book->first];
         
-        return book_id;
+        author_books.erase(std::remove(author_books.begin(), author_books.end(), iter_book->second), author_books.end());
+        
+        iter_book->second = std::move(book);
+        
+        author_books.push_back(iter_book->second);
+        
+        return {result_code::OK, iter_book->first};
     }
 
     private:
@@ -334,7 +328,7 @@ int main()
     Storage* store = new Storage();
     Library lib(store);
     
-    std::unique_ptr<Author> author(new Author(1, "Oruell"));
+    /*std::unique_ptr<Author> author(new Author(1, "Oruell"));
 
     //Добавляем автора
     int auth_id = lib.add_author(std::move(author));
@@ -392,7 +386,7 @@ int main()
     std::cout<<"-------------------"<<std::endl;
     std::cout<<gotten_book_2->get_book_id()<<std::endl;
     std::cout<<gotten_book_2->get_author()->get_name()<<std::endl;
-    std::cout<<gotten_book_2->get_book_title()<<std::endl;
+    std::cout<<gotten_book_2->get_book_title()<<std::endl; */
 
 
     return 0;
