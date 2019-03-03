@@ -46,14 +46,8 @@ class Book
 
     int get_author_id() const 
     {
-        if (this->m_author != nullptr)
-        {
-            return this->m_author->get_author_id();
-        }
-        else
-        {
-            return -1;
-        }
+        //у shared_ptr есть cast к bool(), поэтому не нужно проверять != nullptr, есть более лаконичная запись
+        return m_author ? m_author->get_author_id() : -1;
     }
 
     void set_book_id(int new_book_id)
@@ -92,6 +86,49 @@ class Storage
 };
 
 
+/*
+ * -1,-2,-3 - это все magic-константы, какие-то непонятные числа. этого следует избегать. к тому же в разных методах они означают у тебя еще и разное!
+ * Если тебе требуется возвращать результат в виде кода ошибки + какого-то дополнительного объекта, то есть рзаные способы:
+ * 1) Возвращать всегда код выполнения (и это не magic-константа, а enum), а объект результат заполняется по ссылке
+ *
+ * result get_book(shared_ptr<const Book>& Book_ptr)
+ *
+ * 2) Или возвразщать результат в виде кода + объекта
+ *
+ * enum class result_code  : int {
+ *    ok,
+ *    book_not_found,
+ *    author_not_found,
+ *    invalid_input_params,
+ *    ...
+ * }
+ *
+ * если результат - толькод код , то :
+ * resule_code delete_book(int id);
+ *
+ * если результата - не только код, то:
+ *
+ * template<typename T>
+ * struct result {
+ *     result_code m_code;
+ *     T m_object;
+ * }
+ *
+ * result<std::shared_ptr<const Book>> get_book(int id) const;
+ *
+ * 3) на худой конец, просто заменить magic-константы на enum (ниже я это делаю)
+ *
+ * Мы обычно используем способ 2, если проектируем какой-то синхронный API. Если же речь не идет о каком-то пубдичном API,
+ *  то какой угодно способ.
+ */
+
+enum Error {
+    invalid_input_params = -1,
+    author_not_present = -2,
+    internal_error = -3,
+    author_not_found = -4,
+};
+
 class Library
 {
     public:
@@ -103,50 +140,50 @@ class Library
     //Возвращаем -3, если next_author_id оказался занят
     int add_author(std::unique_ptr<Author> author)
     {
-        if (author == nullptr)
+        if (!author)
         {
-            return -1;
+            return invalid_input_params;
         }
-        
+
+        //TODO : странная проверка, логичнее проверять, что у автора id должен быть не задан
         if (m_author_list.find(author->get_author_id()) != m_author_list.end())
         {   
             std::cout<<"Something go wrong, next_author_id is busy"<<std::endl;
-            return -3;
+            return invalid_input_params;
         }
         
-        author->set_author_id(m_next_author_id);
-
-        
-        m_next_author_id++;
-        
-        int author_id = author->get_author_id();
-
-        m_author_list[author_id] = std::move(author);
-        
-        return author_id;
+        author->set_author_id(m_next_author_id++);
+        //TODO : посмотри что возвращает insert, вот тут как раз будет проверка при вставке, что такой id не был занят
+        auto insert_result = m_author_list.insert({author->get_author_id(), std::move(author)});
+        if (!insert_result.second) {
+            std::cout<< "Something go wrong, next_author_id is busy" << std::endl;
+            return internal_error;
+        }
+        return insert_result.first->first;
     }
 
     //Если автора нет, возвращаем пустой shared_ptr
     std::shared_ptr<const Author> get_author_by_id(int author_id)
-    { 
+    {
+        //TODO : дважды делается поиск, сперва в find, поток в operator []
+        //если ты уже нашел и find вернул итератор - так верни объект :
+        // return it->second;
         if (m_author_list.find(author_id) != m_author_list.end())
         {   
             return m_author_list[author_id];
         }
-        
-        std::shared_ptr<Author> none_author;
-        
-        return none_author;
+        //TODO : чтобы вернуть пустой объект можно сразу написать его конструктор в return, незачем объявляеть его
+        return {};
     }
 
     //Если автора не уществует, то вернется пустой лист и переменнная have_list будет установлена в false
     std::vector<std::shared_ptr<const Book>> get_authors_books(int author_id, bool& have_list)
     {
+        //TODO : оже самое, поиск идет дважды
         if (m_authors_books.find(author_id) == m_authors_books.end())
         {   
             have_list = false;
-            std::vector<std::shared_ptr<const Book>> empty_vector;
-            return empty_vector;
+            return {};
         }
         
         have_list = true;
@@ -158,18 +195,19 @@ class Library
     //Если такая книга уже есть -3
     int add_book(std::unique_ptr<Book> book)
     {    
-        if (book == nullptr)
+        if (!book)
         {
-            return -1;
+            return invalid_input_params;
         }
         
         int author_id = book->get_author_id();
         
         if (author_id < 1)
         {
-            return -2;
+            return author_not_present;
         }
-        
+
+        //TODO : дважды поиск автора (find / operator [] ниже)
         if (m_author_list.find(author_id) == m_author_list.end())
         {   
             return -2;
@@ -180,7 +218,8 @@ class Library
         book->set_author(author);
         
         int book_id = m_next_book_id;
-        
+
+        //TODO : опять странная проверка, лучше проверить что id не задан
         if (m_book_list.find(book_id) != m_book_list.end())
         {   
             std::cout<<"Something go wrong, next_book_id is busy"<<std::endl;
@@ -189,7 +228,8 @@ class Library
         
         book->set_book_id(book_id);
         m_next_book_id++;
-        
+
+        //TODO : а вот тут проверка, что в хранилище id не задан можно сделать через insert, как в примере с автором выше
         m_book_list[book_id] = std::move(book);
         
         m_authors_books[author_id].push_back(m_book_list[book_id]);
@@ -200,29 +240,41 @@ class Library
     //Если книги не существует возвращаем пустой указатель 
     std::shared_ptr<const Book> get_book_by_id(int book_id)
     {
+        //TODO : дважды поиск
         if (m_book_list.find(book_id) != m_book_list.end())
         {   
             return m_book_list[book_id];
         }
-        
-        std::shared_ptr<Book> none_book;
-        
-        return none_book;
+        return {};
     }
     
     //Если автора с таким id нет, то возвращаем -2
     int change_author(std::unique_ptr<Author> author)
     {
+        //TODO : опять двойной поиск find / ниже operator []
         if (m_author_list.find(author->get_author_id()) == m_author_list.end())
         {
-            return -2;
+            return author_not_found;
         }
         
         std::vector<std::shared_ptr<const Book>> new_authors_books;
-        
+
+        //TODO : каждый раз обращаясь по operator [] в map ты делаешь поиск, это не очень хорошо
+
         int auth_id = author->get_author_id();
         m_author_list[auth_id] = std::move(author);
 
+        /*
+        for (auto && book_ptr : m_authors_books[auth_id]) {
+            //конструктор копирования, сколько бы не добавлялось потом полей все будет работать и не придется переписывать код
+            auto new_book_ptr = std::make_shared<Book>(*book_ptr);
+            new_book_ptr->set_author(m_author_list[auth_id]);
+            new_authors_books.push_back(new_book_ptr);
+            m_book_list[book_ptr->get_book_id()] = new_book_ptr;
+        }
+         */
+
+        //TODO : можно переписать цикл проще и универсальнее (пример выше)
         for (auto iter = m_authors_books[auth_id].begin(); iter != m_authors_books[auth_id].end(); iter++)
         {
             std::shared_ptr<Book> new_book(new Book((*iter)->get_book_id(), (*iter)->get_book_title(), m_author_list[auth_id]));
@@ -238,7 +290,8 @@ class Library
     //Если автора нет, то -2
     //Если нет книги с таким id, то -4
     int change_book(std::unique_ptr<Book> book)
-    {	
+    {
+        //TODO : не смотрел, перепиши с учетом всех замечаний выше
         if (m_author_list.find(book->get_author_id()) == m_author_list.end())
         {
             return -2;
