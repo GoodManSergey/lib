@@ -205,7 +205,14 @@ class Library
             return result_code::AUTHOR_NOT_FOUND;
         }
         
-        return iter->second;
+        std::vector<std::shared_ptr<const Book>> authors_books;
+        
+        for (int book_id : iter->second)
+        {
+            authors_books.push_back(m_book_list[book_id]);
+        }
+        
+        return authors_books;
     }
     
     result<int> add_book(std::unique_ptr<Book> book)
@@ -236,8 +243,7 @@ class Library
             return result_code::INTERNAL_ERROR;
         }
 
-        //TODO : нельзя менять author нужно делать копию =),
-        m_authors_books[insert_result.first->second->get_author_id()].push_back(insert_result.first->second);
+        m_authors_books[insert_result.first->second->get_author_id()].push_back(insert_result.first->first);
 
         return insert_result.first->first;
     }
@@ -250,32 +256,26 @@ class Library
         {   
             return std::const_pointer_cast<const Book>(iter->second);
         }
+        
         return result_code::BOOK_NOT_FOUND;
     }
     
     result<int> change_author(std::unique_ptr<Author> author)
     {
         auto iter_author = m_author_list.find(author->get_author_id());
+        
         if (iter_author == m_author_list.end())
         {
             return result_code::AUTHOR_NOT_FOUND;
         }
-        
-        std::vector<std::shared_ptr<const Book>> new_authors_books;
 
         iter_author->second = std::move(author);
         
-        std::vector<std::shared_ptr<const Book>> & authors_books = m_authors_books[iter_author->first];
-        
-        for (auto && book_ptr : authors_books) 
+        for (int book_id : m_authors_books[iter_author->first]) 
         {
-            auto new_book_ptr = std::make_shared<Book>(*book_ptr);
+            auto new_book_ptr = std::make_shared<Book>(*m_book_list[book_id]);
             new_book_ptr->set_author(iter_author->second);
-            new_authors_books.push_back(new_book_ptr);
-            m_book_list[book_ptr->get_book_id()] = new_book_ptr;
         }
-
-        authors_books = new_authors_books;
 
         return iter_author->first;
     }
@@ -287,7 +287,6 @@ class Library
             return result_code::INVALID_INPUT_PARAMS;
         }
 
-        
         if (book->get_author_id() <= 0)
         {
             return result_code::AUTHOR_NOT_PRESENT;
@@ -309,15 +308,27 @@ class Library
         
 	    book->set_author(iter_author->second);
         
-        std::vector<std::shared_ptr<const Book>>& author_books = m_authors_books[iter_book->first];
-        
-        author_books.erase(std::remove(author_books.begin(), author_books.end(), iter_book->second), author_books.end());
-        
         iter_book->second = std::move(book);
         
-        author_books.push_back(iter_book->second);
-        
         return iter_book->first;
+    }
+    
+    result_code delete_author(int author_id)
+    {
+        auto iter_author = m_author_list.find(author_id);
+        
+        if (iter_author == m_author_list.end())
+        {
+            return result_code::AUTHOR_NOT_FOUND;
+        }
+        
+        auto iter_author_books = m_authors_books.find(author_id);
+        
+        m_authors_books.erase(iter_author_books);
+        
+        m_author_list.erase(iter_author);
+        
+        return result_code::OK;
     }
 
     private:
@@ -325,7 +336,7 @@ class Library
     int m_next_book_id;
     std::unordered_map<int, std::shared_ptr<Author>> m_author_list;
     std::unordered_map<int, std::shared_ptr<Book>> m_book_list;
-    std::unordered_map<int, std::vector<std::shared_ptr<const Book>>> m_authors_books;
+    std::unordered_map<int, std::vector<int>> m_authors_books;
     Storage* pm_storage;
     
 };
