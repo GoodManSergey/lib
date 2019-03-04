@@ -258,7 +258,9 @@ class Library
 
         iter_author->second = std::move(author);
         
-        for (auto && book_ptr : m_authors_books[iter_author->first]) 
+        std::vector<std::shared_ptr<const Book>> & authors_books = m_authors_books[iter_author->first];
+        
+        for (auto && book_ptr : authors_books) 
         {
             auto new_book_ptr = std::make_shared<Book>(*book_ptr);
             new_book_ptr->set_author(iter_author->second);
@@ -266,7 +268,7 @@ class Library
             m_book_list[book_ptr->get_book_id()] = new_book_ptr;
         }
 
-        m_authors_books[iter_author->first] = new_authors_books;
+        authors_books = new_authors_books;
 
         return {result_code::OK, iter_author->first};
     }
