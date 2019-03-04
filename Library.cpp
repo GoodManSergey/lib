@@ -289,14 +289,14 @@ class Library
         
         if (iter_author == m_author_list.end())
         {
-            return {result_code::AUTHOR_NOT_PRESENT, 0};;
+            return {result_code::AUTHOR_NOT_FOUND, 0};;
         }
         
         auto iter_book = m_book_list.find(book->get_book_id());
         
         if (iter_book == m_book_list.end())
         {
-            return {result_code::BOOK_NOT_PRESENT, 0};
+            return {result_code::BOOK_NOT_FOUND, 0};
         }
         
 	    book->set_author(iter_author->second);
