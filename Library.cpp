@@ -22,6 +22,15 @@ enum class result_code: int
 template<typename T>
 struct result
 {
+    result(result_code code):
+        m_code(code)
+    {}
+
+    result(const T& object):
+        m_code(result_code::OK),
+        m_object(object)
+    {}
+
     result_code m_code;
     T m_object;
 };
@@ -64,15 +73,15 @@ class Book
     const std::string& get_book_title() const {return m_title;}
     std::shared_ptr<const Author> get_author() const {return m_author;}
 
-    result<int> get_author_id() const 
+    int get_author_id() const
     {
         if (m_author)
         {
-            return {result_code::OK, m_author->get_author_id()};
+            return m_author->get_author_id();
         }
         else
         {
-            return {result_code::AUTHOR_NOT_FOUND, 0};
+            return -1;
         }
     }
 
@@ -160,7 +169,7 @@ class Library
     {
         if (!author)
         {
-            return {result_code::INVALID_INPUT_PARAMS, 0};
+            return result_code::INVALID_INPUT_PARAMS;
         }
         
         author->set_author_id(m_next_author_id++);
@@ -169,10 +178,10 @@ class Library
         if (!insert_result.second) 
         {
             std::cout<< "Something go wrong, next_author_id is busy" << std::endl;
-            return {result_code::INTERNAL_ERROR, 0};
+            return result_code::INTERNAL_ERROR;
         }
         
-        return {result_code::OK, insert_result.first->first};
+        return insert_result.first->first;
     }
 
     result<std::shared_ptr<const Author>> get_author_by_id(int author_id)
@@ -181,10 +190,10 @@ class Library
         
         if (iter != m_author_list.end())
         {   
-            return {result_code::OK, iter->second};
+            return {iter->second};
         }
         
-        return {result_code::AUTHOR_NOT_FOUND, {}};
+        return {result_code::AUTHOR_NOT_FOUND};
     }
 
     result<std::vector<std::shared_ptr<const Book>>> get_authors_books(int author_id)
@@ -193,31 +202,28 @@ class Library
         
         if (iter == m_authors_books.end())
         {   
-            return {result_code::AUTHOR_NOT_FOUND, {}};
+            return result_code::AUTHOR_NOT_FOUND;
         }
         
-        return {result_code::OK, iter->second};
+        return iter->second;
     }
     
     result<int> add_book(std::unique_ptr<Book> book)
     {    
         if (!book)
         {
-            return {result_code::INVALID_INPUT_PARAMS, 0};
+            return result_code::INVALID_INPUT_PARAMS;
         }
-        
-        result<int> get_author_id_res = book->get_author_id();
-        
-        if (get_author_id_res.m_code == result_code::AUTHOR_NOT_FOUND)
-        {
-            return {result_code::AUTHOR_NOT_PRESENT, 0};
-        }
-        
-        auto iter_author = m_author_list.find(get_author_id_res.m_object);
 
+        if (book->get_author_id() <= 0)
+        {
+            return result_code::AUTHOR_NOT_PRESENT;
+        }
+
+        auto iter_author = m_author_list.find(book->get_author_id());
         if (iter_author == m_author_list.end())
         {   
-            return {result_code::AUTHOR_NOT_FOUND, 0};
+            return result_code::AUTHOR_NOT_FOUND;
         }
         
         book->set_author(iter_author->second);
@@ -227,12 +233,13 @@ class Library
         if (!insert_result.second)
         {   
             std::cout<<"Something go wrong, next_book_id is busy"<<std::endl;
-            return {result_code::INTERNAL_ERROR, 0};
+            return result_code::INTERNAL_ERROR;
         }
-        
-        m_authors_books[get_author_id_res.m_object].push_back(insert_result.first->second);
 
-        return {result_code::OK, insert_result.first->first};    
+        //TODO : нельзя менять author нужно делать копию =),
+        m_authors_books[insert_result.first->second->get_author_id()].push_back(insert_result.first->second);
+
+        return insert_result.first->first;
     }
     
     result<std::shared_ptr<const Book>> get_book_by_id(int book_id)
@@ -241,9 +248,9 @@ class Library
         
         if (iter != m_book_list.end())
         {   
-            return {result_code::OK, iter->second};
+            return std::const_pointer_cast<const Book>(iter->second);
         }
-        return {result_code::BOOK_NOT_FOUND, {}};
+        return result_code::BOOK_NOT_FOUND;
     }
     
     result<int> change_author(std::unique_ptr<Author> author)
@@ -251,7 +258,7 @@ class Library
         auto iter_author = m_author_list.find(author->get_author_id());
         if (iter_author == m_author_list.end())
         {
-            return {result_code::AUTHOR_NOT_FOUND, 0};
+            return result_code::AUTHOR_NOT_FOUND;
         }
         
         std::vector<std::shared_ptr<const Book>> new_authors_books;
@@ -270,35 +277,34 @@ class Library
 
         authors_books = new_authors_books;
 
-        return {result_code::OK, iter_author->first};
+        return iter_author->first;
     }
 
     result<int> change_book(std::unique_ptr<Book> book)
     {   
         if (!book)
         {
-            return {result_code::INVALID_INPUT_PARAMS, 0};
+            return result_code::INVALID_INPUT_PARAMS;
         }
+
         
-        result<int> get_author_id_res = book->get_author_id();
-        
-        if (get_author_id_res.m_code == result_code::AUTHOR_NOT_FOUND)
+        if (book->get_author_id() <= 0)
         {
-            return {result_code::AUTHOR_NOT_PRESENT, 0};
+            return result_code::AUTHOR_NOT_PRESENT;
         }
         
-        auto iter_author = m_author_list.find(get_author_id_res.m_object);
+        auto iter_author = m_author_list.find(book->get_author_id());
         
         if (iter_author == m_author_list.end())
         {
-            return {result_code::AUTHOR_NOT_FOUND, 0};;
+            return result_code::AUTHOR_NOT_FOUND;
         }
         
         auto iter_book = m_book_list.find(book->get_book_id());
         
         if (iter_book == m_book_list.end())
         {
-            return {result_code::BOOK_NOT_FOUND, 0};
+            return result_code::BOOK_NOT_FOUND;
         }
         
 	    book->set_author(iter_author->second);
@@ -311,7 +317,7 @@ class Library
         
         author_books.push_back(iter_book->second);
         
-        return {result_code::OK, iter_book->first};
+        return iter_book->first;
     }
 
     private:
