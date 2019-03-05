@@ -330,6 +330,26 @@ class Library
         
         return result_code::OK;
     }
+    
+    result_code delete_book(int book_id)
+    {
+        auto iter_book = m_book_list.find(book_id);
+        
+        if (iter_book == m_book_list.end())
+        {
+            return result_code::BOOK_NOT_FOUND;
+        }
+        
+        if (iter_book->second->get_author_id() > 0)
+        {
+            auto & author_books = m_authors_books[iter_book->second->get_author_id()];
+            author_books.erase(std::remove(author_books.begin(), author_books.end(), iter_book->first), author_books.end());
+        }
+        
+        m_book_list.erase(iter_book);
+        
+        return result_code::OK;
+    }
 
     private:
     int m_next_author_id;
