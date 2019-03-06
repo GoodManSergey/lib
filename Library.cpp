@@ -15,7 +15,8 @@ enum class result_code: int
     INVALID_INPUT_PARAMS,
     INTERNAL_ERROR,
     AUTHOR_NOT_PRESENT,
-    BOOK_NOT_PRESENT
+    BOOK_NOT_PRESENT,
+    STORAGE_ERROR
 };
 
 
@@ -109,53 +110,68 @@ class Book
 
 class Storage
 {
-   /* public:
-    virtual get_books() = 0;
-    virtual get_authors() = 0;
-    virtual add_book() = 0;
-    virtual add_author() = 0;
-    virtual change_book() = 0;
-    virtual change_author() = 0;
-    virtual delete_book() = 0;
-    virtual delete_author() = 0;*/
+    public:
+    virtual void get_books() = 0;
+    virtual void get_authors() = 0;
+    virtual result_code add_book(const Book& book) = 0;
+    virtual result_code add_author(const Author& author) = 0;
+    virtual result_code change_book(const Book& book) = 0;
+    virtual result_code change_author(const Author& author) = 0;
+    virtual result_code delete_book(int book_id) = 0;
+    virtual result_code delete_author(int author_id) = 0;
 };
 
 
-/*
- * -1,-2,-3 - это все magic-константы, какие-то непонятные числа. этого следует избегать. к тому же в разных методах они означают у тебя еще и разное!
- * Если тебе требуется возвращать результат в виде кода ошибки + какого-то дополнительного объекта, то есть рзаные способы:
- * 1) Возвращать всегда код выполнения (и это не magic-константа, а enum), а объект результат заполняется по ссылке
- *
- * result get_book(shared_ptr<const Book>& Book_ptr)
- *
- * 2) Или возвразщать результат в виде кода + объекта
- *
- * enum class result_code  : int {
- *    ok,
- *    book_not_found,
- *    author_not_found,
- *    invalid_input_params,
- *    ...
- * }
- *
- * если результат - толькод код , то :
- * resule_code delete_book(int id);
- *
- * если результата - не только код, то:
- *
- * template<typename T>
- * struct result {
- *     result_code m_code;
- *     T m_object;
- * }
- *
- * result<std::shared_ptr<const Book>> get_book(int id) const;
- *
- * 3) на худой конец, просто заменить magic-константы на enum (ниже я это делаю)
- *
- * Мы обычно используем способ 2, если проектируем какой-то синхронный API. Если же речь не идет о каком-то пубдичном API,
- *  то какой угодно способ.
- */
+class Parser
+{
+
+};
+
+
+class FileStorage: public Storage
+{
+    public:
+    FileStorage(Parser* parser, std::string storage_path): pm_parser(parser), m_storage_path(storage_path)
+    {
+    }
+    
+    void get_books() {}
+    void get_authors() {}
+    
+    result_code add_book(const Book& book)
+    {
+        return result_code::OK;
+    }
+    
+    result_code add_author(const Author& author)
+    {
+        return result_code::OK;
+    }
+    
+    result_code change_book(const Book& book)
+    {
+        return result_code::OK;
+    }
+    
+    result_code change_author(const Author& author)
+    {
+        return result_code::OK;
+    }
+    
+    result_code delete_book(int book_id)
+    {
+        return result_code::OK;
+    }
+    
+    result_code delete_author(int author_id)
+    {
+        return result_code::OK;
+    }
+    
+    private:
+    Parser* pm_parser;
+    std::string m_storage_path;
+};
 
 
 class Library
@@ -364,7 +380,8 @@ class Library
 
 int main()
 {   
-    Storage* store = new Storage();
+    Parser* parser = new Parser();
+    FileStorage* store = new FileStorage(parser, "/file/path");
     Library lib(store);
     
     /*std::unique_ptr<Author> author(new Author(1, "Oruell"));
