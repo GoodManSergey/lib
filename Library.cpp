@@ -113,10 +113,10 @@ class Storage
     public:
     virtual void get_books() = 0;
     virtual void get_authors() = 0;
-    virtual result_code add_book(const Book& book) = 0;
-    virtual result_code add_author(const Author& author) = 0;
-    virtual result_code change_book(const Book& book) = 0;
-    virtual result_code change_author(const Author& author) = 0;
+    virtual result_code add_book(shared_ptr<const Book> book) = 0;
+    virtual result_code add_author(shared_ptr<const Author> author) = 0;
+    virtual result_code change_book(shared_ptr<const Book> book) = 0;
+    virtual result_code change_author(shared_ptr<const Author> author) = 0;
     virtual result_code delete_book(int book_id) = 0;
     virtual result_code delete_author(int author_id) = 0;
 };
@@ -138,22 +138,22 @@ class FileStorage: public Storage
     void get_books() {}
     void get_authors() {}
     
-    result_code add_book(const Book& book)
+    result_code add_book(shared_ptr<const Book> book)
     {
         return result_code::OK;
     }
     
-    result_code add_author(const Author& author)
+    result_code add_author(shared_ptr<const Author> author)
     {
         return result_code::OK;
     }
     
-    result_code change_book(const Book& book)
+    result_code change_book(shared_ptr<const Book> book)
     {
         return result_code::OK;
     }
     
-    result_code change_author(const Author& author)
+    result_code change_author(shared_ptr<const Author> author)
     {
         return result_code::OK;
     }
