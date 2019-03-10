@@ -382,6 +382,11 @@ class Library
         
         auto iter_author_books = m_authors_books.find(author_id);
         
+        if (pm_storage->delete_author(author_id) != result_code::OK)
+        {
+            return result_code::STORAGE_ERROR;
+        }
+        
         m_authors_books.erase(iter_author_books);
         
         m_author_list.erase(iter_author);
@@ -396,6 +401,11 @@ class Library
         if (iter_book == m_book_list.end())
         {
             return result_code::BOOK_NOT_FOUND;
+        }
+        
+        if (pm_storage->delete_book(book_id) != result_code::OK)
+        {
+            return result_code::STORAGE_ERROR;
         }
         
         if (iter_book->second->get_author_id() > 0)
