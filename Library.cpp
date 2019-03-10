@@ -4,6 +4,7 @@
 #include<unordered_map>
 #include<vector>
 #include<algorithm>
+#include<assert.h>
 
 
 
@@ -197,12 +198,21 @@ class Library
         }
         
         author->set_author_id(m_next_author_id++);
-        auto insert_result = m_author_list.insert({author->get_author_id(), std::move(author)});
+        
+        std::shared_ptr<Author> shared_author = std::move(author);
+        
+        if (pm_storage->add_author(shared_author) != result_code::OK)
+        {
+            return result_code::STORAGE_ERROR;
+        }        
+        
+        auto insert_result = m_author_list.insert({author->get_author_id(), shared_author});
+        
+        assert(insert_result.second);
         
         if (!insert_result.second) 
         {
-            std::cout<< "Something go wrong, next_author_id is busy" << std::endl;
-            return result_code::INTERNAL_ERROR;
+            insert_result.first->second = shared_author;
         }
         
         return insert_result.first->first;
@@ -260,11 +270,20 @@ class Library
         book->set_author(iter_author->second);
         book->set_book_id(m_next_book_id++);
         
-        auto insert_result = m_book_list.insert({book->get_book_id(), std::move(book)});
-        if (!insert_result.second)
-        {   
-            std::cout<<"Something go wrong, next_book_id is busy"<<std::endl;
-            return result_code::INTERNAL_ERROR;
+        std::shared_ptr<Book> shared_book = std::move(book);
+        
+        if (pm_storage->add_book(shared_book) != result_code::OK)
+        {
+            return result_code::STORAGE_ERROR;
+        }
+        
+        auto insert_result = m_book_list.insert({book->get_book_id(), shared_book});
+        
+        assert(insert_result.second);
+        
+        if (!insert_result.second) 
+        {
+            insert_result.first->second = shared_book;
         }
 
         m_authors_books[insert_result.first->second->get_author_id()].push_back(insert_result.first->first);
@@ -292,13 +311,21 @@ class Library
         {
             return result_code::AUTHOR_NOT_FOUND;
         }
+        
+        std::shared_ptr<Author> shared_author = std::move(author);
 
-        iter_author->second = std::move(author);
+        iter_author->second = shared_author;
+        
+        if (pm_storage->change_author(shared_author) != result_code::OK)
+        {
+            return result_code::STORAGE_ERROR;
+        }
         
         for (int book_id : m_authors_books[iter_author->first]) 
         {
             auto new_book_ptr = std::make_shared<Book>(*m_book_list[book_id]);
             new_book_ptr->set_author(iter_author->second);
+            m_book_list[book_id] = new_book_ptr;
         }
 
         return iter_author->first;
