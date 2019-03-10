@@ -108,15 +108,24 @@ class Book
 };
 
 
+struct storage_data
+{
+    int next_book_id;
+    int next_author_id;
+    std::unordered_map<int, std::shared_ptr<Author>> m_author_list;
+    std::unordered_map<int, std::shared_ptr<Book>> m_book_list;
+    std::unordered_map<int, std::vector<int>> m_authors_books;
+};
+
+
 class Storage
 {
     public:
-    virtual void get_books() = 0;
-    virtual void get_authors() = 0;
-    virtual result_code add_book(shared_ptr<const Book> book) = 0;
-    virtual result_code add_author(shared_ptr<const Author> author) = 0;
-    virtual result_code change_book(shared_ptr<const Book> book) = 0;
-    virtual result_code change_author(shared_ptr<const Author> author) = 0;
+    virtual storage_data get_storage() = 0;
+    virtual result_code add_book(std::shared_ptr<const Book> book) = 0;
+    virtual result_code add_author(std::shared_ptr<const Author> author) = 0;
+    virtual result_code change_book(std::shared_ptr<const Book> book) = 0;
+    virtual result_code change_author(std::shared_ptr<const Author> author) = 0;
     virtual result_code delete_book(int book_id) = 0;
     virtual result_code delete_author(int author_id) = 0;
 };
@@ -135,25 +144,24 @@ class FileStorage: public Storage
     {
     }
     
-    void get_books() {}
-    void get_authors() {}
+    storage_data get_storage() {};
     
-    result_code add_book(shared_ptr<const Book> book)
+    result_code add_book(std::shared_ptr<const Book> book)
     {
         return result_code::OK;
     }
     
-    result_code add_author(shared_ptr<const Author> author)
+    result_code add_author(std::shared_ptr<const Author> author)
     {
         return result_code::OK;
     }
     
-    result_code change_book(shared_ptr<const Book> book)
+    result_code change_book(std::shared_ptr<const Book> book)
     {
         return result_code::OK;
     }
     
-    result_code change_author(shared_ptr<const Author> author)
+    result_code change_author(std::shared_ptr<const Author> author)
     {
         return result_code::OK;
     }
