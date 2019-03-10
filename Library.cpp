@@ -313,13 +313,13 @@ class Library
         }
         
         std::shared_ptr<Author> shared_author = std::move(author);
-
-        iter_author->second = shared_author;
         
         if (pm_storage->change_author(shared_author) != result_code::OK)
         {
             return result_code::STORAGE_ERROR;
         }
+
+        iter_author->second = shared_author;
         
         for (int book_id : m_authors_books[iter_author->first]) 
         {
@@ -359,7 +359,14 @@ class Library
         
 	    book->set_author(iter_author->second);
         
-        iter_book->second = std::move(book);
+        std::shared_ptr<Book> shared_book = std::move(book);
+        
+        if (pm_storage->change_book(shared_book) != result_code::OK)
+        {
+            return result_code::STORAGE_ERROR;
+        }
+        
+        iter_book->second = shared_book;
         
         return iter_book->first;
     }
