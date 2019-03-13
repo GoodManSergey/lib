@@ -111,12 +111,11 @@ class Book
 
 struct storage_data
 {
-	//TODO : construct
+	
     int next_book_id;
     int next_author_id;
-	//TODO : vector
-    std::unordered_map<int, std::shared_ptr<Author>> m_author_list;
-    std::unordered_map<int, std::shared_ptr<Book>> m_book_list;
+    std::vector<std::shared_ptr<Author>> m_author_list;
+    std::vector<std::shared_ptr<Book>> m_book_list;
 };
 
 
@@ -268,10 +267,10 @@ class Library
         
         std::shared_ptr<Book> shared_book = std::move(book);
 
-        //TODO : code
-        if (pm_storage->add_book(shared_book) != result_code::OK)
+        auto storage_result = pm_storage->add_book(shared_book);
+        if (storage_result != result_code::OK)
         {
-            return result_code::STORAGE_ERROR;
+            return storage_result;
         }
         
         auto insert_result = m_book_list.insert({shared_book->get_book_id(), shared_book});
@@ -306,9 +305,10 @@ class Library
         
         std::shared_ptr<Author> shared_author = std::move(author);
         
-        if (pm_storage->change_author(shared_author) != result_code::OK)
+        auto storage_result = pm_storage->change_author(shared_author);
+        if (storage_result != result_code::OK)
         {
-            return result_code::STORAGE_ERROR;
+            return storage_result;
         }
 
         iter_author->second = shared_author;
@@ -353,9 +353,10 @@ class Library
         
         std::shared_ptr<Book> shared_book = std::move(book);
         
-        if (pm_storage->change_book(shared_book) != result_code::OK)
+        auto storage_result = pm_storage->change_book(shared_book);
+        if (storage_result != result_code::OK)
         {
-            return result_code::STORAGE_ERROR;
+            return storage_result;
         }
         
         iter_book->second = shared_book;
@@ -373,10 +374,11 @@ class Library
         }
 
         //TODO : а книги то остались. и они ссылаются на автора, которого уже нет
-
-        if (pm_storage->delete_author(author_id) != result_code::OK)
+        
+        auto storage_result = pm_storage->delete_author(author_id);
+        if (storage_result != result_code::OK)
         {
-            return result_code::STORAGE_ERROR;
+            return storage_result;
         }
         
         m_authors_books.erase(author_id);
@@ -395,9 +397,10 @@ class Library
             return result_code::BOOK_NOT_FOUND;
         }
         
-        if (pm_storage->delete_book(book_id) != result_code::OK)
+        auto storage_result = pm_storage->delete_book(book_id);
+        if (storage_result != result_code::OK)
         {
-            return result_code::STORAGE_ERROR;
+            return storage_result;
         }
 
         assert(iter_book->second->get_author_id() > 0);
