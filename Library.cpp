@@ -111,11 +111,12 @@ class Book
 
 struct storage_data
 {
+	//TODO : construct
     int next_book_id;
     int next_author_id;
+	//TODO : vector
     std::unordered_map<int, std::shared_ptr<Author>> m_author_list;
     std::unordered_map<int, std::shared_ptr<Book>> m_book_list;
-    std::unordered_map<int, std::vector<int>> m_authors_books;
 };
 
 
@@ -140,8 +141,8 @@ class Parser
 
 class FileStorage: public Storage
 {
-    public:
-    FileStorage(Parser* parser, std::string storage_path): pm_parser(parser), m_storage_path(storage_path)
+   public:
+    FileStorage(std::unique_ptr<Parser> parser, std::string storage_path): pm_parser(std::move(parser)), m_storage_path(storage_path)
     {
     }
     
@@ -177,8 +178,8 @@ class FileStorage: public Storage
         return result_code::OK;
     }
     
-    private:
-    Parser* pm_parser;
+private:
+    std::unique_ptr<Parser> pm_parser;
     std::string m_storage_path;
 };
 
@@ -186,7 +187,7 @@ class FileStorage: public Storage
 class Library
 {
     public:
-    Library(Storage* storage): pm_storage(storage), m_next_author_id(1), m_next_book_id(1)
+    Library(std::unique_ptr<Storage> storage): pm_storage(std::move(storage)), m_next_author_id(1), m_next_book_id(1)
     {
     }
     
@@ -200,21 +201,16 @@ class Library
         author->set_author_id(m_next_author_id++);
         
         std::shared_ptr<Author> shared_author = std::move(author);
-        
-        if (pm_storage->add_author(shared_author) != result_code::OK)
+
+        auto storage_result = pm_storage->add_author(shared_author);
+        if (storage_result != result_code::OK)
         {
-            return result_code::STORAGE_ERROR;
+            return storage_result;
         }        
         
-        auto insert_result = m_author_list.insert({author->get_author_id(), shared_author});
-        
+        auto insert_result = m_author_list.insert({shared_author->get_author_id(), shared_author});
         assert(insert_result.second);
-        
-        if (!insert_result.second) 
-        {
-            insert_result.first->second = shared_author;
-        }
-        
+
         return insert_result.first->first;
     }
 
@@ -271,20 +267,16 @@ class Library
         book->set_book_id(m_next_book_id++);
         
         std::shared_ptr<Book> shared_book = std::move(book);
-        
+
+        //TODO : code
         if (pm_storage->add_book(shared_book) != result_code::OK)
         {
             return result_code::STORAGE_ERROR;
         }
         
-        auto insert_result = m_book_list.insert({book->get_book_id(), shared_book});
+        auto insert_result = m_book_list.insert({shared_book->get_book_id(), shared_book});
         
         assert(insert_result.second);
-        
-        if (!insert_result.second) 
-        {
-            insert_result.first->second = shared_book;
-        }
 
         m_authors_books[insert_result.first->second->get_author_id()].push_back(insert_result.first->first);
 
@@ -379,15 +371,15 @@ class Library
         {
             return result_code::AUTHOR_NOT_FOUND;
         }
-        
-        auto iter_author_books = m_authors_books.find(author_id);
-        
+
+        //TODO : а книги то остались. и они ссылаются на автора, которого уже нет
+
         if (pm_storage->delete_author(author_id) != result_code::OK)
         {
             return result_code::STORAGE_ERROR;
         }
         
-        m_authors_books.erase(iter_author_books);
+        m_authors_books.erase(author_id);
         
         m_author_list.erase(iter_author);
         
@@ -407,12 +399,11 @@ class Library
         {
             return result_code::STORAGE_ERROR;
         }
-        
-        if (iter_book->second->get_author_id() > 0)
-        {
-            auto & author_books = m_authors_books[iter_book->second->get_author_id()];
-            author_books.erase(std::remove(author_books.begin(), author_books.end(), iter_book->first), author_books.end());
-        }
+
+        assert(iter_book->second->get_author_id() > 0);
+
+        auto & author_books = m_authors_books[iter_book->second->get_author_id()];
+        author_books.erase(std::remove(author_books.begin(), author_books.end(), iter_book->first), author_books.end());
         
         m_book_list.erase(iter_book);
         
@@ -425,16 +416,20 @@ class Library
     std::unordered_map<int, std::shared_ptr<Author>> m_author_list;
     std::unordered_map<int, std::shared_ptr<Book>> m_book_list;
     std::unordered_map<int, std::vector<int>> m_authors_books;
-    Storage* pm_storage;
+    std::unique_ptr<Storage> pm_storage;
     
 };
 
 
 int main()
-{   
-    Parser* parser = new Parser();
-    FileStorage* store = new FileStorage(parser, "/file/path");
-    Library lib(store);
+{
+    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new Parser()), "/file/path")));
+
+    auto Book_ptr = lib.get_book_by_id(1).m_object;
+    auto NewBook_ptr = std::unique_ptr<Book>(new Book(*Book_ptr));
+    NewBook_ptr->set_title("foo");
+
+
     
     /*std::unique_ptr<Author> author(new Author(1, "Oruell"));
 
