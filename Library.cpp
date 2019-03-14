@@ -17,7 +17,8 @@ enum class result_code: int
     INTERNAL_ERROR,
     AUTHOR_NOT_PRESENT,
     BOOK_NOT_PRESENT,
-    STORAGE_ERROR
+    STORAGE_ERROR,
+    AUTHOR_HAS_BOOKS
 };
 
 
@@ -373,7 +374,12 @@ class Library
             return result_code::AUTHOR_NOT_FOUND;
         }
 
-        //TODO : а книги то остались. и они ссылаются на автора, которого уже нет
+        auto authors_books = m_authors_books.find(author_id);
+        
+        if (authors_books->second.empty())
+        {
+            return result_code::AUTHOR_HAS_BOOKS;
+        }
         
         auto storage_result = pm_storage->delete_author(author_id);
         if (storage_result != result_code::OK)
