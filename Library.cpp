@@ -5,6 +5,9 @@
 #include<vector>
 #include<algorithm>
 #include<assert.h>
+#include<fstream>
+#include<sstream>
+#include"jsoncpp/json/json.h"
 
 
 
@@ -112,9 +115,15 @@ class Book
 
 struct storage_data
 {
-	
-    int next_book_id;
-    int next_author_id;
+    storage_data(int next_book_id, int next_author_id, std::vector<std::shared_ptr<Author>> author_list, std::vector<std::shared_ptr<Book>> book_list):
+        m_next_book_id(next_book_id), 
+        m_next_author_id(next_author_id), 
+        m_author_list(author_list), 
+        m_book_list(book_list)
+    {}
+        
+    int m_next_book_id;
+    int m_next_author_id;
     std::vector<std::shared_ptr<Author>> m_author_list;
     std::vector<std::shared_ptr<Book>> m_book_list;
 };
@@ -135,19 +144,64 @@ class Storage
 
 class Parser
 {
-
+    public:
+    virtual result<storage_data> get_storage(const std::string& file_str) = 0;
+    virtual result_code add_book(std::shared_ptr<const Book> book) = 0;
+    virtual result_code add_author(std::shared_ptr<const Author> author) = 0;
+    virtual result_code change_book(std::shared_ptr<const Book> book) = 0;
+    virtual result_code change_author(std::shared_ptr<const Author> author) = 0;
+    virtual result_code delete_book(int book_id) = 0;
+    virtual result_code delete_author(int author_id) = 0;
 };
 
+class JsonParser: public Parser
+{
+    
+    result<storage_data> get_storage(const std::string& file_str)
+    {
+        
+    }
+}
 
 class FileStorage: public Storage
 {
    public:
-    FileStorage(std::unique_ptr<Parser> parser, std::string storage_path): pm_parser(std::move(parser)), m_storage_path(storage_path)
+    FileStorage(std::unique_ptr<Parser> parser, std::string storage_path): 
+        pm_parser(std::move(parser)), 
+        m_storage_path(storage_path)
+    {}
+    
+    std::string get_string_from_file()
     {
+        std::ifstream file(this->m_storage_path);
+        assert(file.is_open());
+        std::stringstream buffer;   
+        buffer << file.rdbuf();
+        file.close();
+        return buffer.str();
     }
     
-    storage_data get_storage() {};
-    
+    storage_data get_storage() 
+    {
+        Json::Value root;
+        std::ifstream file("FileStore.json");
+        file >> root;
+        std::vector<std::shared_ptr<Author>> author_list;
+        std::vector<std::shared_ptr<Book>> book_list;
+        for (auto author : root["authors"])
+        {
+            author_list.push_back(std::shared_ptr<Author>(new Author(author["id"].asInt(), author["name"].asString())));
+        }
+        
+        for (auto book : root["books"])
+        {
+            auto author_iter = std::find_if(author_list.begin(), author_list.end(), [author_id = book["author_id"].asInt()] (std::shared_ptr<Author>  author) -> bool { return author->get_author_id() == author_id; }); 
+            std::cout<<(*author_iter)->get_name();
+        }
+        
+        return {root["next_book_id"].asInt(), root["next_author_id"].asInt(), {}, {}};
+    }
+        
     result_code add_book(std::shared_ptr<const Book> book)
     {
         return result_code::OK;
@@ -189,6 +243,7 @@ class Library
     public:
     Library(std::unique_ptr<Storage> storage): pm_storage(std::move(storage)), m_next_author_id(1), m_next_book_id(1)
     {
+        auto aaa = pm_storage->get_storage();
     }
     
     result<int> add_author(std::unique_ptr<Author> author)
@@ -432,11 +487,11 @@ class Library
 
 int main()
 {
-    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new Parser()), "/file/path")));
+    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new Parser()), "FileStore.json")));
 
-    auto Book_ptr = lib.get_book_by_id(1).m_object;
-    auto NewBook_ptr = std::unique_ptr<Book>(new Book(*Book_ptr));
-    NewBook_ptr->set_title("foo");
+    //auto Book_ptr = lib.get_book_by_id(1).m_object;
+    //auto NewBook_ptr = std::unique_ptr<Book>(new Book(*Book_ptr));
+    //NewBook_ptr->set_title("foo");
 
 
     

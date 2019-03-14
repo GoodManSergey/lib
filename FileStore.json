@@ -1,0 +1,16 @@
+{
+    "authors": [
+    {"id": 1,
+     "name": "Pushkin"
+    }
+    ],
+    "books": [
+    {
+        "id": 1,
+        "title": "Story",
+        "author_id": 1
+    }
+    ],
+    "next_book_id": 1,
+    "next_author_id": 2    
+}
