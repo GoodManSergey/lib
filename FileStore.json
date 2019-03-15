@@ -1,16 +1,1 @@
-{
-    "authors": [
-    {"id": 1,
-     "name": "Pushkin"
-    }
-    ],
-    "books": [
-    {
-        "id": 1,
-        "title": "Story",
-        "author_id": 1
-    }
-    ],
-    "next_book_id": 2,
-    "next_author_id": 2    
-}
+{"authors":[{"id":1,"name":"Pushkin"},{"id":2,"name":"new author"}],"books":[{"author_id":1,"id":1,"title":"Story"},{"author_id":1,"id":2,"title":"new book"},{"author_id":2,"id":3,"title":"new book"}],"next_author_id":3,"next_book_id":4}

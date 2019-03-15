@@ -146,8 +146,8 @@ class Parser
 {
     public:
     virtual storage_data get_storage(const std::string& file_str) = 0;
-    //virtual result_code add_book(std::shared_ptr<const Book> book) = 0;
-    //virtual result_code add_author(std::shared_ptr<const Author> author) = 0;
+    virtual std::string add_book(const std::string& file_str, std::shared_ptr<const Book> book) = 0;
+    virtual std::string add_author(const std::string& file_str, std::shared_ptr<const Author> author) = 0;
     //virtual result_code change_book(std::shared_ptr<const Book> book) = 0;
     //virtual result_code change_author(std::shared_ptr<const Author> author) = 0;
     //virtual result_code delete_book(int book_id) = 0;
@@ -183,6 +183,47 @@ class JsonParser: public Parser
         }
         
         return {root["next_book_id"].asInt(), root["next_author_id"].asInt(), author_list, book_list};
+    }
+    
+    std::string add_book(const std::string& file_str, std::shared_ptr<const Book> book)
+    {
+        Json::Value root;
+        Json::Reader reader;
+        
+        assert(reader.parse(file_str.c_str(), root ));
+        
+        Json::Value book_json;
+        book_json["id"] = book->get_book_id();
+        book_json["title"] = book->get_book_title();
+        book_json["author_id"] = book->get_author_id();
+        
+        root["books"].append(book_json);
+        root["next_book_id"] = book->get_book_id() + 1;
+        
+        Json::FastWriter fastWriter;
+        std::string output = fastWriter.write(root);
+        
+        return output;
+    }
+    
+    std::string add_author(const std::string& file_str, std::shared_ptr<const Author> author)
+    {
+        Json::Value root;
+        Json::Reader reader;
+        
+        assert(reader.parse(file_str.c_str(), root ));
+        
+        Json::Value author_json;
+        author_json["id"] = author->get_author_id();
+        author_json["name"] = author->get_name();
+        
+        root["authors"].append(author_json);
+        root["next_author_id"] = author->get_author_id() + 1;
+        
+        Json::FastWriter fastWriter;
+        std::string output = fastWriter.write(root);
+        
+        return output;
     }
 };
 
@@ -242,13 +283,17 @@ class FileStorage: public Storage
     }
         
     result_code add_book(std::shared_ptr<const Book> book)
-    {
-        return result_code::OK;
+    {   
+        std::string new_data = pm_parser->add_book(this->get_string_from_file(), book);
+        
+        return this->set_data_to_file(new_data);
     }
     
     result_code add_author(std::shared_ptr<const Author> author)
     {
-        return result_code::OK;
+        std::string new_data = pm_parser->add_author(this->get_string_from_file(), author);
+        
+        return this->set_data_to_file(new_data);
     }
     
     result_code change_book(std::shared_ptr<const Book> book)
@@ -548,6 +593,11 @@ int main()
     Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")));
     auto book = lib.get_book_by_id(1).m_object;
     std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
+    
+    auto add_author = lib.add_author(std::unique_ptr<Author>(new Author(1, "new author")));
+    auto author = lib.get_author_by_id(2).m_object;
+    auto add_book = lib.add_book(std::unique_ptr<Book>(new Book(1, "new book", author)));
+    
 
     //auto Book_ptr = lib.get_book_by_id(1).m_object;
     //auto NewBook_ptr = std::unique_ptr<Book>(new Book(*Book_ptr));
