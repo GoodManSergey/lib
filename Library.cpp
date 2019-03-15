@@ -145,23 +145,46 @@ class Storage
 class Parser
 {
     public:
-    virtual result<storage_data> get_storage(const std::string& file_str) = 0;
-    virtual result_code add_book(std::shared_ptr<const Book> book) = 0;
-    virtual result_code add_author(std::shared_ptr<const Author> author) = 0;
-    virtual result_code change_book(std::shared_ptr<const Book> book) = 0;
-    virtual result_code change_author(std::shared_ptr<const Author> author) = 0;
-    virtual result_code delete_book(int book_id) = 0;
-    virtual result_code delete_author(int author_id) = 0;
+    virtual storage_data get_storage(const std::string& file_str) = 0;
+    //virtual result_code add_book(std::shared_ptr<const Book> book) = 0;
+    //virtual result_code add_author(std::shared_ptr<const Author> author) = 0;
+    //virtual result_code change_book(std::shared_ptr<const Book> book) = 0;
+    //virtual result_code change_author(std::shared_ptr<const Author> author) = 0;
+    //virtual result_code delete_book(int book_id) = 0;
+    //virtual result_code delete_author(int author_id) = 0;
 };
 
 class JsonParser: public Parser
 {
     
-    result<storage_data> get_storage(const std::string& file_str)
+    storage_data get_storage(const std::string& file_str)
     {
+        Json::Value root;
+        Json::Reader reader;
         
+        assert(reader.parse(file_str.c_str(), root ));
+        
+        std::vector<std::shared_ptr<Author>> author_list;
+        std::vector<std::shared_ptr<Book>> book_list;
+        
+        for (auto author : root["authors"])
+        {
+            author_list.push_back(std::shared_ptr<Author>(new Author(author["id"].asInt(), author["name"].asString())));
+        }
+        
+        for (auto book : root["books"])
+        {
+            auto author_iter = std::find_if(author_list.begin(), author_list.end(),
+             [author_id = book["author_id"].asInt()] (std::shared_ptr<Author>  author) -> bool { return author->get_author_id() == author_id; });
+             
+            assert(author_iter!=author_list.end());
+            
+            book_list.push_back(std::shared_ptr<Book>(new Book(book["id"].asInt(), book["title"].asString(), (*author_iter))));
+        }
+        
+        return {root["next_book_id"].asInt(), root["next_author_id"].asInt(), author_list, book_list};
     }
-}
+};
 
 class FileStorage: public Storage
 {
@@ -174,7 +197,9 @@ class FileStorage: public Storage
     std::string get_string_from_file()
     {
         std::ifstream file(this->m_storage_path);
+        
         assert(file.is_open());
+        
         std::stringstream buffer;   
         buffer << file.rdbuf();
         file.close();
@@ -183,23 +208,7 @@ class FileStorage: public Storage
     
     storage_data get_storage() 
     {
-        Json::Value root;
-        std::ifstream file("FileStore.json");
-        file >> root;
-        std::vector<std::shared_ptr<Author>> author_list;
-        std::vector<std::shared_ptr<Book>> book_list;
-        for (auto author : root["authors"])
-        {
-            author_list.push_back(std::shared_ptr<Author>(new Author(author["id"].asInt(), author["name"].asString())));
-        }
-        
-        for (auto book : root["books"])
-        {
-            auto author_iter = std::find_if(author_list.begin(), author_list.end(), [author_id = book["author_id"].asInt()] (std::shared_ptr<Author>  author) -> bool { return author->get_author_id() == author_id; }); 
-            std::cout<<(*author_iter)->get_name();
-        }
-        
-        return {root["next_book_id"].asInt(), root["next_author_id"].asInt(), {}, {}};
+        return pm_parser->get_storage(this->get_string_from_file());
     }
         
     result_code add_book(std::shared_ptr<const Book> book)
@@ -241,9 +250,28 @@ private:
 class Library
 {
     public:
-    Library(std::unique_ptr<Storage> storage): pm_storage(std::move(storage)), m_next_author_id(1), m_next_book_id(1)
+    Library(std::unique_ptr<Storage> storage): 
+        pm_storage(std::move(storage))
     {
-        auto aaa = pm_storage->get_storage();
+        auto gotten_storage = pm_storage->get_storage();
+        
+        this->m_next_book_id = gotten_storage.m_next_book_id;
+        this->m_next_author_id = gotten_storage.m_next_author_id;
+        
+        for (auto author : gotten_storage.m_author_list)
+        {
+            auto insert_result = m_author_list.insert({author->get_author_id(), author});
+            assert(insert_result.second);    
+        }
+        
+        for (auto book : gotten_storage.m_book_list)
+        {
+            auto insert_result = m_book_list.insert({book->get_book_id(), book});
+        
+            assert(insert_result.second);
+
+            m_authors_books[insert_result.first->second->get_author_id()].push_back(insert_result.first->first);
+        } 
     }
     
     result<int> add_author(std::unique_ptr<Author> author)
@@ -487,7 +515,9 @@ class Library
 
 int main()
 {
-    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new Parser()), "FileStore.json")));
+    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")));
+    auto book = lib.get_book_by_id(1).m_object;
+    std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
 
     //auto Book_ptr = lib.get_book_by_id(1).m_object;
     //auto NewBook_ptr = std::unique_ptr<Book>(new Book(*Book_ptr));
