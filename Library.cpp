@@ -148,10 +148,10 @@ class Parser
     virtual storage_data get_storage(const std::string& file_str) = 0;
     virtual std::string add_book(const std::string& file_str, std::shared_ptr<const Book> book) = 0;
     virtual std::string add_author(const std::string& file_str, std::shared_ptr<const Author> author) = 0;
-    //virtual result_code change_book(std::shared_ptr<const Book> book) = 0;
-    //virtual result_code change_author(std::shared_ptr<const Author> author) = 0;
-    //virtual result_code delete_book(int book_id) = 0;
-    //virtual result_code delete_author(int author_id) = 0;
+    virtual std::string change_book(const std::string& file_str, std::shared_ptr<const Book> book) = 0;
+    virtual std::string change_author(const std::string& file_str, std::shared_ptr<const Author> author) = 0;
+    virtual std::string delete_book(const std::string& file_str, int book_id) = 0;
+    virtual std::string delete_author(const std::string& file_str, int author_id) = 0;
 };
 
 class JsonParser: public Parser
@@ -225,7 +225,105 @@ class JsonParser: public Parser
         
         return output;
     }
+    
+    std::string change_book(const std::string& file_str, std::shared_ptr<const Book> book)
+    {
+        Json::Value root;
+        Json::Reader reader;
+        
+        assert(reader.parse(file_str.c_str(), root ));
+        
+        for (auto& book_json : root["books"])
+        {
+            if (book_json["id"] == book->get_book_id())
+            {
+                book_json["title"] = book->get_book_title();
+                book_json["author_id"] = book->get_author_id();
+                break;
+            }   
+        }
+        
+        Json::FastWriter fastWriter;
+        std::string output = fastWriter.write(root);
+        
+        return output;
+    }
+    
+    std::string change_author(const std::string& file_str, std::shared_ptr<const Author> author)
+    {
+        Json::Value root;
+        Json::Reader reader;
+        
+        assert(reader.parse(file_str.c_str(), root ));
+        
+        for (auto& author_json : root["authors"])
+        {
+            if (author_json["id"] == author->get_author_id())
+            {
+                author_json["name"] = author->get_name();
+                break;
+            }   
+        }
+        
+        Json::FastWriter fastWriter;
+        std::string output = fastWriter.write(root);
+        
+        return output;
+    }
+    
+    std::string delete_book(const std::string& file_str, int book_id)
+    {
+        Json::Value root;
+        Json::Reader reader;
+        
+        Json::Value new_books;
+         
+        assert(reader.parse(file_str.c_str(), root ));
+        
+        for (auto& book_json : root["books"])
+        {
+            if (book_json["id"].asInt() == book_id)
+            {   
+                continue;
+            }
+            new_books.append(book_json);
+        }
+        
+        root["books"] = new_books;
+        
+        Json::FastWriter fastWriter;
+        std::string output = fastWriter.write(root);
+        
+        return output;
+    }
+    
+    std::string delete_author(const std::string& file_str, int author_id)
+    {
+        Json::Value root;
+        Json::Reader reader;
+        
+        Json::Value new_authors;
+         
+        assert(reader.parse(file_str.c_str(), root ));
+        
+        for (auto& author_json : root["authors"])
+        {
+            if (author_json["id"].asInt() == author_id)
+            {   
+                continue;
+            }
+            new_authors.append(author_json);
+        }
+        
+        root["authors"] = new_authors;
+        
+        Json::FastWriter fastWriter;
+        std::string output = fastWriter.write(root);
+        
+        return output;
+    }
 };
+
 
 class FileStorage: public Storage
 {
@@ -298,22 +396,30 @@ class FileStorage: public Storage
     
     result_code change_book(std::shared_ptr<const Book> book)
     {
-        return result_code::OK;
+        std::string new_data = pm_parser->change_book(this->get_string_from_file(), book);
+        
+        return this->set_data_to_file(new_data);
     }
     
     result_code change_author(std::shared_ptr<const Author> author)
     {
-        return result_code::OK;
+        std::string new_data = pm_parser->change_author(this->get_string_from_file(), author);
+        
+        return this->set_data_to_file(new_data);
     }
     
     result_code delete_book(int book_id)
     {
-        return result_code::OK;
+        std::string new_data = pm_parser->delete_book(this->get_string_from_file(), book_id);
+        
+        return this->set_data_to_file(new_data);
     }
     
     result_code delete_author(int author_id)
     {
-        return result_code::OK;
+        std::string new_data = pm_parser->delete_author(this->get_string_from_file(), author_id);
+        
+        return this->set_data_to_file(new_data);
     }
     
 private:
@@ -336,7 +442,8 @@ class Library
         for (auto author : gotten_storage.m_author_list)
         {
             auto insert_result = m_author_list.insert({author->get_author_id(), author});
-            assert(insert_result.second);    
+            assert(insert_result.second);
+            m_authors_books[author->get_author_id()];
         }
         
         for (auto book : gotten_storage.m_book_list)
@@ -534,8 +641,8 @@ class Library
 
         auto authors_books = m_authors_books.find(author_id);
         
-        if (authors_books->second.empty())
-        {
+        if (!authors_books->second.empty())
+        {   
             return result_code::AUTHOR_HAS_BOOKS;
         }
         
@@ -547,7 +654,7 @@ class Library
         
         m_authors_books.erase(author_id);
         
-        m_author_list.erase(iter_author);
+        m_author_list.erase(author_id);
         
         return result_code::OK;
     }
@@ -591,80 +698,20 @@ class Library
 int main()
 {
     Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")));
-    auto book = lib.get_book_by_id(1).m_object;
-    std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
+    //auto book = lib.get_book_by_id(1).m_object;
+    //std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
     
     auto add_author = lib.add_author(std::unique_ptr<Author>(new Author(1, "new author")));
-    auto author = lib.get_author_by_id(2).m_object;
+    auto author = lib.get_author_by_id(1).m_object;
     auto add_book = lib.add_book(std::unique_ptr<Book>(new Book(1, "new book", author)));
     
-
-    //auto Book_ptr = lib.get_book_by_id(1).m_object;
-    //auto NewBook_ptr = std::unique_ptr<Book>(new Book(*Book_ptr));
-    //NewBook_ptr->set_title("foo");
-
-
+    auto change_book = lib.change_book(std::unique_ptr<Book>(new Book(1, "The new book", author)));
+    auto change_author = lib.change_author(std::unique_ptr<Author>(new Author(1, "The new author")));
     
-    /*std::unique_ptr<Author> author(new Author(1, "Oruell"));
-
-    //Добавляем автора
-    int auth_id = lib.add_author(std::move(author));
-    
-    bool have_books;
-    std::vector<std::shared_ptr<const Book>> auth_books = lib.get_authors_books(auth_id, have_books);
-    if (have_books)
-    {
-        std::cout<<auth_books.size()<<std::endl;
-    }
-    else
-    {
-        std::cout<<"No books"<<std::endl;
-    }
-    //Получаем несущ автора
-    std::shared_ptr<const Author> none_author = lib.get_author_by_id(100);
-    std::cout<<"EMPTY AUTHOR: "<<none_author<<std::endl;
-    
-    //Получаем автора
-    std::shared_ptr<const Author> author_2 = lib.get_author_by_id(auth_id);
-
-    std::unique_ptr<Book> book(new Book(1, "1984", author_2));
-    //Добавляем книгу
-    int book_id = lib.add_book(std::move(book));
-    
-    auth_books = lib.get_authors_books(auth_id, have_books);
-    if (have_books)
-    {
-        std::cout<<"Books: "<<auth_books.size()<<std::endl;
-    }
-    else
-    {
-        std::cout<<"No books"<<std::endl;
-    }
-    
-    //Получаем книгу
-    std::shared_ptr<const Book> gotten_book= lib.get_book_by_id(book_id);
-    
-    std::unique_ptr<Author> author_3(new Author(1, "Ne Pushkin"));
-    //Изменяем автора
-    lib.change_author(std::move(author_3));
-
-    //Изменяеи книгу(название)
-    std::unique_ptr<Book> new_book(new Book(1, "ne ev on", author_2));
-    lib.change_book(std::move(new_book));
-
-    //Получаем ту же книгу
-    std::shared_ptr<const Book> gotten_book_2 = lib.get_book_by_id(book_id);
-    
-    
-    
-    std::cout<<gotten_book->get_book_id()<<std::endl;
-    std::cout<<gotten_book->get_author()->get_name()<<std::endl;
-    std::cout<<gotten_book->get_book_title()<<std::endl;
-    std::cout<<"-------------------"<<std::endl;
-    std::cout<<gotten_book_2->get_book_id()<<std::endl;
-    std::cout<<gotten_book_2->get_author()->get_name()<<std::endl;
-    std::cout<<gotten_book_2->get_book_title()<<std::endl; */
-
-
-    return 0;
+    auto delete_book = lib.delete_book(10);
+    if (delete_book == result_code::OK)
+        std::cout<<"OK"<<std::endl;
+    auto delete_author = lib.delete_author(3);
+    if (delete_author == result_code::OK)
+        std::cout<<"OK"<<std::endl;
 }
