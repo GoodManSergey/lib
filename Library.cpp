@@ -197,13 +197,43 @@ class FileStorage: public Storage
     std::string get_string_from_file()
     {
         std::ifstream file(this->m_storage_path);
+        std::stringstream buffer; 
+        
+        if (file.is_open())
+        {
+            buffer << file.rdbuf();
+            file.close();
+        }
+        else
+        {
+            std::ifstream file_tmp(this->m_storage_path + ".tmp");
+            
+            assert(file_tmp.is_open());
+            
+            buffer << file_tmp.rdbuf();
+            file_tmp.close();
+            
+            bool rename_status = std::rename((this->m_storage_path + ".tmp").c_str(), this->m_storage_path.c_str());
+        
+            assert(!rename_status);
+        }       
+        
+        return buffer.str();
+    }
+    
+    result_code set_data_to_file(const std::string& str_data)
+    {
+        std::ofstream file(this->m_storage_path + ".tmp");
         
         assert(file.is_open());
-        
-        std::stringstream buffer;   
-        buffer << file.rdbuf();
+        file << str_data;
         file.close();
-        return buffer.str();
+        
+        bool rename_status = std::rename((this->m_storage_path + ".tmp").c_str(), this->m_storage_path.c_str());
+        
+        assert(!rename_status);
+        
+        return result_code::OK;
     }
     
     storage_data get_storage() 
