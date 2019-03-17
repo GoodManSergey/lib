@@ -158,14 +158,21 @@ class Parser
 };
 
 
-class XmlParser: public Parser
+/*class XmlParser: public Parser
 {
     storage_data get_storage(const std::string& file_str)
     {
         pugi::xml_document doc;
-        doc.load_string(xml_mesg.c_str());
+        
+        assert(doc.load_string(file_str.c_str()));
+        
+        pugi::xpath_query books_query("/data/books/book");
+        pugi::xpath_query authors_query("/data/authors/author");
+        pugi::xpath_query next_book_id_path("/data/next_book_id");
+        pugi::xpath_query next_author_id_path("/data/next_author_id");
+        
     }
-};
+};*/
 
 
 class JsonParser: public Parser
