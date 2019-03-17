@@ -8,6 +8,7 @@
 #include<fstream>
 #include<sstream>
 #include"jsoncpp/json/json.h"
+#include"pugixml.hpp"
 
 
 
@@ -21,7 +22,9 @@ enum class result_code: int
     AUTHOR_NOT_PRESENT,
     BOOK_NOT_PRESENT,
     STORAGE_ERROR,
-    AUTHOR_HAS_BOOKS
+    AUTHOR_HAS_BOOKS,
+    PARSER_ERROR,
+    CAN_NOT_OPEN_FILE
 };
 
 
@@ -153,6 +156,17 @@ class Parser
     virtual std::string delete_book(const std::string& file_str, int book_id) = 0;
     virtual std::string delete_author(const std::string& file_str, int author_id) = 0;
 };
+
+
+class XmlParser: public Parser
+{
+    storage_data get_storage(const std::string& file_str)
+    {
+        pugi::xml_document doc;
+        doc.load_string(xml_mesg.c_str());
+    }
+};
+
 
 class JsonParser: public Parser
 {

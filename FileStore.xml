@@ -1,0 +1,21 @@
+<data>
+	<books>
+		<book>
+			<id>1</id>
+			<title>The book</title>
+			<author_id>1</author_id>
+		</book>
+	</books>
+	<authors>
+		<author>
+			<id>1</id>
+			<name>The author</name>
+		</author>
+	</authors>
+	<next_book_id>
+		<id>2</id>
+	</next_book_id>
+	<next_author_id>
+		<id>2</id>
+	</next_author_id>
+</data>
