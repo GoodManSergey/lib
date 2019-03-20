@@ -158,21 +158,74 @@ class Parser
 };
 
 
-/*class XmlParser: public Parser
+class XmlParser: public Parser
 {
     storage_data get_storage(const std::string& file_str)
     {
         pugi::xml_document doc;
         
         assert(doc.load_string(file_str.c_str()));
+        pugi::xml_node root = doc.document_element();
         
         pugi::xpath_query books_query("/data/books/book");
         pugi::xpath_query authors_query("/data/authors/author");
         pugi::xpath_query next_book_id_path("/data/next_book_id");
         pugi::xpath_query next_author_id_path("/data/next_author_id");
         
+        std::vector<std::shared_ptr<Author>> author_list;
+        std::vector<std::shared_ptr<Book>> book_list;
+        
+        for (pugi::xpath_node author_query : root.select_nodes(authors_query))
+        {
+            pugi::xml_node author = author_query.node();
+            author_list.push_back(std::shared_ptr<Author>(new Author(author.attribute("id").as_int(), author.attribute("name").value())));
+        }
+        
+        for (pugi::xpath_node book_query : root.select_nodes(books_query))
+        {
+            pugi::xml_node book = book_query.node();
+            
+            auto author_iter = std::find_if(author_list.begin(), author_list.end(),
+             [author_id = book.attribute("author_id").as_int()] (std::shared_ptr<Author>  author) -> bool { return author->get_author_id() == author_id; });
+             
+            assert(author_iter!=author_list.end());
+            
+            book_list.push_back(std::shared_ptr<Book>(new Book(book.attribute("id").as_int(), book.attribute("title").value(), (*author_iter))));
+        }
+  
+        return {root.select_single_node(next_book_id_path).node().attribute("id").as_int(), root.select_single_node(next_author_id_path).node().attribute("id").as_int(), author_list, book_list};
     }
-};*/
+    
+    std::string add_book(const std::string& file_str, std::shared_ptr<const Book> book)
+    {
+        return "";
+    }
+    
+    std::string add_author(const std::string& file_str, std::shared_ptr<const Author> author)
+    {
+        return "";
+    }
+    
+    std::string change_book(const std::string& file_str, std::shared_ptr<const Book> book)
+    {
+        return "";
+    }
+    
+    std::string change_author(const std::string& file_str, std::shared_ptr<const Author> author)
+    {
+        return "";
+    }
+    
+    std::string delete_book(const std::string& file_str, int book_id)
+    {
+        return "";
+    }
+    
+    std::string delete_author(const std::string& file_str, int author_id)
+    {
+        return "";
+    }
+};
 
 
 class JsonParser: public Parser
@@ -718,10 +771,10 @@ class Library
 
 int main()
 {
-    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")));
-    //auto book = lib.get_book_by_id(1).m_object;
-    //std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
-    
+    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new XmlParser()), "FileStore.xml")));
+    auto book = lib.get_book_by_id(1).m_object;
+    std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
+    /*
     auto add_author = lib.add_author(std::unique_ptr<Author>(new Author(1, "new author")));
     auto author = lib.get_author_by_id(1).m_object;
     auto add_book = lib.add_book(std::unique_ptr<Book>(new Book(1, "new book", author)));
@@ -735,4 +788,5 @@ int main()
     auto delete_author = lib.delete_author(3);
     if (delete_author == result_code::OK)
         std::cout<<"OK"<<std::endl;
+        */
 }
