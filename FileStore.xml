@@ -1,10 +1,37 @@
+<?xml version="1.0"?>
 <data>
 	<books>
 		<book id="1" title="The book" author_id="1" />
-    </books>
+		<book id="2" title="new book" author_id="1" />
+		<book id="3" title="The new book" author_id="1" />
+		<book id="4" title="new book" author_id="1" />
+		<book id="5" title="new book" author_id="1" />
+		<book id="6" title="new book" author_id="1" />
+		<book id="7" title="new book" author_id="1" />
+		<book id="8" title="new book" author_id="1" />
+		<book id="9" title="new book" author_id="1" />
+		<book id="11" title="new book" author_id="1" />
+		<book id="12" title="new book" author_id="1" />
+		<book id="13" title="new book" author_id="1" />
+		<book id="14" title="new book" author_id="1" />
+		<book id="15" title="new book" author_id="1" />
+	</books>
 	<authors>
 		<author id="1" name="The author" />
+		<author id="2" name="new author" />
+		<author id="4" name="new author" />
+		<author id="5" name="new author" />
+		<author id="6" name="new author" />
+		<author id="7" name="new author" />
+		<author id="8" name="new author" />
+		<author id="9" name="new author" />
+		<author id="10" name="new author" />
+		<author id="11" name="new author" />
+		<author id="12" name="new author" />
+		<author id="13" name="new author" />
+		<author id="14" name="new author" />
+		<author id="15" name="new author" />
 	</authors>
-	<next_book_id id="2" />
-	<next_author_id id="2" />
+	<next_book_id id="16" />
+	<next_author_id id="16" />
 </data>
