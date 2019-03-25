@@ -124,7 +124,7 @@ struct storage_data
         m_author_list(author_list), 
         m_book_list(book_list)
     {}
-        
+
     int m_next_book_id;
     int m_next_author_id;
     std::vector<std::shared_ptr<Author>> m_author_list;
@@ -182,6 +182,17 @@ class XmlParser: public Parser
             author_list.push_back(std::shared_ptr<Author>(new Author(author.attribute("id").as_int(), author.attribute("name").value())));
         }
         
+        pugi::xml_node books_node = root.select_single_node("/data/books").node();
+        if(books_node == nullptr)
+        {
+        	std::cout<<"no books"<<std::endl;
+        }
+
+        for (auto book_child = books_node.child("book"); book_child; book_child = book_child.next_sibling("book"))
+        {
+        	std::cout<<book_child.attribute("title").value()<<std::endl;
+        }
+
         for (pugi::xpath_node book_query : root.select_nodes(books_query))
         {
             pugi::xml_node book = book_query.node();
@@ -189,12 +200,16 @@ class XmlParser: public Parser
             auto author_iter = std::find_if(author_list.begin(), author_list.end(),
              [author_id = book.attribute("author_id").as_int()] (std::shared_ptr<Author>  author) -> bool { return author->get_author_id() == author_id; });
              
-            assert(author_iter!=author_list.end());
-            
+            if (author_iter==author_list.end())
+            {
+            	continue;
+            }
+
             book_list.push_back(std::shared_ptr<Book>(new Book(book.attribute("id").as_int(), book.attribute("title").value(), (*author_iter))));
         }
-  
-        return {root.select_single_node(next_book_id_path).node().attribute("id").as_int(), root.select_single_node(next_author_id_path).node().attribute("id").as_int(), author_list, book_list};
+
+        storage_data data {root.select_single_node(next_book_id_path).node().attribute("id").as_int(), root.select_single_node(next_author_id_path).node().attribute("id").as_int(), author_list, book_list};
+        return std::move(data);
     }
     
     std::string add_book(const std::string& file_str, std::shared_ptr<const Book> book)
@@ -377,7 +392,8 @@ class JsonParser: public Parser
             book_list.push_back(std::shared_ptr<Book>(new Book(book["id"].asInt(), book["title"].asString(), (*author_iter))));
         }
         
-        return {root["next_book_id"].asInt(), root["next_author_id"].asInt(), author_list, book_list};
+        storage_data data {root["next_book_id"].asInt(), root["next_author_id"].asInt(), author_list, book_list};
+        return std::move(data);
     }
     
     std::string add_book(const std::string& file_str, std::shared_ptr<const Book> book)
@@ -893,7 +909,7 @@ class Library
 int main()
 {
     Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new XmlParser()), "FileStore.xml")));
-    auto book = lib.get_book_by_id(1).m_object;
+    /*auto book = lib.get_book_by_id(1).m_object;
     std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
 
     auto add_author = lib.add_author(std::unique_ptr<Author>(new Author(1, "new author")));
@@ -909,6 +925,6 @@ int main()
         std::cout<<"OK"<<std::endl;
     auto delete_author = lib.delete_author(3);
     if (delete_author == result_code::OK)
-        std::cout<<"OK"<<std::endl;
+        std::cout<<"OK"<<std::endl;*/
 
 }

@@ -15,6 +15,24 @@
 		<book id="13" title="new book" author_id="1" />
 		<book id="14" title="new book" author_id="1" />
 		<book id="15" title="new book" author_id="1" />
+		<book id="16" title="new book" author_id="1" />
+		<book id="17" title="new book" author_id="1" />
+		<book id="18" title="new book" author_id="1" />
+		<book id="19" title="new book" author_id="1" />
+		<book id="20" title="new book" author_id="1" />
+		<book id="21" title="new book" author_id="1" />
+		<book id="22" title="new book" author_id="1" />
+		<book id="23" title="new book" author_id="1" />
+		<book id="24" title="new book" author_id="1" />
+		<book id="25" title="new book" author_id="1" />
+		<book id="26" title="new book" author_id="1" />
+		<book id="27" title="new book" author_id="1" />
+		<book id="28" title="new book" author_id="1" />
+		<book id="29" title="new book" author_id="1" />
+		<book id="30" title="new book" author_id="1" />
+		<book id="31" title="new book" author_id="1" />
+		<book id="32" title="new book" author_id="1" />
+		<book id="33" title="new book" author_id="1" />
 	</books>
 	<authors>
 		<author id="1" name="The author" />
@@ -31,7 +49,25 @@
 		<author id="13" name="new author" />
 		<author id="14" name="new author" />
 		<author id="15" name="new author" />
+		<author id="16" name="new author" />
+		<author id="17" name="new author" />
+		<author id="18" name="new author" />
+		<author id="19" name="new author" />
+		<author id="20" name="new author" />
+		<author id="21" name="new author" />
+		<author id="22" name="new author" />
+		<author id="23" name="new author" />
+		<author id="24" name="new author" />
+		<author id="25" name="new author" />
+		<author id="26" name="new author" />
+		<author id="27" name="new author" />
+		<author id="28" name="new author" />
+		<author id="29" name="new author" />
+		<author id="30" name="new author" />
+		<author id="31" name="new author" />
+		<author id="32" name="new author" />
+		<author id="33" name="new author" />
 	</authors>
-	<next_book_id id="16" />
-	<next_author_id id="16" />
+	<next_book_id id="34" />
+	<next_author_id id="34" />
 </data>
