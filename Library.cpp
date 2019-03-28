@@ -148,6 +148,7 @@ class Storage
 class Parser
 {
     public:
+    virtual std::string get_empty_tmpl() = 0;
     virtual storage_data get_storage(const std::string& file_str) = 0;
     virtual std::string add_book(const std::string& file_str, std::shared_ptr<const Book> book) = 0;
     virtual std::string add_author(const std::string& file_str, std::shared_ptr<const Author> author) = 0;
@@ -160,6 +161,17 @@ class Parser
 
 class XmlParser: public Parser
 {
+    public:
+    std::string get_empty_tmpl()
+    {
+        this->m_doc.load("<data><books></books> <authors></authors> <next_book_id id='1' /> <next_author_id id='1' /> </data>");
+
+        std::stringstream buffer;
+    	this->m_doc.save(buffer);
+    	
+    	return buffer.str();
+    }
+    
     storage_data get_storage(const std::string& file_str)
     {
         pugi::xml_document doc;
@@ -361,11 +373,19 @@ class XmlParser: public Parser
 
     	return buffer.str();
     }
+    
+    private:
+        pugi::xml_document m_doc;
 };
 
 
 class JsonParser: public Parser
 {
+    std::string get_empty_tmpl()
+    {
+        
+        return "";
+    }
     
     storage_data get_storage(const std::string& file_str)
     {
@@ -533,6 +553,9 @@ class JsonParser: public Parser
         
         return output;
     }
+    
+    private:
+    Json::Value m_root;
 };
 
 
@@ -909,6 +932,8 @@ class Library
 int main()
 {
     Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new XmlParser()), "FileStore.xml")));
+    XmlParser parser;
+    std::cout<<parser.get_empty_tmpl();
     /*auto book = lib.get_book_by_id(1).m_object;
     std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
 
