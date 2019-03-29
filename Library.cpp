@@ -24,7 +24,7 @@ enum class result_code: int
     STORAGE_ERROR,
     AUTHOR_HAS_BOOKS,
     PARSER_ERROR,
-    CAN_NOT_OPEN_FILE
+    OPEN_FILE_ERROR
 };
 
 
@@ -148,7 +148,7 @@ class Storage
 class Parser
 {
     public:
-    virtual std::string get_empty_tmpl() = 0;
+    virtual std::string set_empty_tmpl() = 0;
     virtual storage_data get_storage(const std::string& file_str) = 0;
     virtual std::string add_book(const std::string& file_str, std::shared_ptr<const Book> book) = 0;
     virtual std::string add_author(const std::string& file_str, std::shared_ptr<const Author> author) = 0;
@@ -162,9 +162,10 @@ class Parser
 class XmlParser: public Parser
 {
     public:
-    std::string get_empty_tmpl()
-    {
-        this->m_doc.load("<data><books></books> <authors></authors> <next_book_id id='1' /> <next_author_id id='1' /> </data>");
+    std::string set_empty_tmpl()
+    {   
+        std::string file_tmpl = "<data><books></books> <authors></authors> <next_book_id id='1' /> <next_author_id id='1' /> </data>";
+        this->m_doc.load(file_tmpl.c_str());
 
         std::stringstream buffer;
     	this->m_doc.save(buffer);
@@ -380,11 +381,19 @@ class XmlParser: public Parser
 
 
 class JsonParser: public Parser
-{
-    std::string get_empty_tmpl()
+{   
+    public:
+    std::string set_empty_tmpl()
     {
+        Json::Reader reader;
+        std::string file_tmpl = "{\"authors\":[],\"books\":[],\"next_author_id\":1,\"next_book_id\": 1}";
         
-        return "";
+        reader.parse(file_tmpl.c_str(), this->m_root);
+        
+        Json::FastWriter fastWriter;
+        std::string output = fastWriter.write(this->m_root);
+        
+        return output;
     }
     
     storage_data get_storage(const std::string& file_str)
@@ -567,7 +576,7 @@ class FileStorage: public Storage
         m_storage_path(storage_path)
     {}
     
-    std::string get_string_from_file()
+    result<std::string> get_string_from_file()
     {
         std::ifstream file(this->m_storage_path);
         std::stringstream buffer; 
@@ -581,7 +590,10 @@ class FileStorage: public Storage
         {
             std::ifstream file_tmp(this->m_storage_path + ".tmp");
             
-            assert(file_tmp.is_open());
+            if (!file_tmp.is_open())
+            {
+                return result_code::OPEN_FILE_ERROR;
+            }
             
             buffer << file_tmp.rdbuf();
             file_tmp.close();
@@ -594,15 +606,22 @@ class FileStorage: public Storage
         return buffer.str();
     }
     
-    result_code set_data_to_file(const std::string& str_data)
+    result_code make_postfix_file(const std::sring& str_data, const std::string& postfix="")
     {
-        std::ofstream file(this->m_storage_path + ".tmp");
+        std::ofstream file(this->m_storage_path + postfix);
         
         assert(file.is_open());
+        
         file << str_data;
         file.close();
+    }
+    
+    result_code set_data_to_file(const std::string& str_data)
+    {   
+        std::string tmp_postfix = ".tmp";
+        this->make_file(str_data, tmp_postfix);
         
-        bool rename_status = std::rename((this->m_storage_path + ".tmp").c_str(), this->m_storage_path.c_str());
+        bool rename_status = std::rename((this->m_storage_path + tmp_postfix).c_str(), this->m_storage_path.c_str());
         
         assert(!rename_status);
         
@@ -610,8 +629,26 @@ class FileStorage: public Storage
     }
     
     storage_data get_storage() 
-    {
-        return pm_parser->get_storage(this->get_string_from_file());
+    {   
+        result get_file_res = this->get_string_from_file();
+        if (get_file_res.m_code != result_code::OK)
+        {
+            std::string file_tmpl = this->pm_parser->set_file_tmpl();
+            result_code tmpl_file_res = this->make_postfix_file(file_tmp);
+        }
+        
+        result<std::string> parser_result = pm_parser->get_storage(file_tmpl);
+        
+        if (parser_result.m_code != result_code::OK)
+        {
+            std::string file_tmpl = this->pm_parser->set_file_tmpl();
+            result_code tmpl_file_res = this->make_postfix_file(file_tmp);
+            parser_result = pm_parser->get_storage(file_tmpl);
+            
+            assert(parser_result.m_code != result_code::OK);//Если наш шаблон не распарсилса, значит совсем беда
+        }
+        
+        return parser_result.m_object;
     }
         
     result_code add_book(std::shared_ptr<const Book> book)
@@ -932,8 +969,8 @@ class Library
 int main()
 {
     Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new XmlParser()), "FileStore.xml")));
-    XmlParser parser;
-    std::cout<<parser.get_empty_tmpl();
+    JsonParser parser;
+    std::cout<<parser.set_empty_tmpl();
     /*auto book = lib.get_book_by_id(1).m_object;
     std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
 
