@@ -7,6 +7,7 @@
 #include<assert.h>
 #include<fstream>
 #include<sstream>
+#include<functional>
 #include"jsoncpp/json/json.h"
 #include"pugixml.hpp"
 
@@ -606,21 +607,32 @@ class FileStorage: public Storage
         return buffer.str();
     }
     
-    result_code make_postfix_file(const std::sring& str_data, const std::string& postfix="")
+    result_code make_file(const std::string& str_data, const std::string& postfix="")
     {
         std::ofstream file(this->m_storage_path + postfix);
         
-        assert(file.is_open());
+       if (!file.is_open())
+       {
+    	   return result_code::OPEN_FILE_ERROR;
+       }
         
         file << str_data;
         file.close();
+
+        return result_code::OK;
     }
     
     result_code set_data_to_file(const std::string& str_data)
     {   
         std::string tmp_postfix = ".tmp";
-        this->make_file(str_data, tmp_postfix);
+
+        result_code make_file_res = this->make_file(str_data, tmp_postfix);
         
+        if (make_file_res != result_code::OK)
+        {
+        	return make_file_res;
+        }
+
         bool rename_status = std::rename((this->m_storage_path + tmp_postfix).c_str(), this->m_storage_path.c_str());
         
         assert(!rename_status);
@@ -630,67 +642,102 @@ class FileStorage: public Storage
     
     storage_data get_storage() 
     {   
-        result get_file_res = this->get_string_from_file();
-        if (get_file_res.m_code != result_code::OK)
+        result<std::string> get_file_res = this->get_string_from_file(); //пытаемся получить файл
+
+        if (get_file_res.m_code != result_code::OK) //если не вышло
         {
-            std::string file_tmpl = this->pm_parser->set_file_tmpl();
-            result_code tmpl_file_res = this->make_postfix_file(file_tmp);
+            std::string file_tmpl = this->pm_parser->set_empty_tmpl(); //получаем паустой шаблон и заполняем его в парсер
+            result_code tmpl_file_res = this->make_file(file_tmpl); //записываем его в файл, без tmp, т.к. файл уже битый
+            assert(tmpl_file_res == result_code::OK);//если не вышло записать, то брасаем ошибку
+            storage_data empty_data {1,1, {}, {}};
+            return std::move(empty_data);//возвращаем пустую либу
+        }
+        //если файл таки открылся, пытаемся его распарсить
+        result<storage_data> parser_result = pm_parser->get_storage(get_file_res.m_object);
+        
+        if (parser_result.m_code != result_code::OK)//если не вышло
+        {
+        	//TODO: fix copy-paste
+            std::string file_tmpl = this->pm_parser->set_empty_tmpl(); //получаем паустой шаблон и заполняем его в парсер
+            result_code tmpl_file_res = this->make_file(file_tmpl);//записываем его в файл, без tmp, т.к. файл уже битый
+            assert(tmpl_file_res == result_code::OK);//если не вышло записать, то брасаем ошибку
+            storage_data empty_data {1,1, {}, {}};
+            return std::move(empty_data);//возвращаем пустую либу
         }
         
-        result<std::string> parser_result = pm_parser->get_storage(file_tmpl);
-        
-        if (parser_result.m_code != result_code::OK)
-        {
-            std::string file_tmpl = this->pm_parser->set_file_tmpl();
-            result_code tmpl_file_res = this->make_postfix_file(file_tmp);
-            parser_result = pm_parser->get_storage(file_tmpl);
-            
-            assert(parser_result.m_code != result_code::OK);//Если наш шаблон не распарсилса, значит совсем беда
-        }
-        
-        return parser_result.m_object;
+        return std::move(parser_result.m_object); //Если все ок, возвращаем результат
     }
-        
+
+    result_code store(std::function<std::string(std::string&)> parser)
+    {
+    	result<std::string> res_get_file = this->get_string_from_file();
+    	if (res_get_file.m_code != result_code::OK)
+    	{
+    		return res_get_file.m_code;
+    	}
+
+    	result<std::string> res_new_data = parser(res_get_file.m_object);
+
+    	if (res_new_data.m_code != result_code::OK)
+    	{
+    		return res_new_data.m_code;
+    	}
+
+    	return this->set_data_to_file(res_new_data.m_object);
+    }
+
     result_code add_book(std::shared_ptr<const Book> book)
     {   
-        std::string new_data = pm_parser->add_book(this->get_string_from_file(), book);
-        
-        return this->set_data_to_file(new_data);
+    	std::function<std::string(std::string&)> l_add_book = [this, book]
+															   (std::string& str_file) -> std::string
+															   {return this->pm_parser->add_book(str_file, book);};
+
+    	return this->store(l_add_book);
     }
     
     result_code add_author(std::shared_ptr<const Author> author)
     {
-        std::string new_data = pm_parser->add_author(this->get_string_from_file(), author);
-        
-        return this->set_data_to_file(new_data);
+        std::function<std::string(std::string&)> l_add_author = [this, author]
+																 (std::string& str_file) -> std::string
+																 {return this->pm_parser->add_author(str_file, author);};
+
+        return this->store(l_add_author);
     }
     
     result_code change_book(std::shared_ptr<const Book> book)
     {
-        std::string new_data = pm_parser->change_book(this->get_string_from_file(), book);
-        
-        return this->set_data_to_file(new_data);
+        std::function<std::string(std::string&)> l_change_book = [this, book]
+																 (std::string& str_file) -> std::string
+																 {return this->pm_parser->change_book(str_file, book);};
+
+        return this->store(l_change_book);
     }
     
     result_code change_author(std::shared_ptr<const Author> author)
     {
-        std::string new_data = pm_parser->change_author(this->get_string_from_file(), author);
-        
-        return this->set_data_to_file(new_data);
+        std::function<std::string(std::string&)> l_change_author = [this, author]
+																  (std::string& str_file) -> std::string
+																  {return this->pm_parser->change_author(str_file, author);};
+
+        return this->store(l_change_author);
     }
     
     result_code delete_book(int book_id)
     {
-        std::string new_data = pm_parser->delete_book(this->get_string_from_file(), book_id);
-        
-        return this->set_data_to_file(new_data);
+        std::function<std::string(std::string&)> l_delete_book = [this, book_id]
+																  (std::string& str_file) -> std::string
+																  {return this->pm_parser->delete_book(str_file, book_id);};
+
+        return this->store(l_delete_book);
     }
     
     result_code delete_author(int author_id)
     {
-        std::string new_data = pm_parser->delete_author(this->get_string_from_file(), author_id);
-        
-        return this->set_data_to_file(new_data);
+        std::function<std::string(std::string&)> l_delete_author = [this, author_id]
+																	(std::string& str_file) -> std::string
+																	{return this->pm_parser->delete_author(str_file, author_id);};
+
+        return this->store(l_delete_author);
     }
     
 private:
