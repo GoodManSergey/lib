@@ -125,6 +125,12 @@ struct storage_data
         m_author_list(author_list), 
         m_book_list(book_list)
     {}
+    storage_data():
+           m_next_book_id(1),
+           m_next_author_id(1),
+           m_author_list({}),
+           m_book_list({})
+       {}
 
     int m_next_book_id;
     int m_next_author_id;
@@ -150,13 +156,13 @@ class Parser
 {
     public:
     virtual std::string set_empty_tmpl() = 0;
-    virtual storage_data get_storage(const std::string& file_str) = 0;
-    virtual std::string add_book(const std::string& file_str, std::shared_ptr<const Book> book) = 0;
-    virtual std::string add_author(const std::string& file_str, std::shared_ptr<const Author> author) = 0;
-    virtual std::string change_book(const std::string& file_str, std::shared_ptr<const Book> book) = 0;
-    virtual std::string change_author(const std::string& file_str, std::shared_ptr<const Author> author) = 0;
-    virtual std::string delete_book(const std::string& file_str, int book_id) = 0;
-    virtual std::string delete_author(const std::string& file_str, int author_id) = 0;
+    virtual result<storage_data> get_storage(const std::string& file_str) = 0;
+    virtual result<std::string> add_book(const std::string& file_str, std::shared_ptr<const Book> book) = 0;
+    virtual result<std::string> add_author(const std::string& file_str, std::shared_ptr<const Author> author) = 0;
+    virtual result<std::string> change_book(const std::string& file_str, std::shared_ptr<const Book> book) = 0;
+    virtual result<std::string> change_author(const std::string& file_str, std::shared_ptr<const Author> author) = 0;
+    virtual result<std::string> delete_book(const std::string& file_str, int book_id) = 0;
+    virtual result<std::string> delete_author(const std::string& file_str, int author_id) = 0;
 };
 
 
@@ -171,35 +177,49 @@ class XmlParser: public Parser
         std::stringstream buffer;
     	this->m_doc.save(buffer);
     	
-    	return buffer.str();
+    	return std::move(buffer.str());
     }
     
-    storage_data get_storage(const std::string& file_str)
+    result<storage_data> get_storage(const std::string& file_str)
     {
         pugi::xml_document doc;
         
-        assert(doc.load_string(file_str.c_str()));
+        if (!doc.load_string(file_str.c_str()))
+        {
+        	return result_code::PARSER_ERROR;
+        }
 
         pugi::xml_node root = doc.document_element();
 
-        pugi::xpath_query books_query("/data/books/book");
-        pugi::xpath_query authors_query("/data/authors/author");
+        pugi::xpath_query books_query("/data/books");
+        pugi::xpath_query authors_query("/data/authors");
         pugi::xpath_query next_book_id_path("/data/next_book_id");
         pugi::xpath_query next_author_id_path("/data/next_author_id");
         
-        std::vector<std::shared_ptr<Author>> author_list;
-        std::vector<std::shared_ptr<Book>> book_list;
+        std::vector<std::shared_ptr<Author>> author_list{};
+        std::vector<std::shared_ptr<Book>> book_list{};
         
-        for (pugi::xpath_node author_query : root.select_nodes(authors_query))
+        pugi::xml_node authors_node = root.select_single_node(authors_query).node();
+        if (authors_node == nullptr)
         {
-            pugi::xml_node author = author_query.node();
-            author_list.push_back(std::shared_ptr<Author>(new Author(author.attribute("id").as_int(), author.attribute("name").value())));
+        	std::cout<<"no authors node"<<std::endl;
+        }
+
+        for (auto author_child = authors_node.child("author"); author_child; author_child = author_child.next_sibling("author"))
+        {
+        	auto author_id = author_child.attribute("id");
+        	auto author_name = author_child.attribute("name");
+        	if(!(author_id and author_name))
+        	{
+        		continue;
+        	}
+        	author_list.push_back(std::shared_ptr<Author>(new Author(author_id.as_int(), author_name.value())));
         }
         
-        pugi::xml_node books_node = root.select_single_node("/data/books").node();
-        if(books_node == nullptr)
+        pugi::xml_node books_node = root.select_single_node(books_query).node();
+        if (books_node == nullptr)
         {
-        	std::cout<<"no books"<<std::endl;
+        	std::cout<<"no books node"<<std::endl;
         }
 
         for (auto book_child = books_node.child("book"); book_child; book_child = book_child.next_sibling("book"))
@@ -207,7 +227,7 @@ class XmlParser: public Parser
         	std::cout<<book_child.attribute("title").value()<<std::endl;
         }
 
-        for (pugi::xpath_node book_query : root.select_nodes(books_query))
+        /*for (pugi::xpath_node book_query : root.select_nodes(books_query))
         {
             pugi::xml_node book = book_query.node();
             
@@ -220,13 +240,13 @@ class XmlParser: public Parser
             }
 
             book_list.push_back(std::shared_ptr<Book>(new Book(book.attribute("id").as_int(), book.attribute("title").value(), (*author_iter))));
-        }
+        }*/
 
         storage_data data {root.select_single_node(next_book_id_path).node().attribute("id").as_int(), root.select_single_node(next_author_id_path).node().attribute("id").as_int(), author_list, book_list};
         return std::move(data);
     }
     
-    std::string add_book(const std::string& file_str, std::shared_ptr<const Book> book)
+    result<std::string> add_book(const std::string& file_str, std::shared_ptr<const Book> book)
     {
     	pugi::xml_document doc;
 
@@ -253,7 +273,7 @@ class XmlParser: public Parser
         return buffer.str();
     }
     
-    std::string add_author(const std::string& file_str, std::shared_ptr<const Author> author)
+    result<std::string> add_author(const std::string& file_str, std::shared_ptr<const Author> author)
     {
     	pugi::xml_document doc;
 
@@ -279,7 +299,7 @@ class XmlParser: public Parser
     	return buffer.str();
     }
     
-    std::string change_book(const std::string& file_str, std::shared_ptr<const Book> book)
+    result<std::string> change_book(const std::string& file_str, std::shared_ptr<const Book> book)
     {
     	pugi::xml_document doc;
 
@@ -304,7 +324,7 @@ class XmlParser: public Parser
     	return buffer.str();
     }
     
-    std::string change_author(const std::string& file_str, std::shared_ptr<const Author> author)
+    result<std::string> change_author(const std::string& file_str, std::shared_ptr<const Author> author)
     {
         pugi::xml_document doc;
 
@@ -328,7 +348,7 @@ class XmlParser: public Parser
         return buffer.str();
     }
     
-    std::string delete_book(const std::string& file_str, int book_id)
+    result<std::string> delete_book(const std::string& file_str, int book_id)
     {
     	pugi::xml_document doc;
 
@@ -352,7 +372,7 @@ class XmlParser: public Parser
     	return buffer.str();
     }
     
-    std::string delete_author(const std::string& file_str, int author_id)
+    result<std::string> delete_author(const std::string& file_str, int author_id)
     {
     	pugi::xml_document doc;
 
@@ -397,7 +417,7 @@ class JsonParser: public Parser
         return output;
     }
     
-    storage_data get_storage(const std::string& file_str)
+    result<storage_data> get_storage(const std::string& file_str)
     {
         Json::Value root;
         Json::Reader reader;
@@ -426,7 +446,7 @@ class JsonParser: public Parser
         return std::move(data);
     }
     
-    std::string add_book(const std::string& file_str, std::shared_ptr<const Book> book)
+    result<std::string> add_book(const std::string& file_str, std::shared_ptr<const Book> book)
     {
         Json::Value root;
         Json::Reader reader;
@@ -447,7 +467,7 @@ class JsonParser: public Parser
         return output;
     }
     
-    std::string add_author(const std::string& file_str, std::shared_ptr<const Author> author)
+    result<std::string> add_author(const std::string& file_str, std::shared_ptr<const Author> author)
     {
         Json::Value root;
         Json::Reader reader;
@@ -467,7 +487,7 @@ class JsonParser: public Parser
         return output;
     }
     
-    std::string change_book(const std::string& file_str, std::shared_ptr<const Book> book)
+    result<std::string> change_book(const std::string& file_str, std::shared_ptr<const Book> book)
     {
         Json::Value root;
         Json::Reader reader;
@@ -490,7 +510,7 @@ class JsonParser: public Parser
         return output;
     }
     
-    std::string change_author(const std::string& file_str, std::shared_ptr<const Author> author)
+    result<std::string> change_author(const std::string& file_str, std::shared_ptr<const Author> author)
     {
         Json::Value root;
         Json::Reader reader;
@@ -512,7 +532,7 @@ class JsonParser: public Parser
         return output;
     }
     
-    std::string delete_book(const std::string& file_str, int book_id)
+    result<std::string> delete_book(const std::string& file_str, int book_id)
     {
         Json::Value root;
         Json::Reader reader;
@@ -538,7 +558,7 @@ class JsonParser: public Parser
         return output;
     }
     
-    std::string delete_author(const std::string& file_str, int author_id)
+    result<std::string> delete_author(const std::string& file_str, int author_id)
     {
         Json::Value root;
         Json::Reader reader;
@@ -640,35 +660,35 @@ class FileStorage: public Storage
         return result_code::OK;
     }
     
+    storage_data make_tmpl_file()
+    {
+    	std::string file_tmpl = this->pm_parser->set_empty_tmpl(); //получаем паустой шаблон и заполняем его в парсер
+    	result_code tmpl_file_res = this->make_file(file_tmpl); //записываем его в файл, без tmp, т.к. файл уже битый
+    	assert(tmpl_file_res == result_code::OK);//если не вышло записать, то брасаем ошибку
+    	storage_data empty_data {1,1, {}, {}};
+    	return std::move(empty_data);//возвращаем пустую либу
+    }
+
     storage_data get_storage() 
     {   
         result<std::string> get_file_res = this->get_string_from_file(); //пытаемся получить файл
 
         if (get_file_res.m_code != result_code::OK) //если не вышло
         {
-            std::string file_tmpl = this->pm_parser->set_empty_tmpl(); //получаем паустой шаблон и заполняем его в парсер
-            result_code tmpl_file_res = this->make_file(file_tmpl); //записываем его в файл, без tmp, т.к. файл уже битый
-            assert(tmpl_file_res == result_code::OK);//если не вышло записать, то брасаем ошибку
-            storage_data empty_data {1,1, {}, {}};
-            return std::move(empty_data);//возвращаем пустую либу
+            return std::move(make_tmpl_file());//возвращаем пустую либу
         }
         //если файл таки открылся, пытаемся его распарсить
         result<storage_data> parser_result = pm_parser->get_storage(get_file_res.m_object);
         
         if (parser_result.m_code != result_code::OK)//если не вышло
         {
-        	//TODO: fix copy-paste
-            std::string file_tmpl = this->pm_parser->set_empty_tmpl(); //получаем паустой шаблон и заполняем его в парсер
-            result_code tmpl_file_res = this->make_file(file_tmpl);//записываем его в файл, без tmp, т.к. файл уже битый
-            assert(tmpl_file_res == result_code::OK);//если не вышло записать, то брасаем ошибку
-            storage_data empty_data {1,1, {}, {}};
-            return std::move(empty_data);//возвращаем пустую либу
+            return std::move(make_tmpl_file());;//возвращаем пустую либу
         }
         
         return std::move(parser_result.m_object); //Если все ок, возвращаем результат
     }
 
-    result_code store(std::function<std::string(std::string&)> parser)
+    result_code store(std::function<result<std::string>(std::string&)> parser)
     {
     	result<std::string> res_get_file = this->get_string_from_file();
     	if (res_get_file.m_code != result_code::OK)
@@ -688,8 +708,8 @@ class FileStorage: public Storage
 
     result_code add_book(std::shared_ptr<const Book> book)
     {   
-    	std::function<std::string(std::string&)> l_add_book = [this, book]
-															   (std::string& str_file) -> std::string
+    	std::function<result<std::string>(std::string&)> l_add_book = [this, book]
+															   (std::string& str_file) -> result<std::string>
 															   {return this->pm_parser->add_book(str_file, book);};
 
     	return this->store(l_add_book);
@@ -697,8 +717,8 @@ class FileStorage: public Storage
     
     result_code add_author(std::shared_ptr<const Author> author)
     {
-        std::function<std::string(std::string&)> l_add_author = [this, author]
-																 (std::string& str_file) -> std::string
+        std::function<result<std::string>(std::string&)> l_add_author = [this, author]
+																 (std::string& str_file) -> result<std::string>
 																 {return this->pm_parser->add_author(str_file, author);};
 
         return this->store(l_add_author);
@@ -706,8 +726,8 @@ class FileStorage: public Storage
     
     result_code change_book(std::shared_ptr<const Book> book)
     {
-        std::function<std::string(std::string&)> l_change_book = [this, book]
-																 (std::string& str_file) -> std::string
+        std::function<result<std::string>(std::string&)> l_change_book = [this, book]
+																 (std::string& str_file) -> result<std::string>
 																 {return this->pm_parser->change_book(str_file, book);};
 
         return this->store(l_change_book);
@@ -715,8 +735,8 @@ class FileStorage: public Storage
     
     result_code change_author(std::shared_ptr<const Author> author)
     {
-        std::function<std::string(std::string&)> l_change_author = [this, author]
-																  (std::string& str_file) -> std::string
+        std::function<result<std::string>(std::string&)> l_change_author = [this, author]
+																  (std::string& str_file) -> result<std::string>
 																  {return this->pm_parser->change_author(str_file, author);};
 
         return this->store(l_change_author);
@@ -724,8 +744,8 @@ class FileStorage: public Storage
     
     result_code delete_book(int book_id)
     {
-        std::function<std::string(std::string&)> l_delete_book = [this, book_id]
-																  (std::string& str_file) -> std::string
+        std::function<result<std::string>(std::string&)> l_delete_book = [this, book_id]
+																  (std::string& str_file) -> result<std::string>
 																  {return this->pm_parser->delete_book(str_file, book_id);};
 
         return this->store(l_delete_book);
@@ -733,8 +753,8 @@ class FileStorage: public Storage
     
     result_code delete_author(int author_id)
     {
-        std::function<std::string(std::string&)> l_delete_author = [this, author_id]
-																	(std::string& str_file) -> std::string
+        std::function<result<std::string>(std::string&)> l_delete_author = [this, author_id]
+																	(std::string& str_file) -> result<std::string>
 																	{return this->pm_parser->delete_author(str_file, author_id);};
 
         return this->store(l_delete_author);
