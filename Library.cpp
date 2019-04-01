@@ -224,25 +224,49 @@ class XmlParser: public Parser
 
         for (auto book_child = books_node.child("book"); book_child; book_child = book_child.next_sibling("book"))
         {
-        	std::cout<<book_child.attribute("title").value()<<std::endl;
+        	auto book_author_id = book_child.attribute("author_id");
+        	auto book_id = book_child.attribute("id");
+        	auto title = book_child.attribute("title");
+
+        	if (!(book_author_id and book_id and title))
+        	{
+        		continue;
+        	}
+
+        	auto find_author = [author_id = book_author_id.as_int()] (std::shared_ptr<Author>  author) -> bool
+        			{ return author->get_author_id() == author_id; };
+        	auto author_iter = std::find_if(author_list.begin(), author_list.end(), find_author);
+
+        	if (author_iter==author_list.end())
+        	{
+        		continue;
+        	}
+
+        	book_list.push_back(std::shared_ptr<Book>(new Book(book_id.as_int(), title.value(), (*author_iter))));
         }
 
-        /*for (pugi::xpath_node book_query : root.select_nodes(books_query))
+        pugi::xml_node next_book_id_node = root.select_single_node(next_book_id_path).node();
+        if (next_book_id_node == nullptr)
         {
-            pugi::xml_node book = book_query.node();
-            
-            auto author_iter = std::find_if(author_list.begin(), author_list.end(),
-             [author_id = book.attribute("author_id").as_int()] (std::shared_ptr<Author>  author) -> bool { return author->get_author_id() == author_id; });
-             
-            if (author_iter==author_list.end())
-            {
-            	continue;
-            }
+        	return result_code::PARSER_ERROR;
+        }
 
-            book_list.push_back(std::shared_ptr<Book>(new Book(book.attribute("id").as_int(), book.attribute("title").value(), (*author_iter))));
-        }*/
+        pugi::xml_node next_author_id_node = root.select_single_node(next_author_id_path).node();
+        if (next_book_id_node == nullptr)
+        {
+        	return result_code::PARSER_ERROR;
+       	}
 
-        storage_data data {root.select_single_node(next_book_id_path).node().attribute("id").as_int(), root.select_single_node(next_author_id_path).node().attribute("id").as_int(), author_list, book_list};
+        auto next_book_id = next_book_id_node.attribute("id");
+        auto next_author_id = next_author_id_node.attribute("id");
+
+        if (!(next_book_id and next_author_id))
+        {
+        	return result_code::PARSER_ERROR;
+        }
+
+        storage_data data {next_book_id.as_int(), next_author_id.as_int(), author_list, book_list};
+
         return std::move(data);
     }
     
