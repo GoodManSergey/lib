@@ -1,7 +1,13 @@
 <?xml version="1.0"?>
 <data>
-	<books />
-	<authors />
-	<next_book_id id="1" />
-	<next_author_id id="1" />
+	<books>
+		<book id="1" title="new book" author_id="1" />
+		<book id="2" title="new book" author_id="1" />
+	</books>
+	<authors>
+		<author id="1" name="new author" />
+		<author id="2" name="new author" />
+	</authors>
+	<next_book_id id="3" />
+	<next_author_id id="3" />
 </data>
