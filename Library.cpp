@@ -277,9 +277,9 @@ class XmlParser: public Parser
     {
         pugi::xml_node root = this->m_doc.document_element();
         
-        auto node = root.select_single_node(nodes_path);
+        auto node = root.select_single_node(nodes_path).node();
         
-        auto next_id_node = root.select_single_node(next_id_path);
+        auto next_id_node = root.select_single_node(next_id_path).node();
         
         
         if (node == nullptr or next_id_node == nullptr)
@@ -287,13 +287,13 @@ class XmlParser: public Parser
             return result_code::PARSER_ERROR;
         }
         
-        auto next_id_attr = next_id_node.node().attribute("id");
+        auto next_id_attr = next_id_node.attribute("id");
         if (!next_id_attr)
         {
             return result_code::PARSER_ERROR;
         }
         
-        node_filler(node.node());
+        node_filler(node);
         
         next_id_attr.set_value(next_id_attr.as_int() + 1);
         
@@ -316,7 +316,7 @@ class XmlParser: public Parser
     	                                    book_node.append_attribute("title") = book->get_book_title().c_str();
     	                                    book_node.append_attribute("author_id") = book->get_author_id();
     	                                };
-        return this->add_node(file_str, books_query, next_book_id_path, book_node_filler);   
+        return std::move(this->add_node(file_str, books_query, next_book_id_path, book_node_filler));   
     }
     
     result<std::string> add_author(const std::string& file_str, std::shared_ptr<const Author> author)
@@ -331,104 +331,103 @@ class XmlParser: public Parser
     	                                    author_node.append_attribute("id") = author->get_author_id();
     	                                    author_node.append_attribute("name") = author->get_name().c_str();
     	                                };
-        return this->add_node(file_str, authors_query, next_author_id_path, author_node_filler);
+        return std::move(this->add_node(file_str, authors_query, next_author_id_path, author_node_filler));
+    }
+    
+    result<std::string> change_node(const std::string& file_str, const pugi::xpath_query& nodes_path,
+                                     std::function<void(pugi::xml_node)> node_filler, std::function<bool(pugi::xml_node)> node_finder)
+    {
+        pugi::xml_node root = this->m_doc.document_element();
+        
+        auto nodes = root.select_single_node(nodes_path).node();
+        
+        if (nodes == nullptr)
+        {
+            return result_code::PARSER_ERROR;
+        }
+        
+        auto change_node = nodes.find_child(node_finder);
+        
+        if (change_node == nullptr)
+        {
+            return result_code::PARSER_ERROR;
+        }
+        
+        node_filler(change_node);
+        
+        std::stringstream buffer;
+    	this->m_doc.save(buffer);
+
+        return std::move(buffer.str());
     }
     
     result<std::string> change_book(const std::string& file_str, std::shared_ptr<const Book> book)
     {
-    	pugi::xml_document doc;
-
-    	assert(doc.load_string(file_str.c_str()));
-
     	pugi::xpath_query books_query("/data/books");
-
-    	pugi::xml_node root = doc.document_element();
-
-    	auto books_node = root.select_single_node(books_query).node();
-
     	auto find_book_by_id = [book_id = book->get_book_id()] (pugi::xml_node node) -> bool {return node.attribute("id").as_int() == book_id; };
-
-    	auto book_node = books_node.find_child(find_book_by_id);
-
-		book_node.attribute("title").set_value(book->get_book_title().c_str());
-    	book_node.attribute("author_id").set_value(book->get_author_id());
-
-    	std::stringstream buffer;
-    	doc.save(buffer);
-
-    	return buffer.str();
+    	
+    	auto book_node_filler = [book](pugi::xml_node book_node)-> void
+    	                                {
+    	                                    book_node.attribute("title").set_value(book->get_book_title().c_str());
+    	                                    book_node.attribute("author_id").set_value(book->get_author_id());
+    	                                };
+    	                                
+        return std::move(this->change_node(file_str, books_query, book_node_filler, find_book_by_id));
     }
     
     result<std::string> change_author(const std::string& file_str, std::shared_ptr<const Author> author)
     {
-        pugi::xml_document doc;
-
-        assert(doc.load_string(file_str.c_str()));
-
         pugi::xpath_query authors_query("/data/authors");
-
-        pugi::xml_node root = doc.document_element();
-
-        auto authors_node = root.select_single_node(authors_query).node();
-
-        auto find_author_by_id = [author_id = author->get_author_id()] (pugi::xml_node node) -> bool {return node.attribute("id").as_int() == author_id; };
-
-        auto author_node = authors_node.find_child(find_author_by_id);
-
-        author_node.attribute("name").set_value(author->get_name().c_str());
-
+    	auto find_author_by_id = [author_id = author->get_author_id()] (pugi::xml_node node) -> bool {return node.attribute("id").as_int() == author_id; };
+    	
+    	auto author_node_filler = [author](pugi::xml_node author_node)-> void
+    	                                {
+    	                                    author_node.attribute("name").set_value(author->get_name().c_str());
+    	                                };
+    	                                
+        return std::move(this->change_node(file_str, authors_query, author_node_filler, find_author_by_id));
+    }
+    
+    result<std::string> delete_node_by_id(const std::string& file_str, const pugi::xpath_query& nodes_path, int node_id)
+    {
+        pugi::xml_node root = this->m_doc.document_element();
+        
+        auto nodes = root.select_single_node(nodes_path).node();
+        
+        if (nodes == nullptr)
+        {
+            return result_code::PARSER_ERROR;
+        }
+        
+        auto find_node_by_id = [node_id] (pugi::xml_node node) -> bool {return node.attribute("id").as_int() == node_id; };
+        
+        auto del_node = nodes.find_child(find_node_by_id);
+        
+        if (del_node == nullptr)
+        {
+            return result_code::PARSER_ERROR;
+        }
+        
+        nodes.remove_child(del_node);
+        
         std::stringstream buffer;
-        doc.save(buffer);
+    	this->m_doc.save(buffer);
 
-        return buffer.str();
+    	return std::move(buffer.str());
     }
     
     result<std::string> delete_book(const std::string& file_str, int book_id)
     {
-    	pugi::xml_document doc;
-
-    	assert(doc.load_string(file_str.c_str()));
-
     	pugi::xpath_query books_query("/data/books");
-
-    	pugi::xml_node root = doc.document_element();
-
-    	auto books_node = root.select_single_node(books_query).node();
-
-    	auto find_book_by_id = [book_id = book_id] (pugi::xml_node node) -> bool {return node.attribute("id").as_int() == book_id; };
-
-    	auto book_node = books_node.find_child(find_book_by_id);
-
-    	books_node.remove_child(book_node);
-
-    	std::stringstream buffer;
-    	doc.save(buffer);
-
-    	return buffer.str();
+    	
+    	return std::move(this->delete_node_by_id(file_str, books_query, book_id));
     }
     
     result<std::string> delete_author(const std::string& file_str, int author_id)
     {
-    	pugi::xml_document doc;
-
-    	assert(doc.load_string(file_str.c_str()));
-
     	pugi::xpath_query authors_query("/data/authors");
-
-    	pugi::xml_node root = doc.document_element();
-
-    	auto authors_node = root.select_single_node(authors_query).node();
-
-    	auto find_author_by_id = [author_id = author_id] (pugi::xml_node node) -> bool {return node.attribute("id").as_int() == author_id; };
-
-    	auto author_node = authors_node.find_child(find_author_by_id);
-
-    	authors_node.remove_child(author_node);
-
-    	std::stringstream buffer;
-    	doc.save(buffer);
-
-    	return buffer.str();
+    	
+    	return std::move(this->delete_node_by_id(file_str, authors_query, author_id));
     }
     
     private:
@@ -1074,15 +1073,15 @@ int main()
     //auto book = lib.get_book_by_id(1).m_object;
     //std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
 
-    auto add_author = lib.add_author(std::unique_ptr<Author>(new Author(1, "new author")));
-    auto author = lib.get_author_by_id(1).m_object;
-    auto add_book = lib.add_book(std::unique_ptr<Book>(new Book(1, "new book", author)));
-    /*
-    auto change_book = lib.change_book(std::unique_ptr<Book>(new Book(3, "The new book", author)));
-    auto change_author = lib.change_author(std::unique_ptr<Author>(new Author(3, "The new author")));
+    //auto add_author = lib.add_author(std::unique_ptr<Author>(new Author(1, "new author")));
+    //auto author = lib.get_author_by_id(1).m_object;
+    //auto add_book = lib.add_book(std::unique_ptr<Book>(new Book(1, "new book", author)));
+    
+    //auto change_book = lib.change_book(std::unique_ptr<Book>(new Book(5, "The new book", author)));
+    //auto change_author = lib.change_author(std::unique_ptr<Author>(new Author(5, "The new author")));
     
 
-    auto delete_book = lib.delete_book(10);
+    /*auto delete_book = lib.delete_book(10);
     if (delete_book == result_code::OK)
         std::cout<<"OK"<<std::endl;
     auto delete_author = lib.delete_author(3);
