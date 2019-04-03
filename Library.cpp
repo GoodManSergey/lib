@@ -453,20 +453,36 @@ class JsonParser: public Parser
     
     result<storage_data> get_storage(const std::string& file_str)
     {
-        Json::Value root;
         Json::Reader reader;
         
-        assert(reader.parse(file_str.c_str(), root ));
+        if (!reader.parse(file_str.c_str(), this->m_root ))
+        {
+            return result_code::PARSER_ERROR;
+        }
         
         std::vector<std::shared_ptr<Author>> author_list;
         std::vector<std::shared_ptr<Book>> book_list;
         
-        for (auto author : root["authors"])
+        auto authors = this->m_root["authors"];
+        if (authors == nullptr)
         {
-            author_list.push_back(std::shared_ptr<Author>(new Author(author["id"].asInt(), author["name"].asString())));
+            std::cout<<"no authors error"<<std::endl;
+            return result_code::PARSER_ERROR;
         }
         
-        for (auto book : root["books"])
+        for (auto author : authors)
+        {   
+            auto author_id = author["id"];
+            auto author_name = author["name"];
+            if (author_id == nullptr or author_name == nullptr)
+            {
+                continue;
+            }
+            std::cout<<author_name.asInt()<<std::endl;
+            author_list.push_back(std::shared_ptr<Author>(new Author(author_id.asInt(), author_name.asString())));
+        }
+        
+        for (auto book : this->m_root["books"])
         {
             auto author_iter = std::find_if(author_list.begin(), author_list.end(),
              [author_id = book["author_id"].asInt()] (std::shared_ptr<Author>  author) -> bool { return author->get_author_id() == author_id; });
@@ -475,8 +491,7 @@ class JsonParser: public Parser
             
             book_list.push_back(std::shared_ptr<Book>(new Book(book["id"].asInt(), book["title"].asString(), (*author_iter))));
         }
-        
-        storage_data data {root["next_book_id"].asInt(), root["next_author_id"].asInt(), author_list, book_list};
+        storage_data data {this->m_root["next_book_id"].asInt(), this->m_root["next_author_id"].asInt(), author_list, book_list};
         return std::move(data);
     }
     
@@ -1069,7 +1084,7 @@ class Library
 
 int main()
 {
-    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new XmlParser()), "FileStore.xml")));
+    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")));
     //auto book = lib.get_book_by_id(1).m_object;
     //std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
 
