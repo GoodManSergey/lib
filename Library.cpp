@@ -479,35 +479,126 @@ class JsonParser: public Parser
         std::vector<std::shared_ptr<Author>> author_list;
         std::vector<std::shared_ptr<Book>> book_list;
         
-        auto authors = this->m_root["authors"];
-        if (authors == nullptr)
+        if (!this->m_root.isMember("authors"))
         {
             std::cout<<"no authors error"<<std::endl;
             return result_code::PARSER_ERROR;
         }
         
+        auto authors = this->m_root["authors"];
+        
         for (auto author : authors)
         {   
-            auto author_id = author["id"];
-            auto author_name = author["name"];
-            if (author_id == nullptr or author_name == nullptr)
+            try
+            {
+                if (!(author.isMember("id") and author.isMember("name")))
+                {
+                    continue;
+                }
+            }
+            catch(Json::Exception const&)
             {
                 continue;
             }
-            std::cout<<author_name.asInt()<<std::endl;
-            author_list.push_back(std::shared_ptr<Author>(new Author(author_id.asInt(), author_name.asString())));
+            
+            auto author_id = author["id"];
+            auto author_name = author["name"];
+            
+            int author_id_int;
+            std::string author_name_str;
+            
+            try
+            {
+                author_id_int = author_id.asInt();
+                author_name_str = author_name.asString();
+            }       
+            catch(Json::Exception const&)
+            {
+                continue;
+            }
+            
+            author_list.push_back(std::shared_ptr<Author>(new Author(author_id_int, author_name_str)));
         }
         
-        for (auto book : this->m_root["books"])
+        if (!this->m_root.isMember("books"))
         {
-            auto author_iter = std::find_if(author_list.begin(), author_list.end(),
-             [author_id = book["author_id"].asInt()] (std::shared_ptr<Author>  author) -> bool { return author->get_author_id() == author_id; });
-             
-            assert(author_iter!=author_list.end());
-            
-            book_list.push_back(std::shared_ptr<Book>(new Book(book["id"].asInt(), book["title"].asString(), (*author_iter))));
+            std::cout<<"no books error"<<std::endl;
+            return result_code::PARSER_ERROR;
         }
-        storage_data data {this->m_root["next_book_id"].asInt(), this->m_root["next_author_id"].asInt(), author_list, book_list};
+        
+        auto books = this->m_root["books"];
+        
+        for (auto book : books)
+        {
+            try
+            {
+                if (!(book.isMember("id") and book.isMember("title") and book.isMember("author_id")))
+                {
+                    continue;
+                }
+            }
+            catch(Json::Exception const&)
+            {
+                continue;
+            }
+            
+            auto book_id = book["id"];
+            auto book_author_id = book["author_id"];
+            auto book_title = book["title"];
+            
+            int book_id_int;
+            int book_author_id_int;
+            std::string book_title_str;
+            
+            try
+            {   
+                book_id_int = book_id.asInt();
+                book_author_id_int = book_author_id.asInt();
+                book_title_str = book_title.asString();
+            }       
+            catch(Json::Exception const&)
+            {
+                continue;
+            }
+            
+            auto author_iter = std::find_if(author_list.begin(), author_list.end(),
+             [book_author_id_int] (std::shared_ptr<Author>  author) -> bool { return author->get_author_id() == book_author_id_int; });
+             
+            if (author_iter==author_list.end())
+            {
+                continue;
+            }
+            
+            book_list.push_back(std::shared_ptr<Book>(new Book(book_id_int, book_title_str, (*author_iter))));
+        }
+        
+        if (!this->m_root.isMember("next_book_id"))
+        {
+            return result_code::PARSER_ERROR;
+        }
+        
+        if (!this->m_root.isMember("next_author_id"))
+        {
+            return result_code::PARSER_ERROR;
+        }
+        
+        auto next_book_id = this->m_root["next_book_id"];
+        auto next_author_id = this->m_root["next_author_id"];
+        
+        int next_book_id_int;
+        int next_author_id_int;
+        
+        try
+        {
+            next_book_id_int = next_book_id.asInt();
+            next_author_id_int = next_author_id.asInt();
+        }
+        catch(Json::Exception const&)
+        {
+            return result_code::PARSER_ERROR;
+        }
+        
+        storage_data data {next_book_id_int, next_author_id_int, author_list, book_list};
         return std::move(data);
     }
     
@@ -1100,7 +1191,7 @@ class Library
 
 int main()
 {
-    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new XmlParser()), "FileStore.xml")));
+    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")));
     //auto book = lib.get_book_by_id(1).m_object;
     //std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
 
