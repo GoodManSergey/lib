@@ -13,7 +13,7 @@
 		<book id="11" title="new book" author_id="1" />
 	</books>
 	<authors>
-		<author id="1" name="new author" />
+		<author id="awd" name="new author" />
 		<author id="2" name="new author" />
 		<author id="4" name="new author" />
 		<author id="5" name="The new author" />

@@ -212,6 +212,14 @@ class XmlParser: public Parser
         	{
         		continue;
         	}
+        	
+        	int author_id_int = author_id.as_int(-1);
+        	
+        	if (author_id_int == -1)
+        	{
+        	    continue;
+        	}
+        	
         	author_list.push_back(std::shared_ptr<Author>(new Author(author_id.as_int(), author_name.value())));
         }
         
@@ -232,8 +240,16 @@ class XmlParser: public Parser
         	{
         		continue;
         	}
-
-        	auto find_author = [author_id = book_author_id.as_int()] (std::shared_ptr<Author>  author) -> bool
+            
+            int book_author_id_int = book_author_id.as_int(-1);
+            int book_id_int = book_id.as_int(-1);
+            
+            if (book_author_id_int == -1 or book_id_int == -1)
+            {
+                continue;
+            }
+            
+        	auto find_author = [author_id = book_author_id_int] (std::shared_ptr<Author>  author) -> bool
         			{ return author->get_author_id() == author_id; };
         	auto author_iter = std::find_if(author_list.begin(), author_list.end(), find_author);
 
@@ -242,7 +258,7 @@ class XmlParser: public Parser
         		continue;
         	}
 
-        	book_list.push_back(std::shared_ptr<Book>(new Book(book_id.as_int(), title.value(), (*author_iter))));
+        	book_list.push_back(std::shared_ptr<Book>(new Book(book_id_int, title.value(), (*author_iter))));
         }
 
         pugi::xml_node next_book_id_node = root.select_single_node(next_book_id_path).node();
@@ -1084,7 +1100,7 @@ class Library
 
 int main()
 {
-    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")));
+    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new XmlParser()), "FileStore.xml")));
     //auto book = lib.get_book_by_id(1).m_object;
     //std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
 
