@@ -472,7 +472,8 @@ class JsonParser: public Parser
         Json::Reader reader;
 
         if (!reader.parse(file_str.c_str(), this->m_root ))
-        {
+        {   
+            std::cout<<"parser error"<<std::endl;
             return result_code::PARSER_ERROR;
         }
 
@@ -486,6 +487,11 @@ class JsonParser: public Parser
         }
 
         auto authors = this->m_root["authors"];
+        
+        if (!authors.isArray())
+        {   
+            return result_code::PARSER_ERROR;
+        }
 
         for (auto author : authors)
         {
@@ -527,6 +533,11 @@ class JsonParser: public Parser
         }
 
         auto books = this->m_root["books"];
+        
+        if (!books.isArray())
+        {
+            return result_code::PARSER_ERROR;
+        }
 
         for (auto book : books)
         {
@@ -608,6 +619,11 @@ class JsonParser: public Parser
         {
             return result_code::PARSER_ERROR;
         }
+        
+        if (!this->m_root[node_name].isArray())
+        {
+            return result_code::PARSER_ERROR;
+        }
 
         if (!this->m_root.isMember(node_next_id))
         {
@@ -659,106 +675,120 @@ class JsonParser: public Parser
         return std::move(this->add_node(file_str, "authors", "next_author_id", author_filler));
     }
 
-    result<std::string> change_node(const std::string& file_str)
+    result<std::string> change_node_by_id(const std::string& file_str, const std::string& node_name, int id, std::function<void(Json::Value&)> node_changer)
     {
-
+        if (!this->m_root.isMember(node_name))
+        {
+            return result_code::PARSER_ERROR;
+        }
+        
+        if (!this->m_root[node_name].isArray())
+        {
+            return result_code::PARSER_ERROR;
+        }
+        
+        bool changed = false;
+        for (auto& node : this->m_root[node_name])
+        {   
+            if (!node.isMember("id"))
+            {
+                continue;
+            }
+            
+            if (node["id"] == id)
+            {
+                node_changer(node);
+                changed = true;
+                break;
+            }
+        }
+        
+        if (!changed)
+        {
+            return result_code::PARSER_ERROR;
+        }
+        
+        Json::FastWriter fastWriter;
+        std::string output = fastWriter.write(this->m_root);
+        
+        return std::move(output);        
     }
 
     result<std::string> change_book(const std::string& file_str, std::shared_ptr<const Book> book)
     {
-        Json::Value root;
-        Json::Reader reader;
-
-        assert(reader.parse(file_str.c_str(), root ));
-
-        for (auto& book_json : root["books"])
-        {
-            if (book_json["id"] == book->get_book_id())
-            {
-                book_json["title"] = book->get_book_title();
-                book_json["author_id"] = book->get_author_id();
-                break;
-            }
-        }
-
-        Json::FastWriter fastWriter;
-        std::string output = fastWriter.write(root);
-
-        return output;
+        auto book_changer = [book](Json::Value& node) -> void
+                            {
+                                node["title"] = book->get_book_title();
+                                node["author_id"] = book->get_author_id();
+                            };
+                    
+        return std::move(this->change_node_by_id(file_str, "books", book->get_book_id(), book_changer));
     }
 
     result<std::string> change_author(const std::string& file_str, std::shared_ptr<const Author> author)
     {
-        Json::Value root;
-        Json::Reader reader;
-
-        assert(reader.parse(file_str.c_str(), root ));
-
-        for (auto& author_json : root["authors"])
+        auto author_changer = [author](Json::Value& node) -> void
+                            {
+                                node["name"] = author->get_name();
+                            };
+                    
+        return std::move(this->change_node_by_id(file_str, "authors", author->get_author_id(), author_changer));
+    }
+    
+    result<std::string> delete_node_by_id(const std::string& file_str, int id, const std::string& node_name)
+    {
+        if (!this->m_root.isMember(node_name))
         {
-            if (author_json["id"] == author->get_author_id())
+            return result_code::PARSER_ERROR;
+        }
+        
+        if (!this->m_root[node_name].isArray())
+        {
+            return result_code::PARSER_ERROR;
+        }
+        
+        bool changed = false;
+        
+        Json::Value new_nodes;
+
+        for (auto& node : this->m_root[node_name])
+        {   
+            if (!node.isMember("id"))
             {
-                author_json["name"] = author->get_name();
-                break;
+                continue;
             }
+            
+            try
+            {
+                if (node["id"] == id)
+                {
+                    continue;
+                }
+            }
+            catch(Json::Exception const&)
+            {
+                continue;
+            }
+            
+            new_nodes.append(node);
         }
 
-        Json::FastWriter fastWriter;
-        std::string output = fastWriter.write(root);
+        this->m_root[node_name] = std::move(new_nodes);
 
-        return output;
+        Json::FastWriter fastWriter;
+        std::string output = fastWriter.write(this->m_root);
+
+        return std::move(output);
     }
 
     result<std::string> delete_book(const std::string& file_str, int book_id)
     {
-        Json::Value root;
-        Json::Reader reader;
-
-        Json::Value new_books;
-
-        assert(reader.parse(file_str.c_str(), root ));
-
-        for (auto& book_json : root["books"])
-        {
-            if (book_json["id"].asInt() == book_id)
-            {
-                continue;
-            }
-            new_books.append(book_json);
-        }
-
-        root["books"] = new_books;
-
-        Json::FastWriter fastWriter;
-        std::string output = fastWriter.write(root);
-
-        return output;
+        return std::move(this->delete_node_by_id(file_str, book_id, "books"));
     }
 
     result<std::string> delete_author(const std::string& file_str, int author_id)
     {
-        Json::Value root;
-        Json::Reader reader;
-
-        Json::Value new_authors;
-
-        assert(reader.parse(file_str.c_str(), root ));
-
-        for (auto& author_json : root["authors"])
-        {
-            if (author_json["id"].asInt() == author_id)
-            {
-                continue;
-            }
-            new_authors.append(author_json);
-        }
-
-        root["authors"] = new_authors;
-
-        Json::FastWriter fastWriter;
-        std::string output = fastWriter.write(root);
-
-        return output;
+        return std::move(this->delete_node_by_id(file_str, author_id, "authors"));
     }
 
     private:
@@ -851,7 +881,8 @@ class FileStorage: public Storage
         result<std::string> get_file_res = this->get_string_from_file(); //пытаемся получить файл
 
         if (get_file_res.m_code != result_code::OK) //если не вышло
-        {
+        {   
+            std::cout<<"can not open file while init"<<std::endl;
             return std::move(make_tmpl_file());//возвращаем пустую либу
         }
         //если файл таки открылся, пытаемся его распарсить
@@ -859,6 +890,7 @@ class FileStorage: public Storage
 
         if (parser_result.m_code != result_code::OK)//если не вышло
         {
+            std::cout<<"can not parse file while init"<<std::endl;
             return std::move(make_tmpl_file());;//возвращаем пустую либу
         }
 
@@ -1220,15 +1252,15 @@ int main()
     auto author = lib.get_author_by_id(1).m_object;
     auto add_book = lib.add_book(std::unique_ptr<Book>(new Book(1, "new book", author)));
 
-    //auto change_book = lib.change_book(std::unique_ptr<Book>(new Book(5, "The new book", author)));
-    //auto change_author = lib.change_author(std::unique_ptr<Author>(new Author(5, "The new author")));
+    auto change_book = lib.change_book(std::unique_ptr<Book>(new Book(1, "The new book", author)));
+    auto change_author = lib.change_author(std::unique_ptr<Author>(new Author(1, "The new author")));
 
 
-    /*auto delete_book = lib.delete_book(10);
+    auto delete_book = lib.delete_book(2);
     if (delete_book == result_code::OK)
         std::cout<<"OK"<<std::endl;
-    auto delete_author = lib.delete_author(3);
+    auto delete_author = lib.delete_author(2);
     if (delete_author == result_code::OK)
-        std::cout<<"OK"<<std::endl;*/
+        std::cout<<"OK"<<std::endl;
 
 }
