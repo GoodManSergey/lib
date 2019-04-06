@@ -679,7 +679,14 @@ class JsonParser: public Parser
                 continue;
             }
 
-            if (node["id"] == id)
+            auto node_id = node["id"];
+
+            if (!node_id.isInt())
+            {
+                continue;
+            }
+
+            if (node_id.asInt() == id)
             {
                 node_changer(node);
                 changed = true;
@@ -739,14 +746,14 @@ class JsonParser: public Parser
                 continue;
             }
 
-            try
+            auto node_id = node["id"];
+
+            if (!node_id.isInt())
             {
-                if (node["id"] == id)
-                {
-                    continue;
-                }
+                continue;
             }
-            catch(Json::Exception const&)
+
+            if (node_id.asInt() == id)
             {
                 continue;
             }
@@ -1166,6 +1173,7 @@ class Library
 
         auto authors_books = m_authors_books.find(author_id);
 
+        if (authors_books != m_authors_books.end())
         if (!authors_books->second.empty())
         {
             return result_code::AUTHOR_HAS_BOOKS;
