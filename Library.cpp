@@ -174,6 +174,11 @@ class XmlParser: public Parser
         std::string file_tmpl = "<data><books></books> <authors></authors> <next_book_id id='1' /> <next_author_id id='1' /> </data>";
         this->m_doc.load(file_tmpl.c_str());
 
+        return std::move(this->to_string());
+    }
+
+    std::string to_string()
+    {
         std::stringstream buffer;
     	this->m_doc.save(buffer);
 
@@ -313,10 +318,7 @@ class XmlParser: public Parser
 
         next_id_attr.set_value(next_id_attr.as_int() + 1);
 
-        std::stringstream buffer;
-    	this->m_doc.save(buffer);
-
-        return std::move(buffer.str());
+        return std::move(this->to_string());
     }
 
     result<std::string> add_book(const std::string& file_str, std::shared_ptr<const Book> book)
@@ -371,10 +373,7 @@ class XmlParser: public Parser
 
         node_filler(change_node);
 
-        std::stringstream buffer;
-    	this->m_doc.save(buffer);
-
-        return std::move(buffer.str());
+        return std::move(this->to_string());
     }
 
     result<std::string> change_book(const std::string& file_str, std::shared_ptr<const Book> book)
@@ -426,10 +425,7 @@ class XmlParser: public Parser
 
         nodes.remove_child(del_node);
 
-        std::stringstream buffer;
-    	this->m_doc.save(buffer);
-
-    	return std::move(buffer.str());
+        return std::move(this->to_string());
     }
 
     result<std::string> delete_book(const std::string& file_str, int book_id)
@@ -461,10 +457,15 @@ class JsonParser: public Parser
 
         reader.parse(file_tmpl.c_str(), this->m_root);
 
+        return std::move(this->to_string());
+    }
+
+    std::string to_string()
+    {
         Json::FastWriter fastWriter;
         std::string output = fastWriter.write(this->m_root);
 
-        return output;
+        return std::move(output);
     }
 
     result<storage_data> get_storage(const std::string& file_str)
@@ -472,7 +473,7 @@ class JsonParser: public Parser
         Json::Reader reader;
 
         if (!reader.parse(file_str.c_str(), this->m_root ))
-        {   
+        {
             std::cout<<"parser error"<<std::endl;
             return result_code::PARSER_ERROR;
         }
@@ -487,22 +488,20 @@ class JsonParser: public Parser
         }
 
         auto authors = this->m_root["authors"];
-        
+
         if (!authors.isArray())
-        {   
+        {
             return result_code::PARSER_ERROR;
         }
 
         for (auto author : authors)
         {
-            try
+            if (!author.isObject())
             {
-                if (!(author.isMember("id") and author.isMember("name")))
-                {
-                    continue;
-                }
+                continue;
             }
-            catch(Json::Exception const&)
+
+            if (!(author.isMember("id") and author.isMember("name")))
             {
                 continue;
             }
@@ -510,18 +509,13 @@ class JsonParser: public Parser
             auto author_id = author["id"];
             auto author_name = author["name"];
 
-            int author_id_int;
-            std::string author_name_str;
-
-            try
-            {
-                author_id_int = author_id.asInt();
-                author_name_str = author_name.asString();
-            }
-            catch(Json::Exception const&)
+            if (!(author_id.isInt() and author_name.isString()))
             {
                 continue;
             }
+
+            int author_id_int = author_id.asInt();
+            std::string author_name_str = author_name.asString();
 
             author_list.push_back(std::shared_ptr<Author>(new Author(author_id_int, author_name_str)));
         }
@@ -533,7 +527,7 @@ class JsonParser: public Parser
         }
 
         auto books = this->m_root["books"];
-        
+
         if (!books.isArray())
         {
             return result_code::PARSER_ERROR;
@@ -541,14 +535,12 @@ class JsonParser: public Parser
 
         for (auto book : books)
         {
-            try
+            if (!book.isObject())
             {
-                if (!(book.isMember("id") and book.isMember("title") and book.isMember("author_id")))
-                {
-                    continue;
-                }
+                continue;
             }
-            catch(Json::Exception const&)
+
+            if (!(book.isMember("id") and book.isMember("title") and book.isMember("author_id")))
             {
                 continue;
             }
@@ -557,20 +549,14 @@ class JsonParser: public Parser
             auto book_author_id = book["author_id"];
             auto book_title = book["title"];
 
-            int book_id_int;
-            int book_author_id_int;
-            std::string book_title_str;
-
-            try
-            {
-                book_id_int = book_id.asInt();
-                book_author_id_int = book_author_id.asInt();
-                book_title_str = book_title.asString();
-            }
-            catch(Json::Exception const&)
+            if (!(book_id.isInt() and book_author_id.isInt() and book_title.isString()))
             {
                 continue;
             }
+
+            int book_id_int = book_id.asInt();
+            int book_author_id_int = book_author_id.asInt();
+            std::string book_title_str = book_title.asString();
 
             auto author_iter = std::find_if(author_list.begin(), author_list.end(),
              [book_author_id_int] (std::shared_ptr<Author>  author) -> bool { return author->get_author_id() == book_author_id_int; });
@@ -596,18 +582,19 @@ class JsonParser: public Parser
         auto next_book_id = this->m_root["next_book_id"];
         auto next_author_id = this->m_root["next_author_id"];
 
-        int next_book_id_int;
-        int next_author_id_int;
-
-        try
-        {
-            next_book_id_int = next_book_id.asInt();
-            next_author_id_int = next_author_id.asInt();
-        }
-        catch(Json::Exception const&)
+        if (!next_book_id.isInt())
         {
             return result_code::PARSER_ERROR;
         }
+
+        if (!next_author_id.isInt())
+        {
+            return result_code::PARSER_ERROR;
+        }
+
+        int next_book_id_int = next_book_id.asInt();
+        int next_author_id_int = next_author_id.asInt();
+
 
         storage_data data {next_book_id_int, next_author_id_int, author_list, book_list};
         return std::move(data);
@@ -619,7 +606,7 @@ class JsonParser: public Parser
         {
             return result_code::PARSER_ERROR;
         }
-        
+
         if (!this->m_root[node_name].isArray())
         {
             return result_code::PARSER_ERROR;
@@ -644,10 +631,7 @@ class JsonParser: public Parser
 
         this->m_root[node_next_id] = id + 1;
 
-        Json::FastWriter fastWriter;
-        std::string output = fastWriter.write(this->m_root);
-
-        return std::move(output);
+        return std::move(this->to_string());
     }
 
     result<std::string> add_book(const std::string& file_str, std::shared_ptr<const Book> book)
@@ -681,20 +665,20 @@ class JsonParser: public Parser
         {
             return result_code::PARSER_ERROR;
         }
-        
+
         if (!this->m_root[node_name].isArray())
         {
             return result_code::PARSER_ERROR;
         }
-        
+
         bool changed = false;
         for (auto& node : this->m_root[node_name])
-        {   
+        {
             if (!node.isMember("id"))
             {
                 continue;
             }
-            
+
             if (node["id"] == id)
             {
                 node_changer(node);
@@ -702,16 +686,13 @@ class JsonParser: public Parser
                 break;
             }
         }
-        
+
         if (!changed)
         {
             return result_code::PARSER_ERROR;
         }
-        
-        Json::FastWriter fastWriter;
-        std::string output = fastWriter.write(this->m_root);
-        
-        return std::move(output);        
+
+        return std::move(this->to_string());
     }
 
     result<std::string> change_book(const std::string& file_str, std::shared_ptr<const Book> book)
@@ -721,7 +702,7 @@ class JsonParser: public Parser
                                 node["title"] = book->get_book_title();
                                 node["author_id"] = book->get_author_id();
                             };
-                    
+
         return std::move(this->change_node_by_id(file_str, "books", book->get_book_id(), book_changer));
     }
 
@@ -731,33 +712,33 @@ class JsonParser: public Parser
                             {
                                 node["name"] = author->get_name();
                             };
-                    
+
         return std::move(this->change_node_by_id(file_str, "authors", author->get_author_id(), author_changer));
     }
-    
+
     result<std::string> delete_node_by_id(const std::string& file_str, int id, const std::string& node_name)
     {
         if (!this->m_root.isMember(node_name))
         {
             return result_code::PARSER_ERROR;
         }
-        
+
         if (!this->m_root[node_name].isArray())
         {
             return result_code::PARSER_ERROR;
         }
-        
+
         bool changed = false;
-        
+
         Json::Value new_nodes;
 
         for (auto& node : this->m_root[node_name])
-        {   
+        {
             if (!node.isMember("id"))
             {
                 continue;
             }
-            
+
             try
             {
                 if (node["id"] == id)
@@ -769,16 +750,13 @@ class JsonParser: public Parser
             {
                 continue;
             }
-            
+
             new_nodes.append(node);
         }
 
         this->m_root[node_name] = std::move(new_nodes);
 
-        Json::FastWriter fastWriter;
-        std::string output = fastWriter.write(this->m_root);
-
-        return std::move(output);
+        return std::move(this->to_string());
     }
 
     result<std::string> delete_book(const std::string& file_str, int book_id)
@@ -881,7 +859,7 @@ class FileStorage: public Storage
         result<std::string> get_file_res = this->get_string_from_file(); //пытаемся получить файл
 
         if (get_file_res.m_code != result_code::OK) //если не вышло
-        {   
+        {
             std::cout<<"can not open file while init"<<std::endl;
             return std::move(make_tmpl_file());//возвращаем пустую либу
         }
