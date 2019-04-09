@@ -8,6 +8,10 @@
 #include<fstream>
 #include<sstream>
 #include<functional>
+
+#include<netinet/in.h>
+#include<sys/socket.h>
+
 #include"jsoncpp/json/json.h"
 #include"pugixml.hpp"
 
@@ -1227,14 +1231,67 @@ class Library
 
 };
 
+class Server
+{
+    public:
+    Server(std::unique_ptr<Library> lib, int port):
+        pm_lib(std::move(lib))
+    {
+        if ((m_server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+        {
+            std::cout<<"Create socket FD error"<<std::endl;
+            assert(false);
+        }
+
+        m_address.sin_family = AF_INET;
+        m_address.sin_addr.s_addr = INADDR_ANY;
+        m_address.sin_port = htons(port);
+
+        if (bind(m_server_fd, (sockaddr*)&m_address, sizeof(m_address)) < 0)
+        {
+            std::cout<<"bind error"<<std::endl;
+            assert(false);
+        }
+
+        if (listen(m_server_fd, 1) < 0)
+        {
+            std::cout<<"listen error"<<std::endl;
+            assert(false);
+        }
+    }
+
+    void run()
+    {
+        int client_socket;
+        int addr_len = sizeof(m_address);
+        if ((client_socket = accept(m_server_fd, (sockaddr*)&m_address, (socklen_t*)&addr_len)) < 0)
+        {
+            std::cout<<"Client connect error"<<std::endl;
+            assert(false);
+        }
+
+        std::string msg = "authors, books";
+        send(client_socket, msg.c_str(), msg.length(), 0);
+    }
+
+    private:
+    std::unique_ptr<Library> pm_lib;
+    int m_buffer_size;
+    char m_buffer[1024];
+    sockaddr_in m_address;
+    int m_server_fd;
+};
 
 int main()
 {
-    Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")));
+    //Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")));
+    std::unique_ptr<Library> lib {new Library(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")))};
+    Server serv = Server(std::move(lib), 8080);
+    serv.run();
     //auto book = lib.get_book_by_id(1).m_object;
     //std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;
 
-    auto add_author = lib.add_author(std::unique_ptr<Author>(new Author(1, "new author")));
+    /*auto add_author = lib.add_author(std::unique_ptr<Author>(new Author(1, "new author")));
     auto author = lib.get_author_by_id(1).m_object;
     auto add_book = lib.add_book(std::unique_ptr<Book>(new Book(1, "new book", author)));
 
@@ -1248,5 +1305,5 @@ int main()
     auto delete_author = lib.delete_author(2);
     if (delete_author == result_code::OK)
         std::cout<<"OK"<<std::endl;
-
+    */
 }
