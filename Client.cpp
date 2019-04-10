@@ -34,9 +34,12 @@ int main()
         return -1;
     }
     //valread = read( sock , buffer, 1024);
-    std::string msg = "123456789\0";
-
+    std::string msg = "hello\v";
+	std::string msg2 = "world\v";
+	std::string msg3 = "it is bad delimiter, but pofig\v";
     send(sock, msg.c_str(), msg.length(), 0);
+    send(sock, msg2.c_str(), msg2.length(), 0);
+    send(sock, msg3.c_str(), msg3.length(), 0);
     //printf("%s\n",buffer );
     return 0;
 }

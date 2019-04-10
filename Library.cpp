@@ -1264,7 +1264,10 @@ class Server
 
     void proc_msg(const std::string& msg, int client_socket)
     {
-        std::cout<<msg<<std::endl;
+        Json::Value root;
+        Json::Reader reader;
+
+        if (reader.parse(msg.c_str(), root));
     }
 
     void run()
@@ -1285,11 +1288,10 @@ class Server
         while (true)
         {
             readval = read(client_socket, buffer, buffer_size);
-            //std::cout<<readval<<std::endl;
+            
             for (int i=0; i<readval; i++)
             {
-                std::cout<<buffer[i]<<std::endl;
-                if (buffer[i] == '\0')
+                if (buffer[i] == '\v')
                 {
                     this->proc_msg(msg, client_socket);
                     msg = "";
