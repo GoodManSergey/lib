@@ -8,6 +8,8 @@
 #include<fstream>
 #include<sstream>
 #include<functional>
+#include<unistd.h>
+#include<string.h>
 
 #include<netinet/in.h>
 #include<sys/socket.h>
@@ -1260,6 +1262,11 @@ class Server
         }
     }
 
+    void proc_msg(const std::string& msg, int client_socket)
+    {
+        std::cout<<msg<<std::endl;
+    }
+
     void run()
     {
         int client_socket;
@@ -1270,14 +1277,34 @@ class Server
             assert(false);
         }
 
-        std::string msg = "authors, books";
-        send(client_socket, msg.c_str(), msg.length(), 0);
+        int readval = 0;
+        int buffer_size = 1024;
+        char buffer[1024]{0};
+        std::string msg = "";
+
+        while (true)
+        {
+            readval = read(client_socket, buffer, buffer_size);
+            //std::cout<<readval<<std::endl;
+            for (int i=0; i<readval; i++)
+            {
+                std::cout<<buffer[i]<<std::endl;
+                if (buffer[i] == '\0')
+                {
+                    this->proc_msg(msg, client_socket);
+                    msg = "";
+                    continue;
+                }
+
+                msg += buffer[i];
+            }
+        }
+        //std::string msg = "authors, books";
+        //send(client_socket, msg.c_str(), msg.length(), 0);
     }
 
     private:
     std::unique_ptr<Library> pm_lib;
-    int m_buffer_size;
-    char m_buffer[1024];
     sockaddr_in m_address;
     int m_server_fd;
 };

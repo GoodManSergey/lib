@@ -33,7 +33,10 @@ int main()
     {
         return -1;
     }
-    valread = read( sock , buffer, 1024);
-    printf("%s\n",buffer );
+    //valread = read( sock , buffer, 1024);
+    std::string msg = "123456789\0";
+
+    send(sock, msg.c_str(), msg.length(), 0);
+    //printf("%s\n",buffer );
     return 0;
 }
