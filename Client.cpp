@@ -35,9 +35,9 @@ int main()
     }
     //valread = read( sock , buffer, 1024);
     std::string msg = "{\"command\":\"add_author\", \"data\":{\"name\":\"NEW AYTHOR NEVEROYATNO\"}}\v";
-	std::string msg2 = "world\v";
+	std::string msg2 = "{\"command\":\"get_author_by_id\", \"data\":{\"id\":1}}\v";
 	std::string msg3 = "it is bad delimiter, but pofig\v";
-    send(sock, msg.c_str(), msg.length(), 0);
+    send(sock, msg2.c_str(), msg2.length(), 0);
     int readval = 0;
     int buffer_size = 1024;
     sleep(1);

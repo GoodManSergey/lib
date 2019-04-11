@@ -1235,23 +1235,23 @@ class Library
 
 
 class ServerStatus
-{	
+{
 	public:
 	static std::string parser_error()
 	{
 		return std::move("PARSER_ERROR");
 	}
-	
+
 	static std::string unknown_command()
 	{
 		return std::move("UNKNOWN_COMMAND");
 	}
-	
+
 	static std::string ok()
 	{
 		return std::move("OK");
 	}
-	
+
 	static std::string lib_error()
 	{
 		return std::move("LIB_ERROR");
@@ -1293,16 +1293,16 @@ class Server
             std::cout<<"listen error"<<std::endl;
             assert(false);
         }
-        
+
         m_commands["add_author"] = server_command::ADD_AUTHOR;
         m_commands["get_author_by_id"] = server_command::GET_AUTHOR_BY_ID;
     }
-    
+
     void send_to(const std::string& msg, int client_socket)
     {
     	send(client_socket, msg.c_str(), msg.length(), 0);
     }
-	
+
 	std::string json_to_string(const Json::Value& json)
 	{
 		Json::FastWriter fastWriter;
@@ -1310,7 +1310,7 @@ class Server
 
         return std::move(output);
 	}
-	
+
 	std::string add_author(const Json::Value& root)
 	{
 		if (!root.isMember("data"))
@@ -1319,40 +1319,40 @@ class Server
 			std::cout<<"no data field"<<std::endl;
 			return std::move(this->error_return(error));
 		}
-		
+
 		auto data = root["data"];
-		
+
 		if (!data.isObject())
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"data is not dict"<<std::endl;
 			return std::move(this->error_return(error));
 		}
-		
+
 		if (!data.isMember("name"))
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no name field"<<std::endl;
 			return std::move(this->error_return(error));
 		}
-		
+
 		auto author_name_json = data["name"];
-		
+
 		if (!author_name_json.isString())
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"name is not string"<<std::endl;
 			return std::move(this->error_return(error));
 		}
-		
-		
+
+
 		result<int> res = pm_lib->add_author(std::unique_ptr<Author>(new Author(1, author_name_json.asString())));
-		
+
 		if (res.m_code == result_code::OK)
 		{
 			Json::Value data;
 			data["id"] = res.m_object;
-			
+
 			return std::move(this->make_resp(data, ServerStatus::ok()));
 		}
 		else
@@ -1361,38 +1361,89 @@ class Server
 			return std::move(this->error_return(ServerStatus::lib_error()));
 		}
 	}
-	
+
+	std::string get_author(const Json::Value& root)
+	{
+        if (!root.isMember("data"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no data field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto data = root["data"];
+
+		if (!data.isObject())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"data is not dict"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		if (!data.isMember("id"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no name field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto author_name_json = data["id"];
+
+		if (!author_name_json.isInt())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"name is not string"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto res = pm_lib->get_author_by_id(author_name_json.asInt());
+
+        if (res.m_code == result_code::OK)
+		{
+			Json::Value data;
+			data["id"] = res.m_object->get_author_id();
+			data["name"] = res.m_object->get_name();
+
+			return std::move(this->make_resp(data, ServerStatus::ok()));
+		}
+		else
+		{
+			std::cout<<"lib error"<<std::endl;
+			return std::move(this->error_return(ServerStatus::lib_error()));
+		}
+	}
+
 	std::string make_resp(Json::Value& data, const std::string& status)
 	{
 		Json::Value root;
 		root["status"] = status;
 		root["data"] = data;
-		
-		return std::move(this->json_to_string(root));
-	} 
-	
+
+		return std::move(this->json_to_string(root) + "\v");
+	}
+
 	std::string error_return(const std::string& error)
 	{
 		Json::Value root;
 		root["status"] = error;
-		
+
 		return std::move(this->json_to_string(root));
 	}
-	
+
     void proc_msg(const std::string& msg, int client_socket)
     {
         Json::Value root;
         Json::Reader reader;
 
         if (!reader.parse(msg.c_str(), root))
-        {	
+        {
         	std::string error = ServerStatus::parser_error();
         	std::string error_msg = this->error_return(error);
         	std::cout<<"parse error"<<std::endl;
         	this->send_to(error_msg, client_socket);
         	return;
        	}
-       	
+
        	if (!root.isMember("command"))
        	{
        		std::string error = ServerStatus::parser_error();
@@ -1401,9 +1452,9 @@ class Server
         	this->send_to(error_msg, client_socket);
         	return;
        	}
-       	
+
        	auto command_json = root["command"];
-       	
+
        	if (!command_json.isString())
        	{
        		std::string error = ServerStatus::parser_error();
@@ -1412,7 +1463,7 @@ class Server
         	this->send_to(error_msg, client_socket);
         	return;
        	}
-       	
+
        	auto command = m_commands.find(command_json.asString());
        	if (command == m_commands.end())
        	{
@@ -1422,9 +1473,9 @@ class Server
         	this->send_to(error_msg, client_socket);
         	return;
        	}
-       	
+
        	std::string resp;
-       	
+
        	switch(command->second)
        	{
 			case server_command::ADD_AUTHOR:
@@ -1432,9 +1483,12 @@ class Server
 				this->send_to(resp, client_socket);
 				break;
 			case server_command::GET_AUTHOR_BY_ID:
-				break;	
+			    resp = this->get_author(root);
+				this->send_to(resp, client_socket);
+				break;
+				break;
        	}
-       	
+
     }
 
     void run()
@@ -1456,7 +1510,7 @@ class Server
         {
         	sleep(0.1);
             readval = read(client_socket, buffer, buffer_size);
-            
+
             for (int i=0; i<readval; i++)
             {
                 if (buffer[i] == '\v')
