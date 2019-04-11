@@ -1,1 +1,1 @@
-{"authors":[{"id":1,"name":"The new author"}],"books":[{"author_id":1,"id":1,"title":"The new book"}],"next_author_id":3,"next_book_id":3}
+{"authors":[{"id":1,"name":"The new author"},{"id":3,"name":"NEW AYTHOR NEVEROYATNO"}],"books":[{"author_id":1,"id":1,"title":"The new book"}],"next_author_id":4,"next_book_id":3}
