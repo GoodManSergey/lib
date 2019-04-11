@@ -3,14 +3,14 @@
 #include<unistd.h>
 #include<cstring>
 #include<arpa/inet.h>
-
+#include<iostream>
 #include<string>
 
 
 int main()
 {
     struct sockaddr_in address;
-    int sock = 0, valread;
+    int sock = 0;
     struct sockaddr_in serv_addr;
     char buffer[1024] = {0};
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -38,8 +38,10 @@ int main()
 	std::string msg2 = "world\v";
 	std::string msg3 = "it is bad delimiter, but pofig\v";
     send(sock, msg.c_str(), msg.length(), 0);
-    send(sock, msg2.c_str(), msg2.length(), 0);
-    send(sock, msg3.c_str(), msg3.length(), 0);
-    //printf("%s\n",buffer );
+    int readval = 0;
+    int buffer_size = 1024;
+    sleep(1);
+    readval = read(sock, buffer, buffer_size);
+    printf("%s\n",buffer );
     return 0;
 }

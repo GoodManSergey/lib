@@ -1233,6 +1233,29 @@ class Library
 
 };
 
+
+class ServerErrors
+{	
+	public:
+	static std::string parser_error()
+	{
+		return std::move("PARSER_ERROR");
+	}
+	
+	static std::string unknown_command()
+	{
+		return std::move("UNKNOWN_COMMAND");
+	}
+};
+
+
+enum class server_command: int
+{
+	ADD_AUTHOR,
+	GET_AUTHOR_BY_ID
+};
+
+
 class Server
 {
     public:
@@ -1260,14 +1283,73 @@ class Server
             std::cout<<"listen error"<<std::endl;
             assert(false);
         }
+        
+        m_commands["add_author"] = server_command::ADD_AUTHOR;
+        m_commands["get_author_by_id"] = server_command::GET_AUTHOR_BY_ID;
     }
+	
+	std::string json_to_string(const Json::Value& json)
+	{
+		Json::FastWriter fastWriter;
+        std::string output = fastWriter.write(json);
 
+        return std::move(output);
+	}
+	
+	void error_return(const std::string& error, int client_socket)
+	{
+		Json::Value root;
+		root["status"] = error;
+		
+		std::string error_msg = std::move(this->json_to_string(root));
+		
+		send(client_socket, error_msg.c_str(), error_msg.length(), 0);
+	}
+	
     void proc_msg(const std::string& msg, int client_socket)
     {
         Json::Value root;
         Json::Reader reader;
 
-        if (reader.parse(msg.c_str(), root));
+        if (!reader.parse(msg.c_str(), root))
+        {	
+        	std::string error = ServerErrors::parser_error();
+        	this->error_return(error, client_socket);
+        	return;
+       	}
+       	
+       	if (!root.isMember("command"))
+       	{
+       		std::string error = ServerErrors::parser_error();
+        	this->error_return(error, client_socket);
+        	return;
+       	}
+       	
+       	auto command_json = root["command"];
+       	
+       	if (!command_json.isString())
+       	{
+       		std::string error = ServerErrors::parser_error();
+        	this->error_return(error, client_socket);
+        	return;
+       	}
+       	
+       	auto command = m_commands.find(command_json.asString());
+       	if (command == m_commands.end())
+       	{
+       		std::string error = ServerErrors::unknown_command();
+        	this->error_return(error, client_socket);
+        	return;
+       	}
+       	
+       	switch(command->second)
+       	{
+			case server_command::ADD_AUTHOR:
+				break;
+			case server_command::GET_AUTHOR_BY_ID:
+				break;	
+       	}
+       	
     }
 
     void run()
@@ -1287,6 +1369,7 @@ class Server
 
         while (true)
         {
+        	sleep(0.1);
             readval = read(client_socket, buffer, buffer_size);
             
             for (int i=0; i<readval; i++)
@@ -1301,14 +1384,13 @@ class Server
                 msg += buffer[i];
             }
         }
-        //std::string msg = "authors, books";
-        //send(client_socket, msg.c_str(), msg.length(), 0);
     }
 
     private:
     std::unique_ptr<Library> pm_lib;
     sockaddr_in m_address;
     int m_server_fd;
+    std::unordered_map<std::string, server_command> m_commands;
 };
 
 int main()
