@@ -1264,7 +1264,12 @@ enum class server_command: int
 	ADD_AUTHOR,
 	GET_AUTHOR_BY_ID,
 	CHANGE_AUTHOR,
-	DELETE_AUTHOR_BY_ID
+	DELETE_AUTHOR_BY_ID,
+	ADD_BOOK,
+	GET_BOOK,
+	CHANGE_BOOK,
+	DELETE_BOOK,
+	GET_ALL_AUTHOR_BOOKS
 };
 
 
@@ -1300,6 +1305,11 @@ class Server
         m_commands["get_author_by_id"] = server_command::GET_AUTHOR_BY_ID;
         m_commands["change_author"] = server_command::CHANGE_AUTHOR;
         m_commands["delete_author_by_id"] = server_command::DELETE_AUTHOR_BY_ID;
+        m_commands["add_book"] = server_command::ADD_BOOK;
+        m_commands["get_book"] = server_command::GET_BOOK;
+        m_commands["change_book"] = server_command::CHANGE_BOOK;
+        m_commands["delete_book"] = server_command::DELETE_BOOK;
+        m_commands["get_all_author_books"] = server_command::GET_ALL_AUTHOR_BOOKS;
     }
 
     void send_to(const std::string& msg, int client_socket)
@@ -1471,7 +1481,246 @@ class Server
 	
 	std::string add_book(const Json::Value& data)
 	{
+		if (!data.isMember("author_id"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no author id field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto author_id_json = data["author_id"];
+
+		if (!author_id_json.isInt())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"author id is not int"<<std::endl;
+			return std::move(this->error_return(error));
+		}
 		
+		if (!data.isMember("title"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no title field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+		
+		auto title_json = data["title"];
+		
+		if (!title_json.isString())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"title is not string"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+		
+		auto author_res = pm_lib->get_author_by_id(author_id_json.asInt());
+
+        if (author_res.m_code != result_code::OK)
+		{
+			std::cout<<"lib error get author"<<std::endl;
+			return std::move(this->error_return(ServerStatus::lib_error()));
+		}
+		
+		auto res = pm_lib->add_book(std::unique_ptr<Book>(new Book(1, title_json.asString(), author_res.m_object)));
+		
+		if (res.m_code == result_code::OK)
+		{
+			Json::Value data;
+			data["id"] = res.m_object;
+
+			return std::move(this->make_resp(data, ServerStatus::ok()));
+		}
+		else
+		{	
+			std::cout<<static_cast<std::underlying_type<result_code>::type>(res.m_code)<<std::endl;
+			std::cout<<"lib error"<<std::endl;
+			return std::move(this->error_return(ServerStatus::lib_error()));
+		}
+	}
+	
+	std::string get_book(const Json::Value& data)
+	{
+		if (!data.isMember("id"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no id field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto book_id_json = data["id"];
+
+		if (!book_id_json.isInt())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"id is not int"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto res = pm_lib->get_book_by_id(book_id_json.asInt());
+
+        if (res.m_code == result_code::OK)
+		{
+			Json::Value data;
+			data["id"] = res.m_object->get_book_id();
+			data["title"] = res.m_object->get_book_title();
+			data["author_id"] = res.m_object->get_author_id();
+
+			return std::move(this->make_resp(data, ServerStatus::ok()));
+		}
+		else
+		{
+			std::cout<<"lib error"<<std::endl;
+			return std::move(this->error_return(ServerStatus::lib_error()));
+		}
+	}
+	
+	std::string change_book(const Json::Value& data)
+	{	
+		if (!data.isMember("id"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no book id field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto book_id_json = data["id"];
+
+		if (!book_id_json.isInt())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"book id is not int"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+		
+		if (!data.isMember("author_id"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no author id field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto author_id_json = data["author_id"];
+
+		if (!author_id_json.isInt())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"author id is not int"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+		
+		if (!data.isMember("title"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no title field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+		
+		auto title_json = data["title"];
+		
+		if (!title_json.isString())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"title is not string"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+		
+		auto author_res = pm_lib->get_author_by_id(author_id_json.asInt());
+
+        if (author_res.m_code != result_code::OK)
+		{
+			std::cout<<"lib error get author"<<std::endl;
+			return std::move(this->error_return(ServerStatus::lib_error()));
+		}
+		
+		auto res = pm_lib->change_book(std::unique_ptr<Book>(new Book(book_id_json.asInt(), title_json.asString(), author_res.m_object)));
+		
+		if (res.m_code == result_code::OK)
+		{
+			Json::Value data;
+			data["id"] = res.m_object;
+
+			return std::move(this->make_resp(data, ServerStatus::ok()));
+		}
+		else
+		{	
+			std::cout<<static_cast<std::underlying_type<result_code>::type>(res.m_code)<<std::endl;
+			std::cout<<"lib error"<<std::endl;
+			return std::move(this->error_return(ServerStatus::lib_error()));
+		}
+	}
+	
+	std::string delete_book(const Json::Value& data)
+	{
+		if (!data.isMember("id"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no id field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto book_id_json = data["id"];
+
+		if (!book_id_json.isInt())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"id is not int"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		result_code res = pm_lib->delete_book(book_id_json.asInt());
+
+        if (res == result_code::OK)
+		{
+			Json::Value data;
+			data["id"] = book_id_json.asInt();
+
+			return std::move(this->make_resp(data, ServerStatus::ok()));
+		}
+		else
+		{
+			std::cout<<"lib error"<<std::endl;
+			return std::move(this->error_return(ServerStatus::lib_error()));
+		}
+	}
+	
+	std::string get_all_author_books(const Json::Value& data)
+	{
+		if (!data.isMember("id"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no name field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto author_id_json = data["id"];
+
+		if (!author_id_json.isInt())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"name is not string"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto res = pm_lib->get_authors_books(author_id_json.asInt());
+
+        if (res.m_code == result_code::OK)
+		{
+			Json::Value data;
+			for (auto book : res.m_object)
+			{
+				Json::Value book_json;
+				book_json["id"] = book->get_book_id();
+				book_json["title"] = book->get_book_title();
+				book_json["author_id"] = book->get_author_id();
+				data["books"].append(book_json);
+			}
+			return std::move(this->make_resp(data, ServerStatus::ok()));
+		}
+		else
+		{
+			std::cout<<"lib error"<<std::endl;
+			return std::move(this->error_return(ServerStatus::lib_error()));
+		}
 	}
 
 	std::string make_resp(Json::Value& data, const std::string& status)
@@ -1575,6 +1824,26 @@ class Server
 				resp = this->delete_author(data);
 				this->send_to(resp, client_socket);
 				break;
+			case server_command::ADD_BOOK:
+				resp = this->add_book(data);
+				this->send_to(resp, client_socket);
+				break;
+			case server_command::GET_BOOK:
+				resp = this->get_book(data);
+				this->send_to(resp, client_socket);
+				break;
+			case server_command::CHANGE_BOOK:
+				resp = this->change_book(data);
+				this->send_to(resp, client_socket);
+				break;
+			case server_command::DELETE_BOOK:
+				resp = this->delete_book(data);
+				this->send_to(resp, client_socket);
+				break;
+			case server_command::GET_ALL_AUTHOR_BOOKS:
+				resp = this->get_all_author_books(data);
+				this->send_to(resp, client_socket);
+				break; 
        	}
 
     }
