@@ -1278,8 +1278,22 @@ class Server
     public:
     Server(std::unique_ptr<Library> lib, int port):
         pm_lib(std::move(lib))
+    {	
+    	this->init_socket()
+        m_commands["add_author"] = server_command::ADD_AUTHOR;
+        m_commands["get_author_by_id"] = server_command::GET_AUTHOR_BY_ID;
+        m_commands["change_author"] = server_command::CHANGE_AUTHOR;
+        m_commands["delete_author_by_id"] = server_command::DELETE_AUTHOR_BY_ID;
+        m_commands["add_book"] = server_command::ADD_BOOK;
+        m_commands["get_book"] = server_command::GET_BOOK;
+        m_commands["change_book"] = server_command::CHANGE_BOOK;
+        m_commands["delete_book"] = server_command::DELETE_BOOK;
+        m_commands["get_all_author_books"] = server_command::GET_ALL_AUTHOR_BOOKS;
+    }
+    
+    void init_socket()
     {
-        if ((m_server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+    	if ((m_server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
         {
             std::cout<<"Create socket FD error"<<std::endl;
             assert(false);
@@ -1300,17 +1314,9 @@ class Server
             std::cout<<"listen error"<<std::endl;
             assert(false);
         }
-
-        m_commands["add_author"] = server_command::ADD_AUTHOR;
-        m_commands["get_author_by_id"] = server_command::GET_AUTHOR_BY_ID;
-        m_commands["change_author"] = server_command::CHANGE_AUTHOR;
-        m_commands["delete_author_by_id"] = server_command::DELETE_AUTHOR_BY_ID;
-        m_commands["add_book"] = server_command::ADD_BOOK;
-        m_commands["get_book"] = server_command::GET_BOOK;
-        m_commands["change_book"] = server_command::CHANGE_BOOK;
-        m_commands["delete_book"] = server_command::DELETE_BOOK;
-        m_commands["get_all_author_books"] = server_command::GET_ALL_AUTHOR_BOOKS;
     }
+    
+    int recv_from(
 
     void send_to(const std::string& msg, int client_socket)
     {
