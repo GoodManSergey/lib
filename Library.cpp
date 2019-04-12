@@ -1262,7 +1262,9 @@ class ServerStatus
 enum class server_command: int
 {
 	ADD_AUTHOR,
-	GET_AUTHOR_BY_ID
+	GET_AUTHOR_BY_ID,
+	CHANGE_AUTHOR,
+	DELETE_AUTHOR_BY_ID
 };
 
 
@@ -1296,6 +1298,8 @@ class Server
 
         m_commands["add_author"] = server_command::ADD_AUTHOR;
         m_commands["get_author_by_id"] = server_command::GET_AUTHOR_BY_ID;
+        m_commands["change_author"] = server_command::CHANGE_AUTHOR;
+        m_commands["delete_author_by_id"] = server_command::DELETE_AUTHOR_BY_ID;
     }
 
     void send_to(const std::string& msg, int client_socket)
@@ -1311,24 +1315,8 @@ class Server
         return std::move(output);
 	}
 
-	std::string add_author(const Json::Value& root)
+	std::string add_author(const Json::Value& data)
 	{
-		if (!root.isMember("data"))
-		{
-			std::string error = ServerStatus::parser_error();
-			std::cout<<"no data field"<<std::endl;
-			return std::move(this->error_return(error));
-		}
-
-		auto data = root["data"];
-
-		if (!data.isObject())
-		{
-			std::string error = ServerStatus::parser_error();
-			std::cout<<"data is not dict"<<std::endl;
-			return std::move(this->error_return(error));
-		}
-
 		if (!data.isMember("name"))
 		{
 			std::string error = ServerStatus::parser_error();
@@ -1362,24 +1350,8 @@ class Server
 		}
 	}
 
-	std::string get_author(const Json::Value& root)
+	std::string get_author(const Json::Value& data)
 	{
-        if (!root.isMember("data"))
-		{
-			std::string error = ServerStatus::parser_error();
-			std::cout<<"no data field"<<std::endl;
-			return std::move(this->error_return(error));
-		}
-
-		auto data = root["data"];
-
-		if (!data.isObject())
-		{
-			std::string error = ServerStatus::parser_error();
-			std::cout<<"data is not dict"<<std::endl;
-			return std::move(this->error_return(error));
-		}
-
 		if (!data.isMember("id"))
 		{
 			std::string error = ServerStatus::parser_error();
@@ -1387,16 +1359,16 @@ class Server
 			return std::move(this->error_return(error));
 		}
 
-		auto author_name_json = data["id"];
+		auto author_id_json = data["id"];
 
-		if (!author_name_json.isInt())
+		if (!author_id_json.isInt())
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"name is not string"<<std::endl;
 			return std::move(this->error_return(error));
 		}
 
-		auto res = pm_lib->get_author_by_id(author_name_json.asInt());
+		auto res = pm_lib->get_author_by_id(author_id_json.asInt());
 
         if (res.m_code == result_code::OK)
 		{
@@ -1411,6 +1383,95 @@ class Server
 			std::cout<<"lib error"<<std::endl;
 			return std::move(this->error_return(ServerStatus::lib_error()));
 		}
+	}
+	
+	std::string change_author(const Json::Value& data)
+	{
+		if (!data.isMember("name"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no name field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto author_name_json = data["name"];
+
+		if (!author_name_json.isString())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"name is not string"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+		
+		if (!data.isMember("id"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no name field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto author_id_json = data["id"];
+
+		if (!author_id_json.isInt())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"name is not string"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		result<int> res = pm_lib->change_author(std::unique_ptr<Author>(new Author(author_id_json.asInt(), author_name_json.asString())));
+
+		if (res.m_code == result_code::OK)
+		{
+			Json::Value data;
+			data["id"] = res.m_object;
+
+			return std::move(this->make_resp(data, ServerStatus::ok()));
+		}
+		else
+		{
+			std::cout<<"lib error"<<std::endl;
+			return std::move(this->error_return(ServerStatus::lib_error()));
+		}
+	}
+	
+	std::string delete_author(const Json::Value& data)
+	{
+		if (!data.isMember("id"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"no name field"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		auto author_id_json = data["id"];
+
+		if (!author_id_json.isInt())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::cout<<"name is not string"<<std::endl;
+			return std::move(this->error_return(error));
+		}
+
+		result_code res = pm_lib->delete_author(author_id_json.asInt());
+
+        if (res == result_code::OK)
+		{
+			Json::Value data;
+			data["id"] = author_id_json.asInt();
+
+			return std::move(this->make_resp(data, ServerStatus::ok()));
+		}
+		else
+		{
+			std::cout<<"lib error"<<std::endl;
+			return std::move(this->error_return(ServerStatus::lib_error()));
+		}
+	}
+	
+	std::string add_book(const Json::Value& data)
+	{
+		
 	}
 
 	std::string make_resp(Json::Value& data, const std::string& status)
@@ -1473,19 +1534,46 @@ class Server
         	this->send_to(error_msg, client_socket);
         	return;
        	}
+       	
+       	if (!root.isMember("data"))
+		{
+			std::string error = ServerStatus::parser_error();
+			std::string error_msg = this->error_return(error);
+			std::cout<<"no data field"<<std::endl;
+			this->send_to(error_msg, client_socket);
+        	return;
+		}
+
+		auto data = root["data"];
+
+		if (!data.isObject())
+		{
+			std::string error = ServerStatus::parser_error();
+			std::string error_msg = this->error_return(error);
+			std::cout<<"data is not dict"<<std::endl;
+			this->send_to(error_msg, client_socket);
+        	return;
+		}
 
        	std::string resp;
 
        	switch(command->second)
        	{
 			case server_command::ADD_AUTHOR:
-				resp = this->add_author(root);
+				resp = this->add_author(data);
 				this->send_to(resp, client_socket);
 				break;
 			case server_command::GET_AUTHOR_BY_ID:
-			    resp = this->get_author(root);
+			    resp = this->get_author(data);
 				this->send_to(resp, client_socket);
 				break;
+			case server_command::CHANGE_AUTHOR:
+				resp = this->change_author(data);
+				this->send_to(resp, client_socket);
+				break;
+			case server_command::DELETE_AUTHOR_BY_ID:
+				resp = this->delete_author(data);
+				this->send_to(resp, client_socket);
 				break;
        	}
 

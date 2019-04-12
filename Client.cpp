@@ -34,10 +34,11 @@ int main()
         return -1;
     }
     //valread = read( sock , buffer, 1024);
-    std::string msg = "{\"command\":\"add_author\", \"data\":{\"name\":\"NEW AYTHOR NEVEROYATNO\"}}\v";
+    std::string msg = "{\"command\":\"add_author\", \"data\":{\"name\":\"NEW AYTHOR\"}}\v";
 	std::string msg2 = "{\"command\":\"get_author_by_id\", \"data\":{\"id\":1}}\v";
-	std::string msg3 = "it is bad delimiter, but pofig\v";
-    send(sock, msg2.c_str(), msg2.length(), 0);
+	std::string msg3 = "{\"command\":\"change_author\", \"data\":{\"id\":3, \"name\": \"new author name\"}}\v";
+	std::string msg4 = "{\"command\":\"delete_author_by_id\", \"data\":{\"id\":3}}\v";
+    send(sock, msg4.c_str(), msg4.length(), 0);
     int readval = 0;
     int buffer_size = 1024;
     sleep(1);
