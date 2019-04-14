@@ -1281,10 +1281,9 @@ enum class server_command: int
 class Server
 {
     public:
-    Server(std::unique_ptr<Library> lib, int port):
+    Server(std::unique_ptr<Library> lib):
         pm_lib(std::move(lib))
     {
-    	this->init_socket(port);
         m_commands["add_author"] = server_command::ADD_AUTHOR;
         m_commands["get_author_by_id"] = server_command::GET_AUTHOR_BY_ID;
         m_commands["change_author"] = server_command::CHANGE_AUTHOR;
@@ -1296,35 +1295,7 @@ class Server
         m_commands["get_all_author_books"] = server_command::GET_ALL_AUTHOR_BOOKS;
     }
 
-    void init_socket(int port)
-    {
-    	if ((m_server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-        {
-            std::cout<<"Create socket FD error"<<std::endl;
-            assert(false);
-        }
-
-        m_address.sin_family = AF_INET;
-        m_address.sin_addr.s_addr = INADDR_ANY;
-        m_address.sin_port = htons(port);
-
-        if (bind(m_server_fd, (sockaddr*)&m_address, sizeof(m_address)) < 0)
-        {
-            std::cout<<"bind error"<<std::endl;
-            assert(false);
-        }
-
-        if (listen(m_server_fd, 1) < 0)
-        {
-            std::cout<<"listen error"<<std::endl;
-            assert(false);
-        }
-    }
-
-    void send_to(const std::string& msg, int client_socket)
-    {
-    	send(client_socket, msg.c_str(), msg.length(), 0);
-    }
+    virtual void init_socket(int port) = 0;
 
 	std::string json_to_string(const Json::Value& json)
 	{
@@ -1847,6 +1818,47 @@ class Server
        	return std::move(resp);
     }
 
+    virtual void run() = 0;
+
+    protected:
+    std::unique_ptr<Library> pm_lib;
+    sockaddr_in m_address;
+    int m_server_fd;
+    std::unordered_map<std::string, server_command> m_commands;
+};
+
+class ServerTCP: public Server
+{
+    public:
+    ServerTCP(std::unique_ptr<Library> lib):
+        Server(std::move(lib))
+    {}
+
+    void init_socket(int port)
+    {
+    	if ((m_server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+        {
+            std::cout<<"Create socket FD error"<<std::endl;
+            assert(false);
+        }
+
+        m_address.sin_family = AF_INET;
+        m_address.sin_addr.s_addr = INADDR_ANY;
+        m_address.sin_port = htons(port);
+
+        if (bind(m_server_fd, (sockaddr*)&m_address, sizeof(m_address)) < 0)
+        {
+            std::cout<<"bind error"<<std::endl;
+            assert(false);
+        }
+
+        if (listen(m_server_fd, 1) < 0)
+        {
+            std::cout<<"listen error"<<std::endl;
+            assert(false);
+        }
+    }
+
     void run()
     {
         int client_socket;
@@ -1872,7 +1884,7 @@ class Server
                 if (buffer[i] == '\v')
                 {
                     std::string resp = this->proc_msg(msg);
-                    this->send_to(std::move(resp), client_socket);
+                    send(client_socket, resp.c_str(), resp.length(), 0);
                     msg = "";
                     continue;
                 }
@@ -1881,19 +1893,82 @@ class Server
             }
         }
     }
+};
 
-    private:
-    std::unique_ptr<Library> pm_lib;
-    sockaddr_in m_address;
-    int m_server_fd;
-    std::unordered_map<std::string, server_command> m_commands;
+class ServerUDP: public Server
+{
+    public:
+    ServerTCP(std::unique_ptr<Library> lib):
+    Server(std::move(lib))
+    {}
+
+    void init_socket(int port)
+    {
+    	/*if ((m_server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+        {
+            std::cout<<"Create socket FD error"<<std::endl;
+            assert(false);
+        }
+
+        m_address.sin_family = AF_INET;
+        m_address.sin_addr.s_addr = INADDR_ANY;
+        m_address.sin_port = htons(port);
+
+        if (bind(m_server_fd, (sockaddr*)&m_address, sizeof(m_address)) < 0)
+        {
+            std::cout<<"bind error"<<std::endl;
+            assert(false);
+        }
+
+        if (listen(m_server_fd, 1) < 0)
+        {
+            std::cout<<"listen error"<<std::endl;
+            assert(false);
+        }*/
+    }
+
+    void run()
+    {
+        /*int client_socket;
+        int addr_len = sizeof(m_address);
+        if ((client_socket = accept(m_server_fd, (sockaddr*)&m_address, (socklen_t*)&addr_len)) < 0)
+        {
+            std::cout<<"Client connect error"<<std::endl;
+            assert(false);
+        }
+
+        int readval = 0;
+        int buffer_size = 1024;
+        char buffer[1024]{0};
+        std::string msg = "";
+
+        while (true)
+        {
+        	sleep(0.1);
+            readval = read(client_socket, buffer, buffer_size);
+
+            for (int i=0; i<readval; i++)
+            {
+                if (buffer[i] == '\v')
+                {
+                    std::string resp = this->proc_msg(msg);
+                    send(client_socket, resp.c_str(), resp.length(), 0);
+                    msg = "";
+                    continue;
+                }
+
+                msg += buffer[i];
+            }
+        }*/
+    }
 };
 
 int main()
 {
     //Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")));
     std::unique_ptr<Library> lib {new Library(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")))};
-    Server serv = Server(std::move(lib), 8080);
+    ServerTCP serv = ServerTCP(std::move(lib));
+    serv.init_socket(8080);
     serv.run();
     //auto book = lib.get_book_by_id(1).m_object;
     //std::cout<<book->get_book_title()<<std::endl<<book->get_author()->get_name()<<std::endl;

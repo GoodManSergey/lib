@@ -43,7 +43,7 @@ int main()
 	std::string msg7 = "{\"command\":\"change_book\", \"data\":{\"author_id\":1, \"title\":\"book\", \"id\":3}}\v";
 	std::string msg8 = "{\"command\":\"delete_book\", \"data\":{\"id\":3}}\v";
 	std::string msg9 = "{\"command\":\"get_all_author_books\", \"data\":{\"id\":1}}\v";
-    send(sock, msg9.c_str(), msg9.length(), 0);
+    send(sock, msg1.c_str(), msg1.length(), 0);
     int readval = 0;
     int buffer_size = 1024;
     sleep(1);
