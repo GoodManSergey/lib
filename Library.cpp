@@ -180,9 +180,16 @@ class XmlParser: public Parser
 {
     public:
     std::string set_empty_tmpl()
-    {
-        std::string file_tmpl = "<data><books></books> <authors></authors> <next_book_id id='1' /> <next_author_id id='1' /> </data>";
-        m_doc.load(file_tmpl.c_str());
+    {        
+        pugi::xml_node root = m_doc.append_child("root");
+        root.append_child("books");
+        root.append_child("authors");
+        
+        pugi::xml_node next_book_id = root.append_child("next_book_id");
+        pugi::xml_node next_author_id = root.append_child("next_author_id");
+        
+        next_book_id.append_attribute("id") = 1;
+        next_author_id.append_attribute("id") = 1;
 
         return std::move(to_string());
     }
@@ -461,12 +468,12 @@ class JsonParser: public Parser
 {
     public:
     std::string set_empty_tmpl()
-    {
-        Json::Reader reader;
-        std::string file_tmpl = "{\"authors\":[],\"books\":[],\"next_author_id\":1,\"next_book_id\": 1}";
-
-        reader.parse(file_tmpl.c_str(), m_root);
-
+    {        
+        m_root["authors"] = Json::arrayValue;
+        m_root["books"] = Json::arrayValue;
+        m_root["next_author_id"] = 1;
+		m_root["next_book_id"] = 1;
+		
         return std::move(to_string());
     }
 
