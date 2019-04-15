@@ -8,6 +8,7 @@
 #include<fstream>
 #include<sstream>
 #include<functional>
+<<<<<<< HEAD
 #include<unistd.h>
 #include<string.h>
 
@@ -18,6 +19,10 @@
 
 #include"jsoncpp/json/json.h"
 #include"pugixml.hpp"
+=======
+#include<jsoncpp/json/json.h>
+#include<pugixml.hpp>
+>>>>>>> 4ea07c7c8640db8c26181bea1790f59ae32c17e6
 
 
 
