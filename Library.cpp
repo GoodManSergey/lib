@@ -11,6 +11,8 @@
 #include<unistd.h>
 #include<string.h>
 
+#include<cstring>
+
 #include<netinet/in.h>
 #include<sys/socket.h>
 
@@ -1904,8 +1906,8 @@ class ServerUDP: public Server
     {}
 
     void init_socket(int port)
-    {
-    	/*if ((m_server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+    {	
+    	if ((m_server_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
         {
             std::cout<<"Create socket FD error"<<std::endl;
             assert(false);
@@ -1920,47 +1922,42 @@ class ServerUDP: public Server
             std::cout<<"bind error"<<std::endl;
             assert(false);
         }
-
-        if (listen(m_server_fd, 1) < 0)
-        {
-            std::cout<<"listen error"<<std::endl;
-            assert(false);
-        }*/
     }
 
     void run()
     {
-        /*int client_socket;
+        sockaddr_in client_addr;
         int addr_len = sizeof(m_address);
-        if ((client_socket = accept(m_server_fd, (sockaddr*)&m_address, (socklen_t*)&addr_len)) < 0)
-        {
-            std::cout<<"Client connect error"<<std::endl;
-            assert(false);
-        }
 
         int readval = 0;
+        socklen_t len_from = 0;
         int buffer_size = 1024;
         char buffer[1024]{0};
         std::string msg = "";
 
         while (true)
         {
-        	sleep(0.1);
-            readval = read(client_socket, buffer, buffer_size);
-
+            readval = recvfrom(m_server_fd, (char *)buffer, buffer_size, MSG_WAITALL, (sockaddr *)&client_addr, &len_from);
             for (int i=0; i<readval; i++)
-            {
+            {	
+            	std::cout<<buffer[i];
                 if (buffer[i] == '\v')
                 {
                     std::string resp = this->proc_msg(msg);
-                    send(client_socket, resp.c_str(), resp.length(), 0);
+                    if (resp.length()>254)
+                    {
+                    	resp = "too large\v";
+                    }
+                    std::cout<<resp<<std::endl;
+                    sendto(m_server_fd, resp.c_str(), resp.length(), MSG_CONFIRM, (sockaddr *)&client_addr, sizeof(client_addr));
+                    std::cout<<std::strerror(errno)<<std::endl;
                     msg = "";
                     continue;
                 }
 
                 msg += buffer[i];
             }
-        }*/
+        }
     }
 };
 
@@ -1968,7 +1965,7 @@ int main()
 {
     //Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")));
     std::unique_ptr<Library> lib {new Library(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")))};
-    ServerTCP serv = ServerTCP(std::move(lib));
+    ServerUDP serv = ServerUDP(std::move(lib));
     serv.init_socket(8080);
     serv.run();
     //auto book = lib.get_book_by_id(1).m_object;
