@@ -1,1 +1,1 @@
-{"authors":[{"id":1,"name":"new author name"},{"id":4,"name":"NEW AYTHOR"}],"books":[{"author_id":1,"id":1,"title":"The new book"},{"author_id":1,"id":3,"title":"book"},{"author_id":1,"id":4,"title":"book"}],"next_author_id":5,"next_book_id":5}
+{"authors":[{"id":1,"name":"new author name"},{"id":4,"name":"NEW AYTHOR"}],"books":[{"author_id":1,"id":1,"title":"The new book"},{"author_id":1,"id":3,"title":"book"},{"author_id":1,"id":4,"title":"book"}],"next_author_id":6,"next_book_id":5}

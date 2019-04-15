@@ -1717,7 +1717,7 @@ class Server
 		Json::Value root;
 		root["status"] = error;
 
-		return std::move(this->json_to_string(root));
+		return std::move(this->json_to_string(root) + "\v");
 	}
 
     std::string proc_msg(const std::string& msg)
@@ -1884,6 +1884,7 @@ class ServerTCP: public Server
                 if (buffer[i] == '\v')
                 {
                     std::string resp = this->proc_msg(msg);
+                    std::cout<<"resp:"<<std::endl<<resp<<std::endl;
                     send(client_socket, resp.c_str(), resp.length(), 0);
                     msg = "";
                     continue;
@@ -1898,8 +1899,8 @@ class ServerTCP: public Server
 class ServerUDP: public Server
 {
     public:
-    ServerTCP(std::unique_ptr<Library> lib):
-    Server(std::move(lib))
+    ServerUDP(std::unique_ptr<Library> lib):
+    	Server(std::move(lib))
     {}
 
     void init_socket(int port)
