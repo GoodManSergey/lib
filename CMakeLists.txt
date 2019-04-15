@@ -1,12 +1,14 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.8)
 include(FindPkgConfig)
 project(library)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(JSONCPP REQUIRED jsoncpp)
-pkg_search_module(PUGIXML REQUIRED pugixml)
+#pkg_search_module(PUGIXML REQUIRED pugixml)
 
 set(SOURCE_FILES Library.cpp)
 add_executable(library ${SOURCE_FILES})

@@ -8,7 +8,6 @@
 #include<fstream>
 #include<sstream>
 #include<functional>
-<<<<<<< HEAD
 #include<unistd.h>
 #include<string.h>
 
@@ -17,12 +16,9 @@
 #include<netinet/in.h>
 #include<sys/socket.h>
 
-#include"jsoncpp/json/json.h"
-#include"pugixml.hpp"
-=======
 #include<jsoncpp/json/json.h>
 #include<pugixml.hpp>
->>>>>>> 4ea07c7c8640db8c26181bea1790f59ae32c17e6
+
 
 
 
@@ -185,14 +181,14 @@ class XmlParser: public Parser
 {
     public:
     std::string set_empty_tmpl()
-    {        
+    {
         pugi::xml_node root = m_doc.append_child("root");
         root.append_child("books");
         root.append_child("authors");
-        
+
         pugi::xml_node next_book_id = root.append_child("next_book_id");
         pugi::xml_node next_author_id = root.append_child("next_author_id");
-        
+
         next_book_id.append_attribute("id") = 1;
         next_author_id.append_attribute("id") = 1;
 
@@ -473,12 +469,12 @@ class JsonParser: public Parser
 {
     public:
     std::string set_empty_tmpl()
-    {        
+    {
         m_root["authors"] = Json::arrayValue;
         m_root["books"] = Json::arrayValue;
         m_root["next_author_id"] = 1;
 		m_root["next_book_id"] = 1;
-		
+
         return std::move(to_string());
     }
 
@@ -836,7 +832,7 @@ class FileStorage: public Storage
             bool rename_status = std::rename((m_storage_path + ".tmp").c_str(), m_storage_path.c_str());
 
             assert(!rename_status);
-            
+
             return std::move(str);
         }
     }
@@ -1310,7 +1306,7 @@ class Server
         m_commands["delete_book"] = server_command::DELETE_BOOK;
         m_commands["get_all_author_books"] = server_command::GET_ALL_AUTHOR_BOOKS;
     }
-    
+
     virtual ~Server() = default;
 
     virtual void init_socket(int port) = 0;
@@ -1912,7 +1908,7 @@ class ServerTCP: public Server
             }
         }
     }
-    
+
     ~ServerTCP() = default;
 };
 
@@ -1924,7 +1920,7 @@ class ServerUDP: public Server
     {}
 
     void init_socket(int port)
-    {	
+    {
     	if ((m_server_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
         {
             std::cout<<"Create socket FD error"<<std::endl;
@@ -1960,7 +1956,7 @@ class ServerUDP: public Server
             readval = recvfrom(m_server_fd, (char *)buffer, buffer_size, MSG_WAITALL, (sockaddr *)&client_addr, &len_from);
             std::cout << "port = " << ntohs(client_addr.sin_port) << std::endl;
             for (int i=0; i<readval; i++)
-            {	
+            {
             	std::cout<<buffer[i];
                 if (buffer[i] == '\v')
                 {
@@ -1980,7 +1976,7 @@ class ServerUDP: public Server
             }
         }
     }
-    
+
     ~ServerUDP() = default;
 };
 
