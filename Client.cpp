@@ -32,7 +32,7 @@ class Client
 		root["command"] = std::move("add_author");
 		root["data"] = std::move(data);
 		
-		return std::move(this->json_to_string(root));
+		return std::move(json_to_string(root));
 	}
 	
 	std::string get_author_msg(int id)
@@ -43,7 +43,7 @@ class Client
 		root["command"] = std::move("get_author_by_id");
 		root["data"] = std::move(data);
 		
-		return std::move(this->json_to_string(root));
+		return std::move(json_to_string(root));
 	}
 	
 	std::string change_author_msg(int id, const std::string& name)
@@ -55,7 +55,7 @@ class Client
 		root["command"] = std::move("change_author");
 		root["data"] = std::move(data);
 		
-		return std::move(this->json_to_string(root));
+		return std::move(json_to_string(root));
 	}
 	
 	std::string delete_author_msg(int id)
@@ -66,7 +66,7 @@ class Client
 		root["command"] = std::move("delete_author_by_id");
 		root["data"] = std::move(data);
 		
-		return std::move(this->json_to_string(root));
+		return std::move(json_to_string(root));
 	}
 	
 	std::string add_book_msg(int author_id, const std::string& title)
@@ -78,7 +78,7 @@ class Client
 		root["command"] = std::move("add_book");
 		root["data"] = std::move(data);
 		
-		return std::move(this->json_to_string(root));
+		return std::move(json_to_string(root));
 	}
 	
 	std::string get_book_msg(int id)
@@ -89,7 +89,7 @@ class Client
 		root["command"] = std::move("get_book");
 		root["data"] = std::move(data);
 		
-		return std::move(this->json_to_string(root));
+		return std::move(json_to_string(root));
 	}
 	
 	std::string change_book_msg(int id, int author_id, const std::string& title)
@@ -102,7 +102,7 @@ class Client
 		root["command"] = std::move("change_book");
 		root["data"] = std::move(data);
 		
-		return std::move(this->json_to_string(root));
+		return std::move(json_to_string(root));
 	}
 	
 	std::string delete_book_msg(int id)
@@ -113,7 +113,7 @@ class Client
 		root["command"] = std::move("delete_book");
 		root["data"] = std::move(data);
 		
-		return std::move(this->json_to_string(root));
+		return std::move(json_to_string(root));
 	}
 	
 	std::string get_all_author_books_msg(int id)
@@ -124,7 +124,7 @@ class Client
 		root["command"] = std::move("get_all_author_books");
 		root["data"] = std::move(data);
 		
-		return std::move(this->json_to_string(root));
+		return std::move(json_to_string(root));
 	}
 	
 };
@@ -209,8 +209,9 @@ class ClientUDP: public Client
     	memset(&m_serv_addr, '0', sizeof(m_serv_addr));
     	
     	m_serv_addr.sin_family = AF_INET;
+    	m_serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
     	m_serv_addr.sin_port = htons(server_port);
-    	m_serv_addr.sin_addr.s_addr = INADDR_ANY;
+    	//m_serv_addr.sin_addr.s_addr = INADDR_ANY;
 	}
 	
 	void send_msg(const std::string& msg)

@@ -65,12 +65,12 @@ class Author
 
     void set_author_id(int id)
     {
-        this->m_author_id = id;
+        m_author_id = id;
     }
 
     void set_name(const std::string& name)
     {
-        this->m_name = name;
+        m_name = name;
     }
 
     private:
@@ -105,17 +105,17 @@ class Book
 
     void set_book_id(int new_book_id)
     {
-        this->m_book_id = new_book_id;
+        m_book_id = new_book_id;
     }
 
     void set_title(const std::string& new_title)
     {
-        this->m_title = new_title;
+        m_title = new_title;
     }
 
     void set_author(const std::shared_ptr<Author> new_author)
     {
-        this->m_author = new_author;
+        m_author = new_author;
     }
 
     private:
@@ -157,6 +157,7 @@ class Storage
     virtual result_code change_author(std::shared_ptr<const Author> author) = 0;
     virtual result_code delete_book(int book_id) = 0;
     virtual result_code delete_author(int author_id) = 0;
+    virtual ~Storage() = default;
 };
 
 
@@ -171,6 +172,7 @@ class Parser
     virtual result<std::string> change_author(const std::string& file_str, std::shared_ptr<const Author> author) = 0;
     virtual result<std::string> delete_book(const std::string& file_str, int book_id) = 0;
     virtual result<std::string> delete_author(const std::string& file_str, int author_id) = 0;
+    virtual ~Parser() = default;
 };
 
 
@@ -180,27 +182,27 @@ class XmlParser: public Parser
     std::string set_empty_tmpl()
     {
         std::string file_tmpl = "<data><books></books> <authors></authors> <next_book_id id='1' /> <next_author_id id='1' /> </data>";
-        this->m_doc.load(file_tmpl.c_str());
+        m_doc.load(file_tmpl.c_str());
 
-        return std::move(this->to_string());
+        return std::move(to_string());
     }
 
     std::string to_string()
     {
         std::stringstream buffer;
-    	this->m_doc.save(buffer);
+    	m_doc.save(buffer);
 
     	return std::move(buffer.str());
     }
 
     result<storage_data> get_storage(const std::string& file_str)
     {
-        if (!this->m_doc.load_string(file_str.c_str()))
+        if (!m_doc.load_string(file_str.c_str()))
         {
         	return result_code::PARSER_ERROR;
         }
 
-        pugi::xml_node root = this->m_doc.document_element();
+        pugi::xml_node root = m_doc.document_element();
 
         pugi::xpath_query books_query("/data/books");
         pugi::xpath_query authors_query("/data/authors");
@@ -304,7 +306,7 @@ class XmlParser: public Parser
     result<std::string> add_node(const std::string& file_str, const pugi::xpath_query& nodes_path,
                                  const pugi::xpath_query& next_id_path, std::function<void(pugi::xml_node)> node_filler)
     {
-        pugi::xml_node root = this->m_doc.document_element();
+        pugi::xml_node root = m_doc.document_element();
 
         auto node = root.select_single_node(nodes_path).node();
 
@@ -326,7 +328,7 @@ class XmlParser: public Parser
 
         next_id_attr.set_value(next_id_attr.as_int() + 1);
 
-        return std::move(this->to_string());
+        return std::move(to_string());
     }
 
     result<std::string> add_book(const std::string& file_str, std::shared_ptr<const Book> book)
@@ -342,7 +344,7 @@ class XmlParser: public Parser
     	                                    book_node.append_attribute("title") = book->get_book_title().c_str();
     	                                    book_node.append_attribute("author_id") = book->get_author_id();
     	                                };
-        return std::move(this->add_node(file_str, books_query, next_book_id_path, book_node_filler));
+        return std::move(add_node(file_str, books_query, next_book_id_path, book_node_filler));
     }
 
     result<std::string> add_author(const std::string& file_str, std::shared_ptr<const Author> author)
@@ -357,13 +359,13 @@ class XmlParser: public Parser
     	                                    author_node.append_attribute("id") = author->get_author_id();
     	                                    author_node.append_attribute("name") = author->get_name().c_str();
     	                                };
-        return std::move(this->add_node(file_str, authors_query, next_author_id_path, author_node_filler));
+        return std::move(add_node(file_str, authors_query, next_author_id_path, author_node_filler));
     }
 
     result<std::string> change_node(const std::string& file_str, const pugi::xpath_query& nodes_path,
                                      std::function<void(pugi::xml_node)> node_filler, std::function<bool(pugi::xml_node)> node_finder)
     {
-        pugi::xml_node root = this->m_doc.document_element();
+        pugi::xml_node root = m_doc.document_element();
 
         auto nodes = root.select_single_node(nodes_path).node();
 
@@ -381,7 +383,7 @@ class XmlParser: public Parser
 
         node_filler(change_node);
 
-        return std::move(this->to_string());
+        return std::move(to_string());
     }
 
     result<std::string> change_book(const std::string& file_str, std::shared_ptr<const Book> book)
@@ -395,7 +397,7 @@ class XmlParser: public Parser
     	                                    book_node.attribute("author_id").set_value(book->get_author_id());
     	                                };
 
-        return std::move(this->change_node(file_str, books_query, book_node_filler, find_book_by_id));
+        return std::move(change_node(file_str, books_query, book_node_filler, find_book_by_id));
     }
 
     result<std::string> change_author(const std::string& file_str, std::shared_ptr<const Author> author)
@@ -408,12 +410,12 @@ class XmlParser: public Parser
     	                                    author_node.attribute("name").set_value(author->get_name().c_str());
     	                                };
 
-        return std::move(this->change_node(file_str, authors_query, author_node_filler, find_author_by_id));
+        return std::move(change_node(file_str, authors_query, author_node_filler, find_author_by_id));
     }
 
     result<std::string> delete_node_by_id(const std::string& file_str, const pugi::xpath_query& nodes_path, int node_id)
     {
-        pugi::xml_node root = this->m_doc.document_element();
+        pugi::xml_node root = m_doc.document_element();
 
         auto nodes = root.select_single_node(nodes_path).node();
 
@@ -433,21 +435,21 @@ class XmlParser: public Parser
 
         nodes.remove_child(del_node);
 
-        return std::move(this->to_string());
+        return std::move(to_string());
     }
 
     result<std::string> delete_book(const std::string& file_str, int book_id)
     {
     	pugi::xpath_query books_query("/data/books");
 
-    	return std::move(this->delete_node_by_id(file_str, books_query, book_id));
+    	return std::move(delete_node_by_id(file_str, books_query, book_id));
     }
 
     result<std::string> delete_author(const std::string& file_str, int author_id)
     {
     	pugi::xpath_query authors_query("/data/authors");
 
-    	return std::move(this->delete_node_by_id(file_str, authors_query, author_id));
+    	return std::move(delete_node_by_id(file_str, authors_query, author_id));
     }
 
     private:
@@ -463,15 +465,15 @@ class JsonParser: public Parser
         Json::Reader reader;
         std::string file_tmpl = "{\"authors\":[],\"books\":[],\"next_author_id\":1,\"next_book_id\": 1}";
 
-        reader.parse(file_tmpl.c_str(), this->m_root);
+        reader.parse(file_tmpl.c_str(), m_root);
 
-        return std::move(this->to_string());
+        return std::move(to_string());
     }
 
     std::string to_string()
     {
         Json::FastWriter fastWriter;
-        std::string output = fastWriter.write(this->m_root);
+        std::string output = fastWriter.write(m_root);
 
         return std::move(output);
     }
@@ -480,7 +482,7 @@ class JsonParser: public Parser
     {
         Json::Reader reader;
 
-        if (!reader.parse(file_str.c_str(), this->m_root ))
+        if (!reader.parse(file_str.c_str(), m_root ))
         {
             std::cout<<"parser error"<<std::endl;
             return result_code::PARSER_ERROR;
@@ -489,13 +491,13 @@ class JsonParser: public Parser
         std::vector<std::shared_ptr<Author>> author_list;
         std::vector<std::shared_ptr<Book>> book_list;
 
-        if (!this->m_root.isMember("authors"))
+        if (!m_root.isMember("authors"))
         {
             std::cout<<"no authors error"<<std::endl;
             return result_code::PARSER_ERROR;
         }
 
-        auto authors = this->m_root["authors"];
+        auto authors = m_root["authors"];
 
         if (!authors.isArray())
         {
@@ -528,13 +530,13 @@ class JsonParser: public Parser
             author_list.push_back(std::shared_ptr<Author>(new Author(author_id_int, author_name_str)));
         }
 
-        if (!this->m_root.isMember("books"))
+        if (!m_root.isMember("books"))
         {
             std::cout<<"no books error"<<std::endl;
             return result_code::PARSER_ERROR;
         }
 
-        auto books = this->m_root["books"];
+        auto books = m_root["books"];
 
         if (!books.isArray())
         {
@@ -577,18 +579,18 @@ class JsonParser: public Parser
             book_list.push_back(std::shared_ptr<Book>(new Book(book_id_int, book_title_str, (*author_iter))));
         }
 
-        if (!this->m_root.isMember("next_book_id"))
+        if (!m_root.isMember("next_book_id"))
         {
             return result_code::PARSER_ERROR;
         }
 
-        if (!this->m_root.isMember("next_author_id"))
+        if (!m_root.isMember("next_author_id"))
         {
             return result_code::PARSER_ERROR;
         }
 
-        auto next_book_id = this->m_root["next_book_id"];
-        auto next_author_id = this->m_root["next_author_id"];
+        auto next_book_id = m_root["next_book_id"];
+        auto next_author_id = m_root["next_author_id"];
 
         if (!next_book_id.isInt())
         {
@@ -610,17 +612,17 @@ class JsonParser: public Parser
 
     result<std::string> add_node(const std::string& file_str, const std::string& node_name, const std::string node_next_id, std::function<int(Json::Value&)> node_filler)
     {
-        if (!this->m_root.isMember(node_name))
+        if (!m_root.isMember(node_name))
         {
             return result_code::PARSER_ERROR;
         }
 
-        if (!this->m_root[node_name].isArray())
+        if (!m_root[node_name].isArray())
         {
             return result_code::PARSER_ERROR;
         }
 
-        if (!this->m_root.isMember(node_next_id))
+        if (!m_root.isMember(node_next_id))
         {
             return result_code::PARSER_ERROR;
         }
@@ -630,16 +632,16 @@ class JsonParser: public Parser
 
         try
         {
-            this->m_root[node_name].append(node);
+            m_root[node_name].append(node);
         }
         catch(Json::Exception const&)
         {
             return result_code::PARSER_ERROR;
         }
 
-        this->m_root[node_next_id] = id + 1;
+        m_root[node_next_id] = id + 1;
 
-        return std::move(this->to_string());
+        return std::move(to_string());
     }
 
     result<std::string> add_book(const std::string& file_str, std::shared_ptr<const Book> book)
@@ -652,7 +654,7 @@ class JsonParser: public Parser
             return book->get_book_id();
         };
 
-        return std::move(this->add_node(file_str, "books", "next_book_id", book_filler));
+        return std::move(add_node(file_str, "books", "next_book_id", book_filler));
     }
 
     result<std::string> add_author(const std::string& file_str, std::shared_ptr<const Author> author)
@@ -664,23 +666,23 @@ class JsonParser: public Parser
             return author->get_author_id();
         };
 
-        return std::move(this->add_node(file_str, "authors", "next_author_id", author_filler));
+        return std::move(add_node(file_str, "authors", "next_author_id", author_filler));
     }
 
     result<std::string> change_node_by_id(const std::string& file_str, const std::string& node_name, int id, std::function<void(Json::Value&)> node_changer)
     {
-        if (!this->m_root.isMember(node_name))
+        if (!m_root.isMember(node_name))
         {
             return result_code::PARSER_ERROR;
         }
 
-        if (!this->m_root[node_name].isArray())
+        if (!m_root[node_name].isArray())
         {
             return result_code::PARSER_ERROR;
         }
 
         bool changed = false;
-        for (auto& node : this->m_root[node_name])
+        for (auto& node : m_root[node_name])
         {
             if (!node.isMember("id"))
             {
@@ -707,7 +709,7 @@ class JsonParser: public Parser
             return result_code::PARSER_ERROR;
         }
 
-        return std::move(this->to_string());
+        return std::move(to_string());
     }
 
     result<std::string> change_book(const std::string& file_str, std::shared_ptr<const Book> book)
@@ -718,7 +720,7 @@ class JsonParser: public Parser
                                 node["author_id"] = book->get_author_id();
                             };
 
-        return std::move(this->change_node_by_id(file_str, "books", book->get_book_id(), book_changer));
+        return std::move(change_node_by_id(file_str, "books", book->get_book_id(), book_changer));
     }
 
     result<std::string> change_author(const std::string& file_str, std::shared_ptr<const Author> author)
@@ -728,17 +730,17 @@ class JsonParser: public Parser
                                 node["name"] = author->get_name();
                             };
 
-        return std::move(this->change_node_by_id(file_str, "authors", author->get_author_id(), author_changer));
+        return std::move(change_node_by_id(file_str, "authors", author->get_author_id(), author_changer));
     }
 
     result<std::string> delete_node_by_id(const std::string& file_str, int id, const std::string& node_name)
     {
-        if (!this->m_root.isMember(node_name))
+        if (!m_root.isMember(node_name))
         {
             return result_code::PARSER_ERROR;
         }
 
-        if (!this->m_root[node_name].isArray())
+        if (!m_root[node_name].isArray())
         {
             return result_code::PARSER_ERROR;
         }
@@ -747,7 +749,7 @@ class JsonParser: public Parser
 
         Json::Value new_nodes;
 
-        for (auto& node : this->m_root[node_name])
+        for (auto& node : m_root[node_name])
         {
             if (!node.isMember("id"))
             {
@@ -769,19 +771,19 @@ class JsonParser: public Parser
             new_nodes.append(node);
         }
 
-        this->m_root[node_name] = std::move(new_nodes);
+        m_root[node_name] = std::move(new_nodes);
 
-        return std::move(this->to_string());
+        return std::move(to_string());
     }
 
     result<std::string> delete_book(const std::string& file_str, int book_id)
     {
-        return std::move(this->delete_node_by_id(file_str, book_id, "books"));
+        return std::move(delete_node_by_id(file_str, book_id, "books"));
     }
 
     result<std::string> delete_author(const std::string& file_str, int author_id)
     {
-        return std::move(this->delete_node_by_id(file_str, author_id, "authors"));
+        return std::move(delete_node_by_id(file_str, author_id, "authors"));
     }
 
     private:
@@ -799,37 +801,37 @@ class FileStorage: public Storage
 
     result<std::string> get_string_from_file()
     {
-        std::ifstream file(this->m_storage_path);
-        std::stringstream buffer;
+        std::ifstream file(m_storage_path);
 
         if (file.is_open())
         {
-            buffer << file.rdbuf();
-            file.close();
+            std::string str((std::istreambuf_iterator<char>(file)),
+                 std::istreambuf_iterator<char>());
+            return std::move(str);
         }
         else
         {
-            std::ifstream file_tmp(this->m_storage_path + ".tmp");
+            std::ifstream file_tmp(m_storage_path + ".tmp");
 
             if (!file_tmp.is_open())
             {
                 return result_code::OPEN_FILE_ERROR;
             }
 
-            buffer << file_tmp.rdbuf();
-            file_tmp.close();
+            std::string str((std::istreambuf_iterator<char>(file_tmp)),
+                 std::istreambuf_iterator<char>());
 
-            bool rename_status = std::rename((this->m_storage_path + ".tmp").c_str(), this->m_storage_path.c_str());
+            bool rename_status = std::rename((m_storage_path + ".tmp").c_str(), m_storage_path.c_str());
 
             assert(!rename_status);
+            
+            return std::move(str);
         }
-
-        return buffer.str();
     }
 
     result_code make_file(const std::string& str_data, const std::string& postfix="")
     {
-        std::ofstream file(this->m_storage_path + postfix);
+        std::ofstream file(m_storage_path + postfix);
 
        if (!file.is_open())
        {
@@ -846,14 +848,14 @@ class FileStorage: public Storage
     {
         std::string tmp_postfix = ".tmp";
 
-        result_code make_file_res = this->make_file(str_data, tmp_postfix);
+        result_code make_file_res = make_file(str_data, tmp_postfix);
 
         if (make_file_res != result_code::OK)
         {
         	return make_file_res;
         }
 
-        bool rename_status = std::rename((this->m_storage_path + tmp_postfix).c_str(), this->m_storage_path.c_str());
+        bool rename_status = std::rename((m_storage_path + tmp_postfix).c_str(), m_storage_path.c_str());
 
         assert(!rename_status);
 
@@ -862,8 +864,8 @@ class FileStorage: public Storage
 
     storage_data make_tmpl_file()
     {
-    	std::string file_tmpl = this->pm_parser->set_empty_tmpl(); //получаем паустой шаблон и заполняем его в парсер
-    	result_code tmpl_file_res = this->make_file(file_tmpl); //записываем его в файл, без tmp, т.к. файл уже битый
+    	std::string file_tmpl = pm_parser->set_empty_tmpl(); //получаем паустой шаблон и заполняем его в парсер
+    	result_code tmpl_file_res = make_file(file_tmpl); //записываем его в файл, без tmp, т.к. файл уже битый
     	assert(tmpl_file_res == result_code::OK);//если не вышло записать, то брасаем ошибку
     	storage_data empty_data {1,1, {}, {}};
     	return std::move(empty_data);//возвращаем пустую либу
@@ -871,7 +873,7 @@ class FileStorage: public Storage
 
     storage_data get_storage()
     {
-        result<std::string> get_file_res = this->get_string_from_file(); //пытаемся получить файл
+        result<std::string> get_file_res = get_string_from_file(); //пытаемся получить файл
 
         if (get_file_res.m_code != result_code::OK) //если не вышло
         {
@@ -892,7 +894,7 @@ class FileStorage: public Storage
 
     result_code store(std::function<result<std::string>(std::string&)> parser)
     {
-    	result<std::string> res_get_file = this->get_string_from_file();
+    	result<std::string> res_get_file = get_string_from_file();
     	if (res_get_file.m_code != result_code::OK)
     	{
     		return res_get_file.m_code;
@@ -905,61 +907,61 @@ class FileStorage: public Storage
     		return res_new_data.m_code;
     	}
 
-    	return this->set_data_to_file(res_new_data.m_object);
+    	return set_data_to_file(res_new_data.m_object);
     }
 
     result_code add_book(std::shared_ptr<const Book> book)
     {
     	std::function<result<std::string>(std::string&)> l_add_book = [this, book]
 															   (std::string& str_file) -> result<std::string>
-															   {return this->pm_parser->add_book(str_file, book);};
+															   {return pm_parser->add_book(str_file, book);};
 
-    	return this->store(l_add_book);
+    	return store(l_add_book);
     }
 
     result_code add_author(std::shared_ptr<const Author> author)
     {
         std::function<result<std::string>(std::string&)> l_add_author = [this, author]
 																 (std::string& str_file) -> result<std::string>
-																 {return this->pm_parser->add_author(str_file, author);};
+																 {return pm_parser->add_author(str_file, author);};
 
-        return this->store(l_add_author);
+        return store(l_add_author);
     }
 
     result_code change_book(std::shared_ptr<const Book> book)
     {
         std::function<result<std::string>(std::string&)> l_change_book = [this, book]
 																 (std::string& str_file) -> result<std::string>
-																 {return this->pm_parser->change_book(str_file, book);};
+																 {return pm_parser->change_book(str_file, book);};
 
-        return this->store(l_change_book);
+        return store(l_change_book);
     }
 
     result_code change_author(std::shared_ptr<const Author> author)
     {
         std::function<result<std::string>(std::string&)> l_change_author = [this, author]
 																  (std::string& str_file) -> result<std::string>
-																  {return this->pm_parser->change_author(str_file, author);};
+																  {return pm_parser->change_author(str_file, author);};
 
-        return this->store(l_change_author);
+        return store(l_change_author);
     }
 
     result_code delete_book(int book_id)
     {
         std::function<result<std::string>(std::string&)> l_delete_book = [this, book_id]
 																  (std::string& str_file) -> result<std::string>
-																  {return this->pm_parser->delete_book(str_file, book_id);};
+																  {return pm_parser->delete_book(str_file, book_id);};
 
-        return this->store(l_delete_book);
+        return store(l_delete_book);
     }
 
     result_code delete_author(int author_id)
     {
         std::function<result<std::string>(std::string&)> l_delete_author = [this, author_id]
 																	(std::string& str_file) -> result<std::string>
-																	{return this->pm_parser->delete_author(str_file, author_id);};
+																	{return pm_parser->delete_author(str_file, author_id);};
 
-        return this->store(l_delete_author);
+        return store(l_delete_author);
     }
 
 private:
@@ -976,8 +978,8 @@ class Library
     {
         auto gotten_storage = pm_storage->get_storage();
 
-        this->m_next_book_id = gotten_storage.m_next_book_id;
-        this->m_next_author_id = gotten_storage.m_next_author_id;
+        m_next_book_id = gotten_storage.m_next_book_id;
+        m_next_author_id = gotten_storage.m_next_author_id;
 
         for (auto author : gotten_storage.m_author_list)
         {
@@ -1296,6 +1298,8 @@ class Server
         m_commands["delete_book"] = server_command::DELETE_BOOK;
         m_commands["get_all_author_books"] = server_command::GET_ALL_AUTHOR_BOOKS;
     }
+    
+    virtual ~Server() = default;
 
     virtual void init_socket(int port) = 0;
 
@@ -1313,7 +1317,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no name field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto author_name_json = data["name"];
@@ -1322,7 +1326,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"name is not string"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 
@@ -1333,12 +1337,12 @@ class Server
 			Json::Value data;
 			data["id"] = res.m_object;
 
-			return std::move(this->make_resp(data, ServerStatus::ok()));
+			return std::move(make_resp(data, ServerStatus::ok()));
 		}
 		else
 		{
 			std::cout<<"lib error"<<std::endl;
-			return std::move(this->error_return(ServerStatus::lib_error()));
+			return std::move(error_return(ServerStatus::lib_error()));
 		}
 	}
 
@@ -1348,7 +1352,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no name field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto author_id_json = data["id"];
@@ -1357,7 +1361,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"name is not string"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto res = pm_lib->get_author_by_id(author_id_json.asInt());
@@ -1368,12 +1372,12 @@ class Server
 			data["id"] = res.m_object->get_author_id();
 			data["name"] = res.m_object->get_name();
 
-			return std::move(this->make_resp(data, ServerStatus::ok()));
+			return std::move(make_resp(data, ServerStatus::ok()));
 		}
 		else
 		{
 			std::cout<<"lib error"<<std::endl;
-			return std::move(this->error_return(ServerStatus::lib_error()));
+			return std::move(error_return(ServerStatus::lib_error()));
 		}
 	}
 
@@ -1383,7 +1387,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no name field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto author_name_json = data["name"];
@@ -1392,14 +1396,14 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"name is not string"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		if (!data.isMember("id"))
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no name field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto author_id_json = data["id"];
@@ -1408,7 +1412,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"name is not string"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		result<int> res = pm_lib->change_author(std::unique_ptr<Author>(new Author(author_id_json.asInt(), author_name_json.asString())));
@@ -1418,12 +1422,12 @@ class Server
 			Json::Value data;
 			data["id"] = res.m_object;
 
-			return std::move(this->make_resp(data, ServerStatus::ok()));
+			return std::move(make_resp(data, ServerStatus::ok()));
 		}
 		else
 		{
 			std::cout<<"lib error"<<std::endl;
-			return std::move(this->error_return(ServerStatus::lib_error()));
+			return std::move(error_return(ServerStatus::lib_error()));
 		}
 	}
 
@@ -1433,7 +1437,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no name field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto author_id_json = data["id"];
@@ -1442,7 +1446,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"name is not string"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		result_code res = pm_lib->delete_author(author_id_json.asInt());
@@ -1452,12 +1456,12 @@ class Server
 			Json::Value data;
 			data["id"] = author_id_json.asInt();
 
-			return std::move(this->make_resp(data, ServerStatus::ok()));
+			return std::move(make_resp(data, ServerStatus::ok()));
 		}
 		else
 		{
 			std::cout<<"lib error"<<std::endl;
-			return std::move(this->error_return(ServerStatus::lib_error()));
+			return std::move(error_return(ServerStatus::lib_error()));
 		}
 	}
 
@@ -1467,7 +1471,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no author id field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto author_id_json = data["author_id"];
@@ -1476,14 +1480,14 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"author id is not int"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		if (!data.isMember("title"))
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no title field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto title_json = data["title"];
@@ -1492,7 +1496,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"title is not string"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto author_res = pm_lib->get_author_by_id(author_id_json.asInt());
@@ -1500,7 +1504,7 @@ class Server
         if (author_res.m_code != result_code::OK)
 		{
 			std::cout<<"lib error get author"<<std::endl;
-			return std::move(this->error_return(ServerStatus::lib_error()));
+			return std::move(error_return(ServerStatus::lib_error()));
 		}
 
 		auto res = pm_lib->add_book(std::unique_ptr<Book>(new Book(1, title_json.asString(), author_res.m_object)));
@@ -1510,13 +1514,13 @@ class Server
 			Json::Value data;
 			data["id"] = res.m_object;
 
-			return std::move(this->make_resp(data, ServerStatus::ok()));
+			return std::move(make_resp(data, ServerStatus::ok()));
 		}
 		else
 		{
 			std::cout<<static_cast<std::underlying_type<result_code>::type>(res.m_code)<<std::endl;
 			std::cout<<"lib error"<<std::endl;
-			return std::move(this->error_return(ServerStatus::lib_error()));
+			return std::move(error_return(ServerStatus::lib_error()));
 		}
 	}
 
@@ -1526,7 +1530,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no id field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto book_id_json = data["id"];
@@ -1535,7 +1539,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"id is not int"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto res = pm_lib->get_book_by_id(book_id_json.asInt());
@@ -1547,12 +1551,12 @@ class Server
 			data["title"] = res.m_object->get_book_title();
 			data["author_id"] = res.m_object->get_author_id();
 
-			return std::move(this->make_resp(data, ServerStatus::ok()));
+			return std::move(make_resp(data, ServerStatus::ok()));
 		}
 		else
 		{
 			std::cout<<"lib error"<<std::endl;
-			return std::move(this->error_return(ServerStatus::lib_error()));
+			return std::move(error_return(ServerStatus::lib_error()));
 		}
 	}
 
@@ -1562,7 +1566,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no book id field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto book_id_json = data["id"];
@@ -1571,14 +1575,14 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"book id is not int"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		if (!data.isMember("author_id"))
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no author id field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto author_id_json = data["author_id"];
@@ -1587,14 +1591,14 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"author id is not int"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		if (!data.isMember("title"))
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no title field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto title_json = data["title"];
@@ -1603,7 +1607,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"title is not string"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto author_res = pm_lib->get_author_by_id(author_id_json.asInt());
@@ -1611,7 +1615,7 @@ class Server
         if (author_res.m_code != result_code::OK)
 		{
 			std::cout<<"lib error get author"<<std::endl;
-			return std::move(this->error_return(ServerStatus::lib_error()));
+			return std::move(error_return(ServerStatus::lib_error()));
 		}
 
 		auto res = pm_lib->change_book(std::unique_ptr<Book>(new Book(book_id_json.asInt(), title_json.asString(), author_res.m_object)));
@@ -1621,13 +1625,13 @@ class Server
 			Json::Value data;
 			data["id"] = res.m_object;
 
-			return std::move(this->make_resp(data, ServerStatus::ok()));
+			return std::move(make_resp(data, ServerStatus::ok()));
 		}
 		else
 		{
 			std::cout<<static_cast<std::underlying_type<result_code>::type>(res.m_code)<<std::endl;
 			std::cout<<"lib error"<<std::endl;
-			return std::move(this->error_return(ServerStatus::lib_error()));
+			return std::move(error_return(ServerStatus::lib_error()));
 		}
 	}
 
@@ -1637,7 +1641,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no id field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto book_id_json = data["id"];
@@ -1646,7 +1650,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"id is not int"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		result_code res = pm_lib->delete_book(book_id_json.asInt());
@@ -1656,12 +1660,12 @@ class Server
 			Json::Value data;
 			data["id"] = book_id_json.asInt();
 
-			return std::move(this->make_resp(data, ServerStatus::ok()));
+			return std::move(make_resp(data, ServerStatus::ok()));
 		}
 		else
 		{
 			std::cout<<"lib error"<<std::endl;
-			return std::move(this->error_return(ServerStatus::lib_error()));
+			return std::move(error_return(ServerStatus::lib_error()));
 		}
 	}
 
@@ -1671,7 +1675,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"no name field"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto author_id_json = data["id"];
@@ -1680,7 +1684,7 @@ class Server
 		{
 			std::string error = ServerStatus::parser_error();
 			std::cout<<"name is not string"<<std::endl;
-			return std::move(this->error_return(error));
+			return std::move(error_return(error));
 		}
 
 		auto res = pm_lib->get_authors_books(author_id_json.asInt());
@@ -1696,12 +1700,12 @@ class Server
 				book_json["author_id"] = book->get_author_id();
 				data["books"].append(book_json);
 			}
-			return std::move(this->make_resp(data, ServerStatus::ok()));
+			return std::move(make_resp(data, ServerStatus::ok()));
 		}
 		else
 		{
 			std::cout<<"lib error"<<std::endl;
-			return std::move(this->error_return(ServerStatus::lib_error()));
+			return std::move(error_return(ServerStatus::lib_error()));
 		}
 	}
 
@@ -1711,7 +1715,7 @@ class Server
 		root["status"] = status;
 		root["data"] = data;
 
-		return std::move(this->json_to_string(root) + "\v");
+		return std::move(json_to_string(root) + "\v");
 	}
 
 	std::string error_return(const std::string& error)
@@ -1719,7 +1723,7 @@ class Server
 		Json::Value root;
 		root["status"] = error;
 
-		return std::move(this->json_to_string(root) + "\v");
+		return std::move(json_to_string(root) + "\v");
 	}
 
     std::string proc_msg(const std::string& msg)
@@ -1730,7 +1734,7 @@ class Server
         if (!reader.parse(msg.c_str(), root))
         {
         	std::string error = ServerStatus::parser_error();
-        	std::string error_msg = this->error_return(error);
+        	std::string error_msg = error_return(error);
         	std::cout<<"parse error"<<std::endl;
         	return std::move(error_msg);
        	}
@@ -1738,7 +1742,7 @@ class Server
        	if (!root.isMember("command"))
        	{
        		std::string error = ServerStatus::parser_error();
-        	std::string error_msg = this->error_return(error);
+        	std::string error_msg = error_return(error);
         	std::cout<<"command not found"<<std::endl;
         	return std::move(error_msg);
        	}
@@ -1748,7 +1752,7 @@ class Server
        	if (!command_json.isString())
        	{
        		std::string error = ServerStatus::parser_error();
-        	std::string error_msg = this->error_return(error);
+        	std::string error_msg = error_return(error);
         	std::cout<<"command is not string"<<std::endl;
         	return std::move(error_msg);
        	}
@@ -1757,7 +1761,7 @@ class Server
        	if (command == m_commands.end())
        	{
        		std::string error = ServerStatus::unknown_command();
-        	std::string error_msg = this->error_return(error);
+        	std::string error_msg = error_return(error);
         	std::cout<<"unknown command"<<std::endl;
         	return std::move(error_msg);
        	}
@@ -1765,7 +1769,7 @@ class Server
        	if (!root.isMember("data"))
 		{
 			std::string error = ServerStatus::parser_error();
-			std::string error_msg = this->error_return(error);
+			std::string error_msg = error_return(error);
 			std::cout<<"no data field"<<std::endl;
 			return std::move(error_msg);
 		}
@@ -1775,7 +1779,7 @@ class Server
 		if (!data.isObject())
 		{
 			std::string error = ServerStatus::parser_error();
-			std::string error_msg = this->error_return(error);
+			std::string error_msg = error_return(error);
 			std::cout<<"data is not dict"<<std::endl;
 			return std::move(error_msg);
 		}
@@ -1785,36 +1789,36 @@ class Server
        	switch(command->second)
        	{
 			case server_command::ADD_AUTHOR:
-				resp = this->add_author(data);
+				resp = add_author(data);
 				break;
 			case server_command::GET_AUTHOR_BY_ID:
-			    resp = this->get_author(data);
+			    resp = get_author(data);
 				break;
 			case server_command::CHANGE_AUTHOR:
-				resp = this->change_author(data);
+				resp = change_author(data);
 				break;
 			case server_command::DELETE_AUTHOR_BY_ID:
-				resp = this->delete_author(data);
+				resp = delete_author(data);
 				break;
 			case server_command::ADD_BOOK:
-				resp = this->add_book(data);
+				resp = add_book(data);
 				break;
 			case server_command::GET_BOOK:
-				resp = this->get_book(data);
+				resp = get_book(data);
 				break;
 			case server_command::CHANGE_BOOK:
-				resp = this->change_book(data);
+				resp = change_book(data);
 				break;
 			case server_command::DELETE_BOOK:
-				resp = this->delete_book(data);
+				resp = delete_book(data);
 				break;
 			case server_command::GET_ALL_AUTHOR_BOOKS:
-				resp = this->get_all_author_books(data);
+				resp = get_all_author_books(data);
 				break;
             default:
                 std::string error = ServerStatus::server_error();
                 std::cout<<"SERVER ERROR"<<std::endl;
-                resp = this->error_return(error);
+                resp = error_return(error);
        	}
 
        	return std::move(resp);
@@ -1885,7 +1889,7 @@ class ServerTCP: public Server
             {
                 if (buffer[i] == '\v')
                 {
-                    std::string resp = this->proc_msg(msg);
+                    std::string resp = proc_msg(msg);
                     std::cout<<"resp:"<<std::endl<<resp<<std::endl;
                     send(client_socket, resp.c_str(), resp.length(), 0);
                     msg = "";
@@ -1896,6 +1900,8 @@ class ServerTCP: public Server
             }
         }
     }
+    
+    ~ServerTCP() = default;
 };
 
 class ServerUDP: public Server
@@ -1927,10 +1933,12 @@ class ServerUDP: public Server
     void run()
     {
         sockaddr_in client_addr;
+        memset(&client_addr, 0, sizeof(client_addr));
+
         int addr_len = sizeof(m_address);
 
         int readval = 0;
-        socklen_t len_from = 0;
+        socklen_t len_from = sizeof(client_addr);
         int buffer_size = 1024;
         char buffer[1024]{0};
         std::string msg = "";
@@ -1938,18 +1946,19 @@ class ServerUDP: public Server
         while (true)
         {
             readval = recvfrom(m_server_fd, (char *)buffer, buffer_size, MSG_WAITALL, (sockaddr *)&client_addr, &len_from);
+            std::cout << "port = " << ntohs(client_addr.sin_port) << std::endl;
             for (int i=0; i<readval; i++)
             {	
             	std::cout<<buffer[i];
                 if (buffer[i] == '\v')
                 {
-                    std::string resp = this->proc_msg(msg);
+                    std::string resp = proc_msg(msg);
                     if (resp.length()>254)
                     {
                     	resp = "too large\v";
                     }
                     std::cout<<resp<<std::endl;
-                    sendto(m_server_fd, resp.c_str(), resp.length(), MSG_CONFIRM, (sockaddr *)&client_addr, sizeof(client_addr));
+                    sendto(m_server_fd, resp.c_str(), resp.length(), 0, (sockaddr *)&client_addr, sizeof(client_addr));
                     std::cout<<std::strerror(errno)<<std::endl;
                     msg = "";
                     continue;
@@ -1959,13 +1968,15 @@ class ServerUDP: public Server
             }
         }
     }
+    
+    ~ServerUDP() = default;
 };
 
 int main()
 {
     //Library lib(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")));
     std::unique_ptr<Library> lib {new Library(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")))};
-    ServerUDP serv = ServerUDP(std::move(lib));
+    ServerUDP serv(std::move(lib));
     serv.init_socket(8080);
     serv.run();
     //auto book = lib.get_book_by_id(1).m_object;

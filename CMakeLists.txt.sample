@@ -1,0 +1,105 @@
+cmake_minimum_required(VERSION 2.8.12)
+
+option(DETERMINISTIC_BUILD "Deterministic static build" ON)
+option(WITH_APPS "Build and link test apps" OFF)
+
+foreach(DIR ${CMAKE_SOURCE_DIR} ${CMAKE_PREFIX_PATH} /usr/ATE)
+	list(APPEND CMAKE_MODULE_PATH ${DIR}/CMake)
+endforeach()
+include(ProductInfo)
+
+project(MultiNodeConference)
+
+set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)
+set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+if(DETERMINISTIC_BUILD)
+	set(CMAKE_CXX_ARCHIVE_CREATE "ar Dcqs <TARGET> <LINK_FLAGS> <OBJECTS>")
+	set(CMAKE_C_ARCHIVE_CREATE "ar Dcqs <TARGET> <LINK_FLAGS> <OBJECTS>")
+	set(CMAKE_RANLIB "file")
+endif()
+
+file(GLOB_RECURSE MNC_SOURCES Source/*.cpp)
+list(REMOVE_ITEM MNC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Source/MultiNodeConference/NodeApplication.cpp)
+
+find_package(ATE REQUIRED BaseLogic Common)
+find_package(PSC REQUIRED)
+find_package(MCU REQUIRED)
+find_package(IntelMediaSDK REQUIRED)
+find_package(Freetype REQUIRED)
+find_package(GTest)
+
+add_library(MNC ${MNC_SOURCES})
+add_product_info(TARGET MNC)
+target_compile_options(MNC PRIVATE -O2 -g3)
+target_include_directories(MNC PUBLIC Source)
+target_include_directories(MNC PRIVATE ${IntelMediaSDK_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS})
+target_link_libraries(MNC MCU ATE PSC ${IntelMediaSDK_LIBRARIES} ${FREETYPE_LIBRARIES})
+if(DETERMINISTIC_BUILD)
+	target_compile_definitions(MNC PRIVATE DETERMINISTIC_BUILD)
+endif()
+if(DEFINED BUILD_NAME)
+    target_compile_definitions(MNC PRIVATE PRODUCT_INFO_BUILD_NAME="${BUILD_NAME}")
+    message(STATUS "Build name was defined manualy: '${BUILD_NAME}'")
+elseif(DEFINED ENV{BUILD_NAME})
+    target_compile_definitions(MNC PRIVATE PRODUCT_INFO_BUILD_NAME="$ENV{BUILD_NAME}")
+    message(STATUS "Build name was defined as environment variable: '$ENV{BUILD_NAME}'")
+endif()
+
+configure_file(mnc-config-cmake.in ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/mnc-config.cmake @ONLY)
+install(TARGETS MNC EXPORT MNC DESTINATION lib)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/mnc-config.cmake DESTINATION lib/cmake/MNC)
+install(DIRECTORY Source/ DESTINATION include FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+
+add_executable(MNC_TextTest ${CMAKE_SOURCE_DIR}/Test/TextTest.cpp)
+target_compile_options(MNC_TextTest PRIVATE -O2 -g3)
+target_link_libraries(MNC_TextTest MNC)
+
+add_executable(MNC_Smoke ${CMAKE_SOURCE_DIR}/Test/Smoke.cpp)
+target_compile_options(MNC_Smoke PRIVATE -O2 -g3)
+target_link_libraries(MNC_Smoke MNC)
+
+if(WITH_APPS)
+	add_executable(MNC_Node Source/MultiNodeConference/NodeApplication.cpp)
+	target_link_libraries(MNC_Node MNC)
+	set_target_properties(MNC_Node PROPERTIES OUTPUT_NAME mnc.node.r64)
+	install(TARGETS MNC_Node EXPORT MNC_Node DESTINATION bin)
+
+	add_executable(MNC_Simple Test/Simple.cpp)
+	target_link_libraries(MNC_Simple MNC)
+
+	add_executable(MNC_SingleNode Test/SingleNode.cpp)
+	target_link_libraries(MNC_SingleNode MNC)
+
+	add_executable(MNC_Latency Test/Latency.cpp)
+	target_link_libraries(MNC_Latency MNC)
+
+	add_executable(MNC_Multicast Test/Multicast.cpp)
+	target_link_libraries(MNC_Multicast MNC)
+
+	add_executable(MNC_Scrolling Test/ScrollingTest.cpp)
+	target_link_libraries(MNC_Scrolling MNC)
+
+	add_executable(MNC_PreviewUpdateConference Test/PreviewUpdateConferenceTest.cpp)
+	target_link_libraries(MNC_PreviewUpdateConference MNC)
+
+#	add_executable(MNC_Timestamp Test/Timestamp.cpp)
+#	target_link_libraries(MNC_Timestamp MNC)
+
+#	add_executable(MNC_LabelsTest Test/LabelsTest.cpp)
+#	target_link_libraries(MNC_LabelsTest MNC)
+
+#	add_executable(MNC_ShowMessage Test/Message.cpp)
+#	target_link_libraries(MNC_ShowMessage MNC)
+
+	if (GTEST_FOUND)
+		add_executable(MNC_LayoutTest Test/LayoutTest.cpp)
+		target_link_libraries(MNC_LayoutTest MNC GTest::GTest)
+
+		add_executable(MNC_GenericSlotTypes Test/GenericSlotTypes.cpp)
+		target_link_libraries(MNC_GenericSlotTypes MNC GTest::GTest GTest::Main)
+
+		add_executable(MNC_MulticastTest Test/MulticastTest.cpp)
+		target_link_libraries(MNC_MulticastTest MNC GTest::GTest)
+	endif()
+endif()
