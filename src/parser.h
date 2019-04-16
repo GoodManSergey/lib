@@ -1,3 +1,11 @@
+#pragma once
+#include"book.h"
+#include"author.h"
+#include"string.h"
+#include"result.h"
+#include"memory"
+#include"storage_data.h"
+
 class Parser
 {
     public:

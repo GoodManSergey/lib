@@ -1,3 +1,9 @@
+#pragma once
+#include"author.h"
+#include"book.h"
+#include<vector>
+#include<memory>
+
 struct storage_data
 {
     storage_data(int next_book_id, int next_author_id, std::vector<std::shared_ptr<Author>> author_list, std::vector<std::shared_ptr<Book>> book_list):

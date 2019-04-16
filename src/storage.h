@@ -1,3 +1,10 @@
+#pragma once
+#include"result_code.h"
+#include"book.h"
+#include"author.h"
+#include"storage_data.h"
+#include"memory"
+
 class Storage
 {
     public:
