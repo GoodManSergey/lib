@@ -1,10 +1,18 @@
-#include"author.h"
-#include"book.h"
-#include"xml_parser.h"
+#include"storage.h"
+#include"library.h"
+#include"server_tcp.h"
+#include"file_storage.h"
+#include"parser.h"
 #include"json_parser.h"
+#include<memory>
 
 
 int main()
 {
-	return 0;
+    std::unique_ptr<Library> lib {new Library(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new JsonParser()), "FileStore.json")))};
+    ServerTCP serv(std::move(lib));
+    serv.init_socket(8080);
+    serv.run();
+    
+    return 0;
 }
