@@ -1,0 +1,16 @@
+#pragma once
+
+enum class result_code: int
+{
+    OK,
+    BOOK_NOT_FOUND,
+    AUTHOR_NOT_FOUND,
+    INVALID_INPUT_PARAMS,
+    INTERNAL_ERROR,
+    AUTHOR_NOT_PRESENT,
+    BOOK_NOT_PRESENT,
+    STORAGE_ERROR,
+    AUTHOR_HAS_BOOKS,
+    PARSER_ERROR,
+    OPEN_FILE_ERROR
+};

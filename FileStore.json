@@ -1,1 +1,1 @@
-{"authors":[{"id":1,"name":"The new author"}],"books":[{"author_id":1,"id":1,"title":"The new book"}],"next_author_id":3,"next_book_id":3}
+{"authors":[{"id":1,"name":"new author name"},{"id":4,"name":"NEW AYTHOR"},{"id":6,"name":"Pushkin"},{"id":7,"name":"Pushkin"},{"id":8,"name":"L"}],"books":[{"author_id":1,"id":1,"title":"The new book"},{"author_id":1,"id":3,"title":"book"},{"author_id":1,"id":4,"title":"book"},{"author_id":6,"id":5,"title":"Book"}],"next_author_id":9,"next_book_id":6}
