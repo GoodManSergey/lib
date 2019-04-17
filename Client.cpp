@@ -251,7 +251,7 @@ class ClientUDP: public Client
 
 int main()
 {
-    ClientUDP client;
+    ClientTCP client;
     
     client.init(8080, "127.0.0.1");
     

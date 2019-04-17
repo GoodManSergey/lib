@@ -47,8 +47,11 @@ void ServerTCP::run()
 
         while (true)
         {
-        	sleep(0.1);
             readval = read(client_socket, buffer, buffer_size);
+            if (readval == 0)
+            {
+                sleep(0.1);
+            }
             
             for (int i=0; i<readval; i++)
             {   
