@@ -2,7 +2,7 @@
 
 
 Server::Server(std::unique_ptr<Library> lib):
-        pm_lib(std::move(lib))
+        pm_lib(std::move(lib)), m_work(true)
     {
         m_commands["add_author"] = server_command::ADD_AUTHOR;
         m_commands["get_author_by_id"] = server_command::GET_AUTHOR_BY_ID;
@@ -535,3 +535,10 @@ std::string Server::proc_msg(const std::string& msg)
 
        	return std::move(resp);
     };
+
+void Server::stop()
+{
+    m_work = false;
+    close(m_server_fd);
+}
+

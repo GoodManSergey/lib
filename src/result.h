@@ -13,6 +13,18 @@ struct result
         m_object(object)
     {}
 
+    operator bool()
+    {
+        if (m_code == result_code::OK)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     result_code m_code;
     T m_object;
 };

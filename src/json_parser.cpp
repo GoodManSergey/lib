@@ -151,7 +151,7 @@ result<storage_data> JsonParser::get_storage(const std::string& file_str)
         return std::move(data);
     };
 
-result<std::string> JsonParser::add_node(const std::string& file_str, const std::string& node_name, const std::string node_next_id, std::function<int(Json::Value&)> node_filler)
+result<std::string> JsonParser::add_node(const std::string& node_name, const std::string& node_next_id, std::function<int(Json::Value&)> node_filler)
     {
         if (!m_root.isMember(node_name))
         {
@@ -185,7 +185,7 @@ result<std::string> JsonParser::add_node(const std::string& file_str, const std:
         return std::move(to_string());
     };
 
-result<std::string> JsonParser::add_book(const std::string& file_str, std::shared_ptr<const Book> book)
+result<std::string> JsonParser::add_book(std::shared_ptr<const Book> book)
     {
         auto book_filler = [book](Json::Value& node) -> int
         {
@@ -195,10 +195,10 @@ result<std::string> JsonParser::add_book(const std::string& file_str, std::share
             return book->get_book_id();
         };
 
-        return std::move(add_node(file_str, "books", "next_book_id", book_filler));
+        return std::move(add_node("books", "next_book_id", book_filler));
     };
 
-result<std::string> JsonParser::add_author(const std::string& file_str, std::shared_ptr<const Author> author)
+result<std::string> JsonParser::add_author(std::shared_ptr<const Author> author)
     {
         auto author_filler = [author](Json::Value& node) -> int
         {
@@ -207,10 +207,10 @@ result<std::string> JsonParser::add_author(const std::string& file_str, std::sha
             return author->get_author_id();
         };
 
-        return std::move(add_node(file_str, "authors", "next_author_id", author_filler));
+        return std::move(add_node("authors", "next_author_id", author_filler));
     };
 
-result<std::string> JsonParser::change_node_by_id(const std::string& file_str, const std::string& node_name, int id, std::function<void(Json::Value&)> node_changer)
+result<std::string> JsonParser::change_node_by_id(const std::string& node_name, int id, std::function<void(Json::Value&)> node_changer)
     {
         if (!m_root.isMember(node_name))
         {
@@ -253,7 +253,7 @@ result<std::string> JsonParser::change_node_by_id(const std::string& file_str, c
         return std::move(to_string());
     };
 
-result<std::string> JsonParser::change_book(const std::string& file_str, std::shared_ptr<const Book> book)
+result<std::string> JsonParser::change_book(std::shared_ptr<const Book> book)
     {
         auto book_changer = [book](Json::Value& node) -> void
                             {
@@ -261,20 +261,20 @@ result<std::string> JsonParser::change_book(const std::string& file_str, std::sh
                                 node["author_id"] = book->get_author_id();
                             };
 
-        return std::move(change_node_by_id(file_str, "books", book->get_book_id(), book_changer));
+        return std::move(change_node_by_id("books", book->get_book_id(), book_changer));
     };
 
-result<std::string> JsonParser::change_author(const std::string& file_str, std::shared_ptr<const Author> author)
+result<std::string> JsonParser::change_author(std::shared_ptr<const Author> author)
     {
         auto author_changer = [author](Json::Value& node) -> void
                             {
                                 node["name"] = author->get_name();
                             };
 
-        return std::move(change_node_by_id(file_str, "authors", author->get_author_id(), author_changer));
+        return std::move(change_node_by_id("authors", author->get_author_id(), author_changer));
     };
 
-result<std::string> JsonParser::delete_node_by_id(const std::string& file_str, int id, const std::string& node_name)
+result<std::string> JsonParser::delete_node_by_id(int id, const std::string& node_name)
     {
         if (!m_root.isMember(node_name))
         {
@@ -290,7 +290,7 @@ result<std::string> JsonParser::delete_node_by_id(const std::string& file_str, i
 
         Json::Value new_nodes;
 
-        for (auto& node : m_root[node_name])
+        for (auto&& node : m_root[node_name])
         {
             if (!node.isMember("id"))
             {
@@ -312,17 +312,22 @@ result<std::string> JsonParser::delete_node_by_id(const std::string& file_str, i
             new_nodes.append(node);
         }
 
+        if (!changed)
+        {
+            return result_code::PARSER_ERROR;
+        }
+
         m_root[node_name] = std::move(new_nodes);
 
         return std::move(to_string());
     };
 
-result<std::string> JsonParser::delete_book(const std::string& file_str, int book_id)
+result<std::string> JsonParser::delete_book(int book_id)
     {
-        return std::move(delete_node_by_id(file_str, book_id, "books"));
+        return std::move(delete_node_by_id(book_id, "books"));
     };
 
-result<std::string> JsonParser::delete_author(const std::string& file_str, int author_id)
+result<std::string> JsonParser::delete_author(int author_id)
     {
-        return std::move(delete_node_by_id(file_str, author_id, "authors"));
+        return std::move(delete_node_by_id(author_id, "authors"));
     };

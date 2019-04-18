@@ -17,7 +17,7 @@
 class FileStorage: public Storage
 {
    public:
-    FileStorage(std::unique_ptr<Parser> parser, std::string storage_path);
+    FileStorage(std::unique_ptr<Parser> parser, const std::string& storage_path);
 
     result<std::string> get_string_from_file();
 
@@ -27,21 +27,21 @@ class FileStorage: public Storage
 
     storage_data make_tmpl_file();
 
-    storage_data get_storage();
+    storage_data get_storage() override;
 
-    result_code store(std::function<result<std::string>(std::string&)> parser);
+    result_code store(const std::function<result<std::string>()>& parser);
 
-    result_code add_book(std::shared_ptr<const Book> book);
+    result_code add_book(std::shared_ptr<const Book> book) override;
 
-    result_code add_author(std::shared_ptr<const Author> author);
+    result_code add_author(std::shared_ptr<const Author> author) override;
 
-    result_code change_book(std::shared_ptr<const Book> book);
+    result_code change_book(std::shared_ptr<const Book> book) override;
     
-    result_code change_author(std::shared_ptr<const Author> author);
+    result_code change_author(std::shared_ptr<const Author> author) override;
     
-    result_code delete_book(int book_id);
+    result_code delete_book(int book_id) override;
     
-    result_code delete_author(int author_id);
+    result_code delete_author(int author_id) override;
     
 private:
     std::unique_ptr<Parser> pm_parser;

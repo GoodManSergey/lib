@@ -2,7 +2,7 @@
 
 
 ServerTCP::ServerTCP(std::unique_ptr<Library> lib):
-        Server(std::move(lib))
+        Server(std::move(lib)), m_has_connect(false)
     {};
 
 void ServerTCP::init_socket(int port)
@@ -43,14 +43,33 @@ void ServerTCP::run()
         int readval = 0;
         int buffer_size = 1024;
         char buffer[1024]{0};
-        std::string msg = "";
+        std::string msg;
 
-        while (true)
+        while (m_work)
         {
+            if (!m_has_connect)
+            {
+                if ((client_socket = accept(m_server_fd, (sockaddr*)&m_address, (socklen_t*)&addr_len)) < 0)
+                {
+                    std::cout<<"Client connect error"<<std::endl;
+                }
+                else
+                {
+                    m_has_connect = true;
+                }
+            }
             readval = read(client_socket, buffer, buffer_size);
+
+            if (readval == -1)
+            {
+                m_has_connect = false;
+                close(client_socket);
+                continue;
+            }
+
             if (readval == 0)
             {
-                sleep(0.1);
+                sleep(1);
             }
             
             for (int i=0; i<readval; i++)
@@ -68,4 +87,14 @@ void ServerTCP::run()
                 msg += buffer[i];
             }
         }
+
+        if (m_has_connect)
+        {
+            close(client_socket);
+        }
     };
+
+ServerTCP::~ServerTCP()
+{
+    stop();
+}

@@ -14,32 +14,32 @@
 class XmlParser: public Parser
 {
     public:
-    std::string set_empty_tmpl();
+    std::string set_empty_tmpl() override;
 
     std::string to_string();
 
-    result<storage_data> get_storage(const std::string& file_str);
+    result<storage_data> get_storage(const std::string& file_str) override;
 
-    result<std::string> add_node(const std::string& file_str, const std::string& nodes_path,
+    result<std::string> add_node(const std::string& nodes_path,
                                  const std::string& next_id_path, std::function<void(pugi::xml_node)> node_filler);
 
-    result<std::string> add_book(const std::string& file_str, std::shared_ptr<const Book> book);
+    result<std::string> add_book(std::shared_ptr<const Book> book) override;
 
-    result<std::string> add_author(const std::string& file_str, std::shared_ptr<const Author> author);
+    result<std::string> add_author(std::shared_ptr<const Author> author) override;
 
-    result<std::string> change_node(const std::string& file_str, const std::string& nodes_path,
+    result<std::string> change_node(const std::string& nodes_path,
                                      std::function<void(pugi::xml_node)> node_filler, std::function<bool(pugi::xml_node)> node_finder);
 
-    result<std::string> change_book(const std::string& file_str, std::shared_ptr<const Book> book);
+    result<std::string> change_book(std::shared_ptr<const Book> book) override;
 
-    result<std::string> change_author(const std::string& file_str, std::shared_ptr<const Author> author);
+    result<std::string> change_author(std::shared_ptr<const Author> author) override;
 
-    result<std::string> delete_node_by_id(const std::string& file_str, const std::string& nodes_path, int node_id);
+    result<std::string> delete_node_by_id(const std::string& nodes_path, int node_id);
 
-    result<std::string> delete_book(const std::string& file_str, int book_id);
-    result<std::string> delete_author(const std::string& file_str, int author_id);
+    result<std::string> delete_book(int book_id) override;
+    result<std::string> delete_author(int author_id) override;
     
-    ~XmlParser() = default;
+    ~XmlParser() override = default;
 
     private:
         pugi::xml_document m_doc;

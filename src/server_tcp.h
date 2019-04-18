@@ -9,11 +9,14 @@
 class ServerTCP: public Server
 {
     public:
-    ServerTCP(std::unique_ptr<Library> lib);
+    explicit ServerTCP(std::unique_ptr<Library> lib);
 
-    void init_socket(int port);
+    void init_socket(int port) override;
 
-    void run();
+    void run() override;
     
-    ~ServerTCP() = default;
+    ~ServerTCP() override;
+
+    private:
+    bool m_has_connect;
 };
