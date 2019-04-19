@@ -9,11 +9,11 @@
 class ServerUDP: public Server
 {
     public:
-    ServerUDP(std::unique_ptr<Library> lib);
+    explicit ServerUDP(std::unique_ptr<Library> lib);
 
-    void init_socket(int port);
+    void init_socket(int port) override;
 
-    void run();
+    void run() override;
 
-    ~ServerUDP() = default;
+    ~ServerUDP() override;
 };

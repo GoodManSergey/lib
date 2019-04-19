@@ -14,7 +14,12 @@ pkg_search_module(JSONCPP REQUIRED jsoncpp)
 
 #set(SOURCE_FILES Library.cpp)
 add_executable(library ${SOURCE_FILES})
+#target_compile_options(library PRIVATE -Wall -Werror -pedantic)
 target_include_directories(library PRIVATE ${JSONCPP_INCLUDE_DIRS})
 #target_include_directories(library PRIVATE ${PUGIXML_INCLUDE_DIRS})
 target_link_libraries(library ${JSONCPP_LDFLAGS})
 target_link_libraries(library pugixml)
+
+add_executable(Client ${CMAKE_SOURCE_DIR}/Client.cpp)
+target_include_directories(Client PRIVATE ${JSONCPP_INCLUDE_DIRS})
+target_link_libraries(Client ${JSONCPP_LDFLAGS})

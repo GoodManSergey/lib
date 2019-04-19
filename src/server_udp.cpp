@@ -37,7 +37,7 @@ void ServerUDP::run()
         char buffer[1024]{0};
         std::string msg = "";
 
-        while (true)
+        while (m_work)
         {
             readval = recvfrom(m_server_fd, (char *)buffer, buffer_size, MSG_WAITALL, (sockaddr *)&client_addr, &len_from);
             std::cout << "port = " << ntohs(client_addr.sin_port) << std::endl;
@@ -62,3 +62,8 @@ void ServerUDP::run()
             }
         }
     };
+
+ServerUDP::~ServerUDP()
+{
+    stop();
+}

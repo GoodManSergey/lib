@@ -11,12 +11,14 @@
 #include<vector>
 #include<netinet/in.h>
 #include<sys/socket.h>
+#include<atomic>
+#include<unistd.h>
 
 
 class Server
 {
     public:
-    Server(std::unique_ptr<Library> lib);
+    explicit Server(std::unique_ptr<Library> lib);
 
     virtual ~Server() = default;
 
@@ -50,7 +52,10 @@ class Server
 
     virtual void run() = 0;
 
+    void stop();
+
     protected:
+    std::atomic<bool> m_work;
     std::unique_ptr<Library> pm_lib;
     sockaddr_in m_address;
     int m_server_fd;
