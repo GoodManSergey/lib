@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/kovalev_s/code/learn/Client.cpp
+sys/socket.h
+-
+netinet/in.h
+-
+unistd.h
+-
+cstring
+-
+arpa/inet.h
+-
+iostream
+-
+string
+-
+assert.h
+-
+jsoncpp/json/json.h
+/home/kovalev_s/code/learn/jsoncpp/json/json.h
+thread
+-
+atomic
+-
+queue
+-
+mutex
+-
+

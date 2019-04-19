@@ -6,9 +6,17 @@
 
 #IncludeRegexTransform: 
 
+/home/kovalev_s/code/learn/src/author.cpp
+author.h
+/home/kovalev_s/code/learn/src/author.h
+
 /home/kovalev_s/code/learn/src/author.h
 string
 -
+
+/home/kovalev_s/code/learn/src/book.cpp
+book.h
+/home/kovalev_s/code/learn/src/book.h
 
 /home/kovalev_s/code/learn/src/book.h
 author.h
@@ -17,6 +25,10 @@ string
 -
 memory
 -
+
+/home/kovalev_s/code/learn/src/file_storage.cpp
+file_storage.h
+/home/kovalev_s/code/learn/src/file_storage.h
 
 /home/kovalev_s/code/learn/src/file_storage.h
 string
@@ -45,6 +57,38 @@ author.h
 /home/kovalev_s/code/learn/src/author.h
 book.h
 /home/kovalev_s/code/learn/src/book.h
+
+/home/kovalev_s/code/learn/src/json_parser.cpp
+json_parser.h
+/home/kovalev_s/code/learn/src/json_parser.h
+
+/home/kovalev_s/code/learn/src/json_parser.h
+jsoncpp/json/json.h
+-
+memory
+-
+author.h
+/home/kovalev_s/code/learn/src/author.h
+book.h
+/home/kovalev_s/code/learn/src/book.h
+vector
+-
+result.h
+/home/kovalev_s/code/learn/src/result.h
+parser.h
+/home/kovalev_s/code/learn/src/parser.h
+string
+-
+storage_data.h
+/home/kovalev_s/code/learn/src/storage_data.h
+iostream
+-
+algorithm
+-
+
+/home/kovalev_s/code/learn/src/library.cpp
+library.h
+/home/kovalev_s/code/learn/src/library.h
 
 /home/kovalev_s/code/learn/src/library.h
 result.h
@@ -108,6 +152,10 @@ result_code.h
 
 /home/kovalev_s/code/learn/src/result_code.h
 
+/home/kovalev_s/code/learn/src/server.cpp
+server.h
+/home/kovalev_s/code/learn/src/server.h
+
 /home/kovalev_s/code/learn/src/server.h
 memory
 -
@@ -160,6 +208,24 @@ sys/socket.h
 unistd.h
 -
 
+/home/kovalev_s/code/learn/src/server_udp.cpp
+server_udp.h
+/home/kovalev_s/code/learn/src/server_udp.h
+
+/home/kovalev_s/code/learn/src/server_udp.h
+server.h
+/home/kovalev_s/code/learn/src/server.h
+memory
+/home/kovalev_s/code/learn/src/memory
+netinet/in.h
+-
+sys/socket.h
+-
+unistd.h
+-
+cstring
+-
+
 /home/kovalev_s/code/learn/src/storage.h
 result_code.h
 /home/kovalev_s/code/learn/src/result_code.h
@@ -181,6 +247,10 @@ vector
 -
 memory
 -
+
+/home/kovalev_s/code/learn/src/xml_parser.cpp
+xml_parser.h
+/home/kovalev_s/code/learn/src/xml_parser.h
 
 /home/kovalev_s/code/learn/src/xml_parser.h
 string

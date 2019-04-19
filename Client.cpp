@@ -7,14 +7,21 @@
 #include<string>
 #include<assert.h>
 #include"jsoncpp/json/json.h"
+#include<thread>
+#include <atomic>
+#include <queue>
+#include <mutex>
 
 
 class Client
 {	
 	public:
+    Client():
+        m_has_response(false)
+    {}
+    virtual ~Client() = default;
 	virtual void init(int server_port, const std::string& server_host) = 0;
-	virtual std::string get_answer() = 0;
-	virtual void send_msg(const std::string& msg) = 0;
+	virtual void read_write() = 0;
 	
 	std::string json_to_string(const Json::Value& json)
 	{
@@ -126,6 +133,44 @@ class Client
 		
 		return std::move(json_to_string(root));
 	}
+
+	std::string get_response()
+    {
+	    std::string response;
+	    bool resp_gotten = false;
+	    while(true)
+        {
+	        m_response_mutex.lock();
+	        if (m_has_response)
+            {
+	            response = std::move(m_response);
+	            m_has_response = false;
+	            resp_gotten = true;
+            }
+	        m_response_mutex.unlock();
+
+	        if (resp_gotten)
+            {
+	            break;
+            }
+        }
+
+        return std::move(response);
+    }
+
+    void send_to_queue(std::string&& request)
+    {
+	    m_send_queue_mutex.lock();
+	    m_send_queue.push(std::move(request));
+	    m_send_queue_mutex.unlock();
+    }
+
+    protected:
+    std::queue<std::string> m_send_queue;
+	std::string m_response;
+	bool m_has_response;
+	std::mutex m_send_queue_mutex;
+	std::mutex m_response_mutex;
 	
 };
 
@@ -154,17 +199,12 @@ class ClientTCP: public Client
     	
     	if (connect(m_sock, (sockaddr *)&m_serv_addr, sizeof(m_serv_addr)) < 0)
     	{
-    		std::cout<<"aconnect"<<std::endl;
+    		std::cout<<"connect"<<std::endl;
         	assert(false);
     	}
 	}
 	
-	void send_msg(const std::string& msg)
-	{
-		send(m_sock, msg.c_str(), msg.length(), 0);
-	}
-	
-	std::string get_answer()
+	void read_write()
 	{
 		int readval = 0;
         int buffer_size = 1024;
@@ -173,14 +213,39 @@ class ClientTCP: public Client
 
         while (true)
         {
-        	sleep(0.1);
+            m_send_queue_mutex.lock();
+            if (m_send_queue.size() > 0)
+            {
+                std::string send_msg = std::move(m_send_queue.front());
+                m_send_queue.pop();
+                send(m_sock, std::move(send_msg.c_str()), send_msg.length(), 0);
+            }
+            m_send_queue_mutex.unlock();
+
+
             readval = read(m_sock, buffer, buffer_size);
+            if (readval == 0)
+            {
+                sleep(1);
+            }
 
             for (int i=0; i<readval; i++)
             {	
                 if (buffer[i] == '\v')
                 {
-                    return std::move(msg);
+                    if (msg != "ping")
+                    {
+                        m_response_mutex.lock();
+                        m_has_response = true;
+                        m_response = std::move(msg);
+                        m_response_mutex.unlock();
+                    }
+                    else
+                    {
+                        std::string send_msg("pong");
+                        send(m_sock, std::move(send_msg.c_str()), send_msg.length(), 0);
+                    }
+                    msg = "";
                 }
 
                 msg += buffer[i];
@@ -246,7 +311,9 @@ class ClientUDP: public Client
 	private:
 	int m_sock;
 	sockaddr_in m_serv_addr;
+
 };
+
 
 
 int main()
@@ -254,8 +321,11 @@ int main()
     ClientTCP client;
     
     client.init(8080, "127.0.0.1");
-    
-    while (true)
+
+    std::thread read_write(&ClientTCP::read_write, &client);
+
+    bool exit = false;
+    while (!exit)
     {
     	std::cout<<"1.Add author"<<std::endl;
     	std::cout<<"2.Get author"<<std::endl;
@@ -279,8 +349,8 @@ int main()
     			std::cout<<"Enter author name"<<std::endl;
     			std::cin>>name;
     			std::string msg = client.add_author_msg(name);
-    			client.send_msg(msg);
-    			std::string answer = client.get_answer();
+    			client.send_to_queue(std::move(msg));
+    			std::string answer = client.get_response();
     			std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
     			break;
     		}
@@ -290,8 +360,8 @@ int main()
     			std::cout<<"Enter author id"<<std::endl;
     			std::cin>>id;
     			std::string msg = client.get_author_msg(id);
-    			client.send_msg(msg);
-    			std::string answer = client.get_answer();
+    			client.send_to_queue(std::move(msg));
+    			std::string answer = client.get_response();
     			std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
     			break;
     		}
@@ -304,8 +374,8 @@ int main()
     			std::cout<<"Enter author name"<<std::endl;
     			std::cin>>name;
     			std::string msg = client.change_author_msg(id, name);
-    			client.send_msg(msg);
-    			std::string answer = client.get_answer();
+    			client.send_to_queue(std::move(msg));
+    			std::string answer = client.get_response();
     			std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
     			break;
     		}
@@ -315,8 +385,8 @@ int main()
     			std::cout<<"Enter author id"<<std::endl;
     			std::cin>>id;
     			std::string msg = client.delete_author_msg(id);
-    			client.send_msg(msg);
-    			std::string answer = client.get_answer();
+    			client.send_to_queue(std::move(msg));
+    			std::string answer = client.get_response();
     			std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
     			break;
     		}
@@ -329,8 +399,8 @@ int main()
     			std::cout<<"Enter book title"<<std::endl;
     			std::cin>>title;
     			std::string msg = client.add_book_msg(author_id, title);
-    			client.send_msg(msg);
-    			std::string answer = client.get_answer();
+    			client.send_to_queue(std::move(msg));
+    			std::string answer = client.get_response();
     			std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
     			break;
     		}
@@ -340,8 +410,8 @@ int main()
     			std::cout<<"Enter book id"<<std::endl;
     			std::cin>>id;
     			std::string msg = client.get_book_msg(id);
-    			client.send_msg(msg);
-    			std::string answer = client.get_answer();
+    			client.send_to_queue(std::move(msg));
+    			std::string answer = client.get_response();
     			std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
     			break;
     		}
@@ -357,8 +427,8 @@ int main()
     			std::cout<<"Enter book title"<<std::endl;
     			std::cin>>title;
     			std::string msg = client.change_book_msg(id, author_id, title);
-    			client.send_msg(msg);
-    			std::string answer = client.get_answer();
+    			client.send_to_queue(std::move(msg));
+    			std::string answer = client.get_response();
     			std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
     			break;
     		}
@@ -368,8 +438,8 @@ int main()
     			std::cout<<"Enter book id"<<std::endl;
     			std::cin>>id;
     			std::string msg = client.delete_book_msg(id);
-    			client.send_msg(msg);
-    			std::string answer = client.get_answer();
+    			client.send_to_queue(std::move(msg));
+    			std::string answer = client.get_response();
     			std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
     			break;
     		}
@@ -379,14 +449,18 @@ int main()
     			std::cout<<"Enter author id"<<std::endl;
     			std::cin>>id;
     			std::string msg = client.get_all_author_books_msg(id);
-    			client.send_msg(msg);
-    			std::string answer = client.get_answer();
+    			client.send_to_queue(std::move(msg));
+    			std::string answer = client.get_response();
     			std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
     			break;
     		}
     		default:
     			std::cout<<"bad choise"<<std::endl;
+    			exit = true;
+    			break;
+
     	}
     }
+    read_write.join();
     return 0;
 }
