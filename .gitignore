@@ -4,4 +4,4 @@ core
 server
 client
 /tmp/*
-.ide
+.idea
