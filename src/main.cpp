@@ -9,20 +9,24 @@
 #include <iostream>
 
 
-std::unique_ptr<Library> lib {new Library(std::unique_ptr<Storage>(new FileStorage(std::unique_ptr<Parser>(new XmlParser()), "FileStore.xml")))};
-ServerTCP serv(std::move(lib));
+std::unique_ptr<Library> lib;
+std::unique_ptr<Server> serv;
 
 void signal_handler(int signal)
 {
     std::cout<<"terminate"<<std::endl;
-    serv.stop();
+    serv->stop();
 }
 
 int main()
 {
+    auto parser = std::make_unique<XmlParser>();
+    auto storage = std::make_unique<FileStorage>(std::move(parser), "FileStore.xml");
+    lib = std::make_unique<Library>(std::move(storage));
+    serv = std::make_unique<ServerTCP>(std::move(lib));
     signal(SIGTERM, signal_handler);
-    serv.init_socket(8080);
-    serv.run();
+    serv->init_socket(8080);
+    serv->run();
     
     return 0;
 }
