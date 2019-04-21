@@ -1,24 +1,24 @@
 Determining if the pthread_create exist failed with the following output:
-Change Dir: /home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/CMakeTmp
+Change Dir: /home/sergey/coding/lib/cmake-build-debug/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_609d6/fast"
-/usr/bin/make -f CMakeFiles/cmTC_609d6.dir/build.make CMakeFiles/cmTC_609d6.dir/build
-make[1]: вход в каталог «/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/CMakeTmp»
-Building C object CMakeFiles/cmTC_609d6.dir/CheckSymbolExists.c.o
-/usr/bin/cc    -o CMakeFiles/cmTC_609d6.dir/CheckSymbolExists.c.o   -c /home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c
-Linking C executable cmTC_609d6
-/home/kovalev_s/.local/lib/python2.7/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_609d6.dir/link.txt --verbose=1
-/usr/bin/cc      CMakeFiles/cmTC_609d6.dir/CheckSymbolExists.c.o  -o cmTC_609d6 
-CMakeFiles/cmTC_609d6.dir/CheckSymbolExists.c.o: In function `main':
+Run Build Command(s):/usr/bin/make cmTC_68998/fast 
+/usr/bin/make -f CMakeFiles/cmTC_68998.dir/build.make CMakeFiles/cmTC_68998.dir/build
+make[1]: вход в каталог «/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/CMakeTmp»
+Building C object CMakeFiles/cmTC_68998.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTC_68998.dir/CheckSymbolExists.c.o   -c /home/sergey/coding/lib/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_68998
+/home/sergey/programs/clion-2019.1.2/bin/cmake/linux/bin/cmake -E cmake_link_script CMakeFiles/cmTC_68998.dir/link.txt --verbose=1
+/usr/bin/cc      CMakeFiles/cmTC_68998.dir/CheckSymbolExists.c.o  -o cmTC_68998 
+CMakeFiles/cmTC_68998.dir/CheckSymbolExists.c.o: In function `main':
 CheckSymbolExists.c:(.text+0x16): undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_609d6.dir/build.make:86: ошибка выполнения рецепта для цели «cmTC_609d6»
-make[1]: *** [cmTC_609d6] Ошибка 1
-make[1]: выход из каталога «/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/CMakeTmp»
-Makefile:121: ошибка выполнения рецепта для цели «cmTC_609d6/fast»
-make: *** [cmTC_609d6/fast] Ошибка 2
+CMakeFiles/cmTC_68998.dir/build.make:86: ошибка выполнения рецепта для цели «cmTC_68998»
+make[1]: *** [cmTC_68998] Ошибка 1
+make[1]: выход из каталога «/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/CMakeTmp»
+Makefile:121: ошибка выполнения рецепта для цели «cmTC_68998/fast»
+make: *** [cmTC_68998/fast] Ошибка 2
 
-File /home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+File /home/sergey/coding/lib/cmake-build-debug/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
 /* */
 #include <pthread.h>
 
@@ -34,22 +34,22 @@ int main(int argc, char** argv)
 }
 
 Determining if the function pthread_create exists in the pthreads failed with the following output:
-Change Dir: /home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/CMakeTmp
+Change Dir: /home/sergey/coding/lib/cmake-build-debug/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_36cd3/fast"
-/usr/bin/make -f CMakeFiles/cmTC_36cd3.dir/build.make CMakeFiles/cmTC_36cd3.dir/build
-make[1]: вход в каталог «/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/CMakeTmp»
-Building C object CMakeFiles/cmTC_36cd3.dir/CheckFunctionExists.c.o
-/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_36cd3.dir/CheckFunctionExists.c.o   -c /home/kovalev_s/.local/lib/python2.7/site-packages/cmake/data/share/cmake-3.13/Modules/CheckFunctionExists.c
-Linking C executable cmTC_36cd3
-/home/kovalev_s/.local/lib/python2.7/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_36cd3.dir/link.txt --verbose=1
-/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_36cd3.dir/CheckFunctionExists.c.o  -o cmTC_36cd3 -lpthreads 
+Run Build Command(s):/usr/bin/make cmTC_ba635/fast 
+/usr/bin/make -f CMakeFiles/cmTC_ba635.dir/build.make CMakeFiles/cmTC_ba635.dir/build
+make[1]: вход в каталог «/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/CMakeTmp»
+Building C object CMakeFiles/cmTC_ba635.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_ba635.dir/CheckFunctionExists.c.o   -c /home/sergey/programs/clion-2019.1.2/bin/cmake/linux/share/cmake-3.14/Modules/CheckFunctionExists.c
+Linking C executable cmTC_ba635
+/home/sergey/programs/clion-2019.1.2/bin/cmake/linux/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ba635.dir/link.txt --verbose=1
+/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_ba635.dir/CheckFunctionExists.c.o  -o cmTC_ba635 -lpthreads 
 /usr/bin/ld: cannot find -lpthreads
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_36cd3.dir/build.make:86: ошибка выполнения рецепта для цели «cmTC_36cd3»
-make[1]: *** [cmTC_36cd3] Ошибка 1
-make[1]: выход из каталога «/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/CMakeTmp»
-Makefile:121: ошибка выполнения рецепта для цели «cmTC_36cd3/fast»
-make: *** [cmTC_36cd3/fast] Ошибка 2
+CMakeFiles/cmTC_ba635.dir/build.make:86: ошибка выполнения рецепта для цели «cmTC_ba635»
+make[1]: *** [cmTC_ba635] Ошибка 1
+make[1]: выход из каталога «/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/CMakeTmp»
+Makefile:121: ошибка выполнения рецепта для цели «cmTC_ba635/fast»
+make: *** [cmTC_ba635/fast] Ошибка 2
 
 

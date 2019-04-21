@@ -6,31 +6,31 @@
 
 #IncludeRegexTransform: 
 
-/home/kovalev_s/code/learn/src/author.cpp
+/home/sergey/coding/lib/src/author.cpp
 author.h
-/home/kovalev_s/code/learn/src/author.h
+/home/sergey/coding/lib/src/author.h
 
-/home/kovalev_s/code/learn/src/author.h
+/home/sergey/coding/lib/src/author.h
 string
 -
 
-/home/kovalev_s/code/learn/src/book.cpp
+/home/sergey/coding/lib/src/book.cpp
 book.h
-/home/kovalev_s/code/learn/src/book.h
+/home/sergey/coding/lib/src/book.h
 
-/home/kovalev_s/code/learn/src/book.h
+/home/sergey/coding/lib/src/book.h
 author.h
-/home/kovalev_s/code/learn/src/author.h
+/home/sergey/coding/lib/src/author.h
 string
 -
 memory
 -
 
-/home/kovalev_s/code/learn/src/file_storage.cpp
+/home/sergey/coding/lib/src/file_storage.cpp
 file_storage.h
-/home/kovalev_s/code/learn/src/file_storage.h
+/home/sergey/coding/lib/src/file_storage.h
 
-/home/kovalev_s/code/learn/src/file_storage.h
+/home/sergey/coding/lib/src/file_storage.h
 string
 -
 sstream
@@ -38,11 +38,11 @@ sstream
 fstream
 -
 storage_data.h
-/home/kovalev_s/code/learn/src/storage_data.h
+/home/sergey/coding/lib/src/storage_data.h
 storage.h
-/home/kovalev_s/code/learn/src/storage.h
+/home/sergey/coding/lib/src/storage.h
 parser.h
-/home/kovalev_s/code/learn/src/parser.h
+/home/sergey/coding/lib/src/parser.h
 iostream
 -
 memory
@@ -50,55 +50,55 @@ memory
 assert.h
 -
 result.h
-/home/kovalev_s/code/learn/src/result.h
+/home/sergey/coding/lib/src/result.h
 result_code.h
-/home/kovalev_s/code/learn/src/result_code.h
+/home/sergey/coding/lib/src/result_code.h
 author.h
-/home/kovalev_s/code/learn/src/author.h
+/home/sergey/coding/lib/src/author.h
 book.h
-/home/kovalev_s/code/learn/src/book.h
+/home/sergey/coding/lib/src/book.h
 
-/home/kovalev_s/code/learn/src/json_parser.cpp
+/home/sergey/coding/lib/src/json_parser.cpp
 json_parser.h
-/home/kovalev_s/code/learn/src/json_parser.h
+/home/sergey/coding/lib/src/json_parser.h
 
-/home/kovalev_s/code/learn/src/json_parser.h
+/home/sergey/coding/lib/src/json_parser.h
 jsoncpp/json/json.h
 -
 memory
 -
 author.h
-/home/kovalev_s/code/learn/src/author.h
+/home/sergey/coding/lib/src/author.h
 book.h
-/home/kovalev_s/code/learn/src/book.h
+/home/sergey/coding/lib/src/book.h
 vector
 -
 result.h
-/home/kovalev_s/code/learn/src/result.h
+/home/sergey/coding/lib/src/result.h
 parser.h
-/home/kovalev_s/code/learn/src/parser.h
+/home/sergey/coding/lib/src/parser.h
 string
 -
 storage_data.h
-/home/kovalev_s/code/learn/src/storage_data.h
+/home/sergey/coding/lib/src/storage_data.h
 iostream
 -
 algorithm
 -
 
-/home/kovalev_s/code/learn/src/library.cpp
+/home/sergey/coding/lib/src/library.cpp
 library.h
-/home/kovalev_s/code/learn/src/library.h
+/home/sergey/coding/lib/src/library.h
 
-/home/kovalev_s/code/learn/src/library.h
+/home/sergey/coding/lib/src/library.h
 result.h
-/home/kovalev_s/code/learn/src/result.h
+/home/sergey/coding/lib/src/result.h
 storage.h
-/home/kovalev_s/code/learn/src/storage.h
+/home/sergey/coding/lib/src/storage.h
 author.h
-/home/kovalev_s/code/learn/src/author.h
+/home/sergey/coding/lib/src/author.h
 book.h
-/home/kovalev_s/code/learn/src/book.h
+/home/sergey/coding/lib/src/book.h
 assert.h
 -
 iostream
@@ -112,19 +112,19 @@ vector
 algorithm
 -
 
-/home/kovalev_s/code/learn/src/main.cpp
+/home/sergey/coding/lib/src/main.cpp
 storage.h
-/home/kovalev_s/code/learn/src/storage.h
+/home/sergey/coding/lib/src/storage.h
 library.h
-/home/kovalev_s/code/learn/src/library.h
+/home/sergey/coding/lib/src/library.h
 server_tcp.h
-/home/kovalev_s/code/learn/src/server_tcp.h
+/home/sergey/coding/lib/src/server_tcp.h
 file_storage.h
-/home/kovalev_s/code/learn/src/file_storage.h
+/home/sergey/coding/lib/src/file_storage.h
 parser.h
-/home/kovalev_s/code/learn/src/parser.h
+/home/sergey/coding/lib/src/parser.h
 xml_parser.h
-/home/kovalev_s/code/learn/src/xml_parser.h
+/home/sergey/coding/lib/src/xml_parser.h
 memory
 -
 csignal
@@ -132,31 +132,31 @@ csignal
 iostream
 -
 
-/home/kovalev_s/code/learn/src/parser.h
+/home/sergey/coding/lib/src/parser.h
 book.h
-/home/kovalev_s/code/learn/src/book.h
+/home/sergey/coding/lib/src/book.h
 author.h
-/home/kovalev_s/code/learn/src/author.h
+/home/sergey/coding/lib/src/author.h
 string.h
-/home/kovalev_s/code/learn/src/string.h
+/home/sergey/coding/lib/src/string.h
 result.h
-/home/kovalev_s/code/learn/src/result.h
+/home/sergey/coding/lib/src/result.h
 memory
-/home/kovalev_s/code/learn/src/memory
+/home/sergey/coding/lib/src/memory
 storage_data.h
-/home/kovalev_s/code/learn/src/storage_data.h
+/home/sergey/coding/lib/src/storage_data.h
 
-/home/kovalev_s/code/learn/src/result.h
+/home/sergey/coding/lib/src/result.h
 result_code.h
-/home/kovalev_s/code/learn/src/result_code.h
+/home/sergey/coding/lib/src/result_code.h
 
-/home/kovalev_s/code/learn/src/result_code.h
+/home/sergey/coding/lib/src/result_code.h
 
-/home/kovalev_s/code/learn/src/server.cpp
+/home/sergey/coding/lib/src/server.cpp
 server.h
-/home/kovalev_s/code/learn/src/server.h
+/home/sergey/coding/lib/src/server.h
 
-/home/kovalev_s/code/learn/src/server.h
+/home/sergey/coding/lib/src/server.h
 memory
 -
 string
@@ -166,15 +166,15 @@ iostream
 jsoncpp/json/json.h
 -
 server_command.h
-/home/kovalev_s/code/learn/src/server_command.h
+/home/sergey/coding/lib/src/server_command.h
 server_status.h
-/home/kovalev_s/code/learn/src/server_status.h
+/home/sergey/coding/lib/src/server_status.h
 book.h
-/home/kovalev_s/code/learn/src/book.h
+/home/sergey/coding/lib/src/book.h
 author.h
-/home/kovalev_s/code/learn/src/author.h
+/home/sergey/coding/lib/src/author.h
 library.h
-/home/kovalev_s/code/learn/src/library.h
+/home/sergey/coding/lib/src/library.h
 vector
 -
 netinet/in.h
@@ -186,21 +186,21 @@ atomic
 unistd.h
 -
 
-/home/kovalev_s/code/learn/src/server_command.h
+/home/sergey/coding/lib/src/server_command.h
 
-/home/kovalev_s/code/learn/src/server_status.h
+/home/sergey/coding/lib/src/server_status.h
 string
 -
 
-/home/kovalev_s/code/learn/src/server_tcp.cpp
+/home/sergey/coding/lib/src/server_tcp.cpp
 server_tcp.h
-/home/kovalev_s/code/learn/src/server_tcp.h
+/home/sergey/coding/lib/src/server_tcp.h
 
-/home/kovalev_s/code/learn/src/server_tcp.h
+/home/sergey/coding/lib/src/server_tcp.h
 server.h
-/home/kovalev_s/code/learn/src/server.h
+/home/sergey/coding/lib/src/server.h
 memory
-/home/kovalev_s/code/learn/src/memory
+/home/sergey/coding/lib/src/memory
 netinet/in.h
 -
 sys/socket.h
@@ -208,15 +208,15 @@ sys/socket.h
 unistd.h
 -
 
-/home/kovalev_s/code/learn/src/server_udp.cpp
+/home/sergey/coding/lib/src/server_udp.cpp
 server_udp.h
-/home/kovalev_s/code/learn/src/server_udp.h
+/home/sergey/coding/lib/src/server_udp.h
 
-/home/kovalev_s/code/learn/src/server_udp.h
+/home/sergey/coding/lib/src/server_udp.h
 server.h
-/home/kovalev_s/code/learn/src/server.h
+/home/sergey/coding/lib/src/server.h
 memory
-/home/kovalev_s/code/learn/src/memory
+/home/sergey/coding/lib/src/memory
 netinet/in.h
 -
 sys/socket.h
@@ -226,43 +226,43 @@ unistd.h
 cstring
 -
 
-/home/kovalev_s/code/learn/src/storage.h
+/home/sergey/coding/lib/src/storage.h
 result_code.h
-/home/kovalev_s/code/learn/src/result_code.h
+/home/sergey/coding/lib/src/result_code.h
 book.h
-/home/kovalev_s/code/learn/src/book.h
+/home/sergey/coding/lib/src/book.h
 author.h
-/home/kovalev_s/code/learn/src/author.h
+/home/sergey/coding/lib/src/author.h
 storage_data.h
-/home/kovalev_s/code/learn/src/storage_data.h
+/home/sergey/coding/lib/src/storage_data.h
 memory
-/home/kovalev_s/code/learn/src/memory
+/home/sergey/coding/lib/src/memory
 
-/home/kovalev_s/code/learn/src/storage_data.h
+/home/sergey/coding/lib/src/storage_data.h
 author.h
-/home/kovalev_s/code/learn/src/author.h
+/home/sergey/coding/lib/src/author.h
 book.h
-/home/kovalev_s/code/learn/src/book.h
+/home/sergey/coding/lib/src/book.h
 vector
 -
 memory
 -
 
-/home/kovalev_s/code/learn/src/xml_parser.cpp
+/home/sergey/coding/lib/src/xml_parser.cpp
 xml_parser.h
-/home/kovalev_s/code/learn/src/xml_parser.h
+/home/sergey/coding/lib/src/xml_parser.h
 
-/home/kovalev_s/code/learn/src/xml_parser.h
+/home/sergey/coding/lib/src/xml_parser.h
 string
 -
 storage_data.h
-/home/kovalev_s/code/learn/src/storage_data.h
+/home/sergey/coding/lib/src/storage_data.h
 pugixml.hpp
 -
 result.h
-/home/kovalev_s/code/learn/src/result.h
+/home/sergey/coding/lib/src/result.h
 parser.h
-/home/kovalev_s/code/learn/src/parser.h
+/home/sergey/coding/lib/src/parser.h
 iostream
 -
 functional

@@ -34,19 +34,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /home/kovalev_s/.local/lib/python2.7/site-packages/cmake/data/bin/cmake
+CMAKE_COMMAND = /home/sergey/.local/lib/python2.7/site-packages/cmake/data/bin/cmake
 
 # The command to remove a file.
-RM = /home/kovalev_s/.local/lib/python2.7/site-packages/cmake/data/bin/cmake -E remove -f
+RM = /home/sergey/.local/lib/python2.7/site-packages/cmake/data/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/kovalev_s/code/learn
+CMAKE_SOURCE_DIR = /home/sergey/coding/lib
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/kovalev_s/code/learn/cmake-build-debug
+CMAKE_BINARY_DIR = /home/sergey/coding/lib/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/library.dir/depend.make
@@ -59,133 +59,133 @@ include CMakeFiles/library.dir/flags.make
 
 CMakeFiles/library.dir/src/author.cpp.o: CMakeFiles/library.dir/flags.make
 CMakeFiles/library.dir/src/author.cpp.o: ../src/author.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/library.dir/src/author.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/author.cpp.o -c /home/kovalev_s/code/learn/src/author.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/library.dir/src/author.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/author.cpp.o -c /home/sergey/coding/lib/src/author.cpp
 
 CMakeFiles/library.dir/src/author.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/library.dir/src/author.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kovalev_s/code/learn/src/author.cpp > CMakeFiles/library.dir/src/author.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/src/author.cpp > CMakeFiles/library.dir/src/author.cpp.i
 
 CMakeFiles/library.dir/src/author.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/library.dir/src/author.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kovalev_s/code/learn/src/author.cpp -o CMakeFiles/library.dir/src/author.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/src/author.cpp -o CMakeFiles/library.dir/src/author.cpp.s
 
 CMakeFiles/library.dir/src/book.cpp.o: CMakeFiles/library.dir/flags.make
 CMakeFiles/library.dir/src/book.cpp.o: ../src/book.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/library.dir/src/book.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/book.cpp.o -c /home/kovalev_s/code/learn/src/book.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/library.dir/src/book.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/book.cpp.o -c /home/sergey/coding/lib/src/book.cpp
 
 CMakeFiles/library.dir/src/book.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/library.dir/src/book.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kovalev_s/code/learn/src/book.cpp > CMakeFiles/library.dir/src/book.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/src/book.cpp > CMakeFiles/library.dir/src/book.cpp.i
 
 CMakeFiles/library.dir/src/book.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/library.dir/src/book.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kovalev_s/code/learn/src/book.cpp -o CMakeFiles/library.dir/src/book.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/src/book.cpp -o CMakeFiles/library.dir/src/book.cpp.s
 
 CMakeFiles/library.dir/src/file_storage.cpp.o: CMakeFiles/library.dir/flags.make
 CMakeFiles/library.dir/src/file_storage.cpp.o: ../src/file_storage.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/library.dir/src/file_storage.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/file_storage.cpp.o -c /home/kovalev_s/code/learn/src/file_storage.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/library.dir/src/file_storage.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/file_storage.cpp.o -c /home/sergey/coding/lib/src/file_storage.cpp
 
 CMakeFiles/library.dir/src/file_storage.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/library.dir/src/file_storage.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kovalev_s/code/learn/src/file_storage.cpp > CMakeFiles/library.dir/src/file_storage.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/src/file_storage.cpp > CMakeFiles/library.dir/src/file_storage.cpp.i
 
 CMakeFiles/library.dir/src/file_storage.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/library.dir/src/file_storage.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kovalev_s/code/learn/src/file_storage.cpp -o CMakeFiles/library.dir/src/file_storage.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/src/file_storage.cpp -o CMakeFiles/library.dir/src/file_storage.cpp.s
 
 CMakeFiles/library.dir/src/json_parser.cpp.o: CMakeFiles/library.dir/flags.make
 CMakeFiles/library.dir/src/json_parser.cpp.o: ../src/json_parser.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/library.dir/src/json_parser.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/json_parser.cpp.o -c /home/kovalev_s/code/learn/src/json_parser.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/library.dir/src/json_parser.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/json_parser.cpp.o -c /home/sergey/coding/lib/src/json_parser.cpp
 
 CMakeFiles/library.dir/src/json_parser.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/library.dir/src/json_parser.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kovalev_s/code/learn/src/json_parser.cpp > CMakeFiles/library.dir/src/json_parser.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/src/json_parser.cpp > CMakeFiles/library.dir/src/json_parser.cpp.i
 
 CMakeFiles/library.dir/src/json_parser.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/library.dir/src/json_parser.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kovalev_s/code/learn/src/json_parser.cpp -o CMakeFiles/library.dir/src/json_parser.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/src/json_parser.cpp -o CMakeFiles/library.dir/src/json_parser.cpp.s
 
 CMakeFiles/library.dir/src/library.cpp.o: CMakeFiles/library.dir/flags.make
 CMakeFiles/library.dir/src/library.cpp.o: ../src/library.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/library.dir/src/library.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/library.cpp.o -c /home/kovalev_s/code/learn/src/library.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/library.dir/src/library.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/library.cpp.o -c /home/sergey/coding/lib/src/library.cpp
 
 CMakeFiles/library.dir/src/library.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/library.dir/src/library.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kovalev_s/code/learn/src/library.cpp > CMakeFiles/library.dir/src/library.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/src/library.cpp > CMakeFiles/library.dir/src/library.cpp.i
 
 CMakeFiles/library.dir/src/library.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/library.dir/src/library.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kovalev_s/code/learn/src/library.cpp -o CMakeFiles/library.dir/src/library.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/src/library.cpp -o CMakeFiles/library.dir/src/library.cpp.s
 
 CMakeFiles/library.dir/src/main.cpp.o: CMakeFiles/library.dir/flags.make
 CMakeFiles/library.dir/src/main.cpp.o: ../src/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/library.dir/src/main.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/main.cpp.o -c /home/kovalev_s/code/learn/src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/library.dir/src/main.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/main.cpp.o -c /home/sergey/coding/lib/src/main.cpp
 
 CMakeFiles/library.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/library.dir/src/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kovalev_s/code/learn/src/main.cpp > CMakeFiles/library.dir/src/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/src/main.cpp > CMakeFiles/library.dir/src/main.cpp.i
 
 CMakeFiles/library.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/library.dir/src/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kovalev_s/code/learn/src/main.cpp -o CMakeFiles/library.dir/src/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/src/main.cpp -o CMakeFiles/library.dir/src/main.cpp.s
 
 CMakeFiles/library.dir/src/server.cpp.o: CMakeFiles/library.dir/flags.make
 CMakeFiles/library.dir/src/server.cpp.o: ../src/server.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/library.dir/src/server.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/server.cpp.o -c /home/kovalev_s/code/learn/src/server.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/library.dir/src/server.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/server.cpp.o -c /home/sergey/coding/lib/src/server.cpp
 
 CMakeFiles/library.dir/src/server.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/library.dir/src/server.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kovalev_s/code/learn/src/server.cpp > CMakeFiles/library.dir/src/server.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/src/server.cpp > CMakeFiles/library.dir/src/server.cpp.i
 
 CMakeFiles/library.dir/src/server.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/library.dir/src/server.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kovalev_s/code/learn/src/server.cpp -o CMakeFiles/library.dir/src/server.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/src/server.cpp -o CMakeFiles/library.dir/src/server.cpp.s
 
 CMakeFiles/library.dir/src/server_tcp.cpp.o: CMakeFiles/library.dir/flags.make
 CMakeFiles/library.dir/src/server_tcp.cpp.o: ../src/server_tcp.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/library.dir/src/server_tcp.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/server_tcp.cpp.o -c /home/kovalev_s/code/learn/src/server_tcp.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/library.dir/src/server_tcp.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/server_tcp.cpp.o -c /home/sergey/coding/lib/src/server_tcp.cpp
 
 CMakeFiles/library.dir/src/server_tcp.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/library.dir/src/server_tcp.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kovalev_s/code/learn/src/server_tcp.cpp > CMakeFiles/library.dir/src/server_tcp.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/src/server_tcp.cpp > CMakeFiles/library.dir/src/server_tcp.cpp.i
 
 CMakeFiles/library.dir/src/server_tcp.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/library.dir/src/server_tcp.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kovalev_s/code/learn/src/server_tcp.cpp -o CMakeFiles/library.dir/src/server_tcp.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/src/server_tcp.cpp -o CMakeFiles/library.dir/src/server_tcp.cpp.s
 
 CMakeFiles/library.dir/src/server_udp.cpp.o: CMakeFiles/library.dir/flags.make
 CMakeFiles/library.dir/src/server_udp.cpp.o: ../src/server_udp.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/library.dir/src/server_udp.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/server_udp.cpp.o -c /home/kovalev_s/code/learn/src/server_udp.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/library.dir/src/server_udp.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/server_udp.cpp.o -c /home/sergey/coding/lib/src/server_udp.cpp
 
 CMakeFiles/library.dir/src/server_udp.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/library.dir/src/server_udp.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kovalev_s/code/learn/src/server_udp.cpp > CMakeFiles/library.dir/src/server_udp.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/src/server_udp.cpp > CMakeFiles/library.dir/src/server_udp.cpp.i
 
 CMakeFiles/library.dir/src/server_udp.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/library.dir/src/server_udp.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kovalev_s/code/learn/src/server_udp.cpp -o CMakeFiles/library.dir/src/server_udp.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/src/server_udp.cpp -o CMakeFiles/library.dir/src/server_udp.cpp.s
 
 CMakeFiles/library.dir/src/xml_parser.cpp.o: CMakeFiles/library.dir/flags.make
 CMakeFiles/library.dir/src/xml_parser.cpp.o: ../src/xml_parser.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/library.dir/src/xml_parser.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/xml_parser.cpp.o -c /home/kovalev_s/code/learn/src/xml_parser.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/library.dir/src/xml_parser.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/library.dir/src/xml_parser.cpp.o -c /home/sergey/coding/lib/src/xml_parser.cpp
 
 CMakeFiles/library.dir/src/xml_parser.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/library.dir/src/xml_parser.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kovalev_s/code/learn/src/xml_parser.cpp > CMakeFiles/library.dir/src/xml_parser.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/src/xml_parser.cpp > CMakeFiles/library.dir/src/xml_parser.cpp.i
 
 CMakeFiles/library.dir/src/xml_parser.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/library.dir/src/xml_parser.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kovalev_s/code/learn/src/xml_parser.cpp -o CMakeFiles/library.dir/src/xml_parser.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/src/xml_parser.cpp -o CMakeFiles/library.dir/src/xml_parser.cpp.s
 
 # Object files for target library
 library_OBJECTS = \
@@ -215,7 +215,7 @@ library: CMakeFiles/library.dir/src/server_udp.cpp.o
 library: CMakeFiles/library.dir/src/xml_parser.cpp.o
 library: CMakeFiles/library.dir/build.make
 library: CMakeFiles/library.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable library"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable library"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/library.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -228,6 +228,6 @@ CMakeFiles/library.dir/clean:
 .PHONY : CMakeFiles/library.dir/clean
 
 CMakeFiles/library.dir/depend:
-	cd /home/kovalev_s/code/learn/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/kovalev_s/code/learn /home/kovalev_s/code/learn /home/kovalev_s/code/learn/cmake-build-debug /home/kovalev_s/code/learn/cmake-build-debug /home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/sergey/coding/lib/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sergey/coding/lib /home/sergey/coding/lib /home/sergey/coding/lib/cmake-build-debug /home/sergey/coding/lib/cmake-build-debug /home/sergey/coding/lib/cmake-build-debug/CMakeFiles/library.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/library.dir/depend
 

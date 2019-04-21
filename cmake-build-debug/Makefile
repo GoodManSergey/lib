@@ -39,19 +39,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /home/kovalev_s/.local/lib/python2.7/site-packages/cmake/data/bin/cmake
+CMAKE_COMMAND = /home/sergey/.local/lib/python2.7/site-packages/cmake/data/bin/cmake
 
 # The command to remove a file.
-RM = /home/kovalev_s/.local/lib/python2.7/site-packages/cmake/data/bin/cmake -E remove -f
+RM = /home/sergey/.local/lib/python2.7/site-packages/cmake/data/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/kovalev_s/code/learn
+CMAKE_SOURCE_DIR = /home/sergey/coding/lib
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/kovalev_s/code/learn/cmake-build-debug
+CMAKE_BINARY_DIR = /home/sergey/coding/lib/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/kovalev_s/code/learn/cmake-build-debug
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/home/kovalev_s/.local/lib/python2.7/site-packages/cmake/data/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/home/sergey/.local/lib/python2.7/site-packages/cmake/data/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -70,7 +70,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/home/kovalev_s/.local/lib/python2.7/site-packages/cmake/data/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	/home/sergey/.local/lib/python2.7/site-packages/cmake/data/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles /home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/sergey/coding/lib/cmake-build-debug/CMakeFiles /home/sergey/coding/lib/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/sergey/coding/lib/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -136,32 +136,140 @@ library/fast:
 	$(MAKE) -f CMakeFiles/library.dir/build.make CMakeFiles/library.dir/build
 .PHONY : library/fast
 
-Client.o: Client.cpp.o
+client_src/client.o: client_src/client.cpp.o
 
-.PHONY : Client.o
+.PHONY : client_src/client.o
 
 # target to build an object file
-Client.cpp.o:
-	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/Client.cpp.o
-.PHONY : Client.cpp.o
+client_src/client.cpp.o:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/client.cpp.o
+.PHONY : client_src/client.cpp.o
 
-Client.i: Client.cpp.i
+client_src/client.i: client_src/client.cpp.i
 
-.PHONY : Client.i
+.PHONY : client_src/client.i
 
 # target to preprocess a source file
-Client.cpp.i:
-	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/Client.cpp.i
-.PHONY : Client.cpp.i
+client_src/client.cpp.i:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/client.cpp.i
+.PHONY : client_src/client.cpp.i
 
-Client.s: Client.cpp.s
+client_src/client.s: client_src/client.cpp.s
 
-.PHONY : Client.s
+.PHONY : client_src/client.s
 
 # target to generate assembly for a file
-Client.cpp.s:
-	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/Client.cpp.s
-.PHONY : Client.cpp.s
+client_src/client.cpp.s:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/client.cpp.s
+.PHONY : client_src/client.cpp.s
+
+client_src/client_tcp.o: client_src/client_tcp.cpp.o
+
+.PHONY : client_src/client_tcp.o
+
+# target to build an object file
+client_src/client_tcp.cpp.o:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/client_tcp.cpp.o
+.PHONY : client_src/client_tcp.cpp.o
+
+client_src/client_tcp.i: client_src/client_tcp.cpp.i
+
+.PHONY : client_src/client_tcp.i
+
+# target to preprocess a source file
+client_src/client_tcp.cpp.i:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/client_tcp.cpp.i
+.PHONY : client_src/client_tcp.cpp.i
+
+client_src/client_tcp.s: client_src/client_tcp.cpp.s
+
+.PHONY : client_src/client_tcp.s
+
+# target to generate assembly for a file
+client_src/client_tcp.cpp.s:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/client_tcp.cpp.s
+.PHONY : client_src/client_tcp.cpp.s
+
+client_src/client_udp.o: client_src/client_udp.cpp.o
+
+.PHONY : client_src/client_udp.o
+
+# target to build an object file
+client_src/client_udp.cpp.o:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/client_udp.cpp.o
+.PHONY : client_src/client_udp.cpp.o
+
+client_src/client_udp.i: client_src/client_udp.cpp.i
+
+.PHONY : client_src/client_udp.i
+
+# target to preprocess a source file
+client_src/client_udp.cpp.i:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/client_udp.cpp.i
+.PHONY : client_src/client_udp.cpp.i
+
+client_src/client_udp.s: client_src/client_udp.cpp.s
+
+.PHONY : client_src/client_udp.s
+
+# target to generate assembly for a file
+client_src/client_udp.cpp.s:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/client_udp.cpp.s
+.PHONY : client_src/client_udp.cpp.s
+
+client_src/main.o: client_src/main.cpp.o
+
+.PHONY : client_src/main.o
+
+# target to build an object file
+client_src/main.cpp.o:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/main.cpp.o
+.PHONY : client_src/main.cpp.o
+
+client_src/main.i: client_src/main.cpp.i
+
+.PHONY : client_src/main.i
+
+# target to preprocess a source file
+client_src/main.cpp.i:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/main.cpp.i
+.PHONY : client_src/main.cpp.i
+
+client_src/main.s: client_src/main.cpp.s
+
+.PHONY : client_src/main.s
+
+# target to generate assembly for a file
+client_src/main.cpp.s:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/main.cpp.s
+.PHONY : client_src/main.cpp.s
+
+client_src/string_queue.o: client_src/string_queue.cpp.o
+
+.PHONY : client_src/string_queue.o
+
+# target to build an object file
+client_src/string_queue.cpp.o:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/string_queue.cpp.o
+.PHONY : client_src/string_queue.cpp.o
+
+client_src/string_queue.i: client_src/string_queue.cpp.i
+
+.PHONY : client_src/string_queue.i
+
+# target to preprocess a source file
+client_src/string_queue.cpp.i:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/string_queue.cpp.i
+.PHONY : client_src/string_queue.cpp.i
+
+client_src/string_queue.s: client_src/string_queue.cpp.s
+
+.PHONY : client_src/string_queue.s
+
+# target to generate assembly for a file
+client_src/string_queue.cpp.s:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/client_src/string_queue.cpp.s
+.PHONY : client_src/string_queue.cpp.s
 
 src/author.o: src/author.cpp.o
 
@@ -443,9 +551,21 @@ help:
 	@echo "... Client"
 	@echo "... edit_cache"
 	@echo "... library"
-	@echo "... Client.o"
-	@echo "... Client.i"
-	@echo "... Client.s"
+	@echo "... client_src/client.o"
+	@echo "... client_src/client.i"
+	@echo "... client_src/client.s"
+	@echo "... client_src/client_tcp.o"
+	@echo "... client_src/client_tcp.i"
+	@echo "... client_src/client_tcp.s"
+	@echo "... client_src/client_udp.o"
+	@echo "... client_src/client_udp.i"
+	@echo "... client_src/client_udp.s"
+	@echo "... client_src/main.o"
+	@echo "... client_src/main.i"
+	@echo "... client_src/main.s"
+	@echo "... client_src/string_queue.o"
+	@echo "... client_src/string_queue.i"
+	@echo "... client_src/string_queue.s"
 	@echo "... src/author.o"
 	@echo "... src/author.i"
 	@echo "... src/author.s"

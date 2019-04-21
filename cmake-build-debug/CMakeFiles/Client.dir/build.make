@@ -34,19 +34,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /home/kovalev_s/.local/lib/python2.7/site-packages/cmake/data/bin/cmake
+CMAKE_COMMAND = /home/sergey/.local/lib/python2.7/site-packages/cmake/data/bin/cmake
 
 # The command to remove a file.
-RM = /home/kovalev_s/.local/lib/python2.7/site-packages/cmake/data/bin/cmake -E remove -f
+RM = /home/sergey/.local/lib/python2.7/site-packages/cmake/data/bin/cmake -E remove -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/kovalev_s/code/learn
+CMAKE_SOURCE_DIR = /home/sergey/coding/lib
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/kovalev_s/code/learn/cmake-build-debug
+CMAKE_BINARY_DIR = /home/sergey/coding/lib/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/Client.dir/depend.make
@@ -57,30 +57,90 @@ include CMakeFiles/Client.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Client.dir/flags.make
 
-CMakeFiles/Client.dir/Client.cpp.o: CMakeFiles/Client.dir/flags.make
-CMakeFiles/Client.dir/Client.cpp.o: ../Client.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Client.dir/Client.cpp.o"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Client.dir/Client.cpp.o -c /home/kovalev_s/code/learn/Client.cpp
+CMakeFiles/Client.dir/client_src/client.cpp.o: CMakeFiles/Client.dir/flags.make
+CMakeFiles/Client.dir/client_src/client.cpp.o: ../client_src/client.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Client.dir/client_src/client.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Client.dir/client_src/client.cpp.o -c /home/sergey/coding/lib/client_src/client.cpp
 
-CMakeFiles/Client.dir/Client.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Client.dir/Client.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kovalev_s/code/learn/Client.cpp > CMakeFiles/Client.dir/Client.cpp.i
+CMakeFiles/Client.dir/client_src/client.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Client.dir/client_src/client.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/client_src/client.cpp > CMakeFiles/Client.dir/client_src/client.cpp.i
 
-CMakeFiles/Client.dir/Client.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Client.dir/Client.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kovalev_s/code/learn/Client.cpp -o CMakeFiles/Client.dir/Client.cpp.s
+CMakeFiles/Client.dir/client_src/client.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Client.dir/client_src/client.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/client_src/client.cpp -o CMakeFiles/Client.dir/client_src/client.cpp.s
+
+CMakeFiles/Client.dir/client_src/client_tcp.cpp.o: CMakeFiles/Client.dir/flags.make
+CMakeFiles/Client.dir/client_src/client_tcp.cpp.o: ../client_src/client_tcp.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Client.dir/client_src/client_tcp.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Client.dir/client_src/client_tcp.cpp.o -c /home/sergey/coding/lib/client_src/client_tcp.cpp
+
+CMakeFiles/Client.dir/client_src/client_tcp.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Client.dir/client_src/client_tcp.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/client_src/client_tcp.cpp > CMakeFiles/Client.dir/client_src/client_tcp.cpp.i
+
+CMakeFiles/Client.dir/client_src/client_tcp.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Client.dir/client_src/client_tcp.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/client_src/client_tcp.cpp -o CMakeFiles/Client.dir/client_src/client_tcp.cpp.s
+
+CMakeFiles/Client.dir/client_src/client_udp.cpp.o: CMakeFiles/Client.dir/flags.make
+CMakeFiles/Client.dir/client_src/client_udp.cpp.o: ../client_src/client_udp.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Client.dir/client_src/client_udp.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Client.dir/client_src/client_udp.cpp.o -c /home/sergey/coding/lib/client_src/client_udp.cpp
+
+CMakeFiles/Client.dir/client_src/client_udp.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Client.dir/client_src/client_udp.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/client_src/client_udp.cpp > CMakeFiles/Client.dir/client_src/client_udp.cpp.i
+
+CMakeFiles/Client.dir/client_src/client_udp.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Client.dir/client_src/client_udp.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/client_src/client_udp.cpp -o CMakeFiles/Client.dir/client_src/client_udp.cpp.s
+
+CMakeFiles/Client.dir/client_src/main.cpp.o: CMakeFiles/Client.dir/flags.make
+CMakeFiles/Client.dir/client_src/main.cpp.o: ../client_src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Client.dir/client_src/main.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Client.dir/client_src/main.cpp.o -c /home/sergey/coding/lib/client_src/main.cpp
+
+CMakeFiles/Client.dir/client_src/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Client.dir/client_src/main.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/client_src/main.cpp > CMakeFiles/Client.dir/client_src/main.cpp.i
+
+CMakeFiles/Client.dir/client_src/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Client.dir/client_src/main.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/client_src/main.cpp -o CMakeFiles/Client.dir/client_src/main.cpp.s
+
+CMakeFiles/Client.dir/client_src/string_queue.cpp.o: CMakeFiles/Client.dir/flags.make
+CMakeFiles/Client.dir/client_src/string_queue.cpp.o: ../client_src/string_queue.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Client.dir/client_src/string_queue.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/Client.dir/client_src/string_queue.cpp.o -c /home/sergey/coding/lib/client_src/string_queue.cpp
+
+CMakeFiles/Client.dir/client_src/string_queue.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Client.dir/client_src/string_queue.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sergey/coding/lib/client_src/string_queue.cpp > CMakeFiles/Client.dir/client_src/string_queue.cpp.i
+
+CMakeFiles/Client.dir/client_src/string_queue.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Client.dir/client_src/string_queue.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sergey/coding/lib/client_src/string_queue.cpp -o CMakeFiles/Client.dir/client_src/string_queue.cpp.s
 
 # Object files for target Client
 Client_OBJECTS = \
-"CMakeFiles/Client.dir/Client.cpp.o"
+"CMakeFiles/Client.dir/client_src/client.cpp.o" \
+"CMakeFiles/Client.dir/client_src/client_tcp.cpp.o" \
+"CMakeFiles/Client.dir/client_src/client_udp.cpp.o" \
+"CMakeFiles/Client.dir/client_src/main.cpp.o" \
+"CMakeFiles/Client.dir/client_src/string_queue.cpp.o"
 
 # External object files for target Client
 Client_EXTERNAL_OBJECTS =
 
-Client: CMakeFiles/Client.dir/Client.cpp.o
+Client: CMakeFiles/Client.dir/client_src/client.cpp.o
+Client: CMakeFiles/Client.dir/client_src/client_tcp.cpp.o
+Client: CMakeFiles/Client.dir/client_src/client_udp.cpp.o
+Client: CMakeFiles/Client.dir/client_src/main.cpp.o
+Client: CMakeFiles/Client.dir/client_src/string_queue.cpp.o
 Client: CMakeFiles/Client.dir/build.make
 Client: CMakeFiles/Client.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable Client"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/sergey/coding/lib/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable Client"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/Client.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -93,6 +153,6 @@ CMakeFiles/Client.dir/clean:
 .PHONY : CMakeFiles/Client.dir/clean
 
 CMakeFiles/Client.dir/depend:
-	cd /home/kovalev_s/code/learn/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/kovalev_s/code/learn /home/kovalev_s/code/learn /home/kovalev_s/code/learn/cmake-build-debug /home/kovalev_s/code/learn/cmake-build-debug /home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/Client.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/sergey/coding/lib/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sergey/coding/lib /home/sergey/coding/lib /home/sergey/coding/lib/cmake-build-debug /home/sergey/coding/lib/cmake-build-debug /home/sergey/coding/lib/cmake-build-debug/CMakeFiles/Client.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/Client.dir/depend
 

@@ -4,7 +4,11 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/kovalev_s/code/learn/Client.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/Client.dir/Client.cpp.o"
+  "/home/sergey/coding/lib/client_src/client.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/Client.dir/client_src/client.cpp.o"
+  "/home/sergey/coding/lib/client_src/client_tcp.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/Client.dir/client_src/client_tcp.cpp.o"
+  "/home/sergey/coding/lib/client_src/client_udp.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/Client.dir/client_src/client_udp.cpp.o"
+  "/home/sergey/coding/lib/client_src/main.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/Client.dir/client_src/main.cpp.o"
+  "/home/sergey/coding/lib/client_src/string_queue.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/Client.dir/client_src/string_queue.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

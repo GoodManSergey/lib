@@ -4,16 +4,16 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/kovalev_s/code/learn/src/author.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/author.cpp.o"
-  "/home/kovalev_s/code/learn/src/book.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/book.cpp.o"
-  "/home/kovalev_s/code/learn/src/file_storage.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/file_storage.cpp.o"
-  "/home/kovalev_s/code/learn/src/json_parser.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/json_parser.cpp.o"
-  "/home/kovalev_s/code/learn/src/library.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/library.cpp.o"
-  "/home/kovalev_s/code/learn/src/main.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/main.cpp.o"
-  "/home/kovalev_s/code/learn/src/server.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/server.cpp.o"
-  "/home/kovalev_s/code/learn/src/server_tcp.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/server_tcp.cpp.o"
-  "/home/kovalev_s/code/learn/src/server_udp.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/server_udp.cpp.o"
-  "/home/kovalev_s/code/learn/src/xml_parser.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/xml_parser.cpp.o"
+  "/home/sergey/coding/lib/src/author.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/library.dir/src/author.cpp.o"
+  "/home/sergey/coding/lib/src/book.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/library.dir/src/book.cpp.o"
+  "/home/sergey/coding/lib/src/file_storage.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/library.dir/src/file_storage.cpp.o"
+  "/home/sergey/coding/lib/src/json_parser.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/library.dir/src/json_parser.cpp.o"
+  "/home/sergey/coding/lib/src/library.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/library.dir/src/library.cpp.o"
+  "/home/sergey/coding/lib/src/main.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/library.dir/src/main.cpp.o"
+  "/home/sergey/coding/lib/src/server.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/library.dir/src/server.cpp.o"
+  "/home/sergey/coding/lib/src/server_tcp.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/library.dir/src/server_tcp.cpp.o"
+  "/home/sergey/coding/lib/src/server_udp.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/library.dir/src/server_udp.cpp.o"
+  "/home/sergey/coding/lib/src/xml_parser.cpp" "/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/library.dir/src/xml_parser.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

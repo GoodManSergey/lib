@@ -21,7 +21,7 @@ target_link_libraries(library ${JSONCPP_LDFLAGS})
 target_link_libraries(library pugixml)
 
 find_package (Threads)
-add_executable(Client ${CMAKE_SOURCE_DIR}/Client.cpp)
+add_executable(Client client_src/client.cpp client_src/client.h client_src/client_tcp.cpp client_src/client_tcp.h client_src/client_udp.cpp client_src/client_udp.h client_src/main.cpp client_src/string_queue.cpp client_src/string_queue.h)
 target_include_directories(Client PRIVATE ${JSONCPP_INCLUDE_DIRS})
 target_link_libraries(Client ${JSONCPP_LDFLAGS})
 target_link_libraries (Client ${CMAKE_THREAD_LIBS_INIT})

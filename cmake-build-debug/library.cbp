@@ -8,28 +8,28 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/home/kovalev_s/code/learn/cmake-build-debug"/>
+				<Option working_dir="/home/sergey/coding/lib/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/home/kovalev_s/code/learn/cmake-build-debug"/>
+				<Option working_dir="/home/sergey/coding/lib/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="Client">
-				<Option output="/home/kovalev_s/code/learn/cmake-build-debug/Client" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/kovalev_s/code/learn/cmake-build-debug"/>
+				<Option output="/home/sergey/coding/lib/cmake-build-debug/Client" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/sergey/coding/lib/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -45,15 +45,15 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 Client"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 Client"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="Client/fast">
-				<Option output="/home/kovalev_s/code/learn/cmake-build-debug/Client" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/kovalev_s/code/learn/cmake-build-debug"/>
+				<Option output="/home/sergey/coding/lib/cmake-build-debug/Client" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/sergey/coding/lib/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -69,25 +69,25 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 Client/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 Client/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/home/kovalev_s/code/learn/cmake-build-debug"/>
+				<Option working_dir="/home/sergey/coding/lib/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="library">
-				<Option output="/home/kovalev_s/code/learn/cmake-build-debug/library" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/kovalev_s/code/learn/cmake-build-debug"/>
+				<Option output="/home/sergey/coding/lib/cmake-build-debug/library" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/sergey/coding/lib/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -103,15 +103,15 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 library"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 library"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="library/fast">
-				<Option output="/home/kovalev_s/code/learn/cmake-build-debug/library" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/kovalev_s/code/learn/cmake-build-debug"/>
+				<Option output="/home/sergey/coding/lib/cmake-build-debug/library" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/sergey/coding/lib/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
@@ -127,74 +127,98 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 library/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/kovalev_s/code/learn/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 library/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/sergey/coding/lib/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/kovalev_s/code/learn/Client.cpp">
+		<Unit filename="/home/sergey/coding/lib/client_src/client.cpp">
 			<Option target="Client"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/author.cpp">
+		<Unit filename="/home/sergey/coding/lib/client_src/client.h">
+			<Option target="Client"/>
+		</Unit>
+		<Unit filename="/home/sergey/coding/lib/client_src/client_tcp.cpp">
+			<Option target="Client"/>
+		</Unit>
+		<Unit filename="/home/sergey/coding/lib/client_src/client_tcp.h">
+			<Option target="Client"/>
+		</Unit>
+		<Unit filename="/home/sergey/coding/lib/client_src/client_udp.cpp">
+			<Option target="Client"/>
+		</Unit>
+		<Unit filename="/home/sergey/coding/lib/client_src/client_udp.h">
+			<Option target="Client"/>
+		</Unit>
+		<Unit filename="/home/sergey/coding/lib/client_src/main.cpp">
+			<Option target="Client"/>
+		</Unit>
+		<Unit filename="/home/sergey/coding/lib/client_src/string_queue.cpp">
+			<Option target="Client"/>
+		</Unit>
+		<Unit filename="/home/sergey/coding/lib/client_src/string_queue.h">
+			<Option target="Client"/>
+		</Unit>
+		<Unit filename="/home/sergey/coding/lib/src/author.cpp">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/author.h">
+		<Unit filename="/home/sergey/coding/lib/src/author.h">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/book.cpp">
+		<Unit filename="/home/sergey/coding/lib/src/book.cpp">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/book.h">
+		<Unit filename="/home/sergey/coding/lib/src/book.h">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/file_storage.cpp">
+		<Unit filename="/home/sergey/coding/lib/src/file_storage.cpp">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/file_storage.h">
+		<Unit filename="/home/sergey/coding/lib/src/file_storage.h">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/json_parser.cpp">
+		<Unit filename="/home/sergey/coding/lib/src/json_parser.cpp">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/json_parser.h">
+		<Unit filename="/home/sergey/coding/lib/src/json_parser.h">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/library.cpp">
+		<Unit filename="/home/sergey/coding/lib/src/library.cpp">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/library.h">
+		<Unit filename="/home/sergey/coding/lib/src/library.h">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/main.cpp">
+		<Unit filename="/home/sergey/coding/lib/src/main.cpp">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/server.cpp">
+		<Unit filename="/home/sergey/coding/lib/src/server.cpp">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/server.h">
+		<Unit filename="/home/sergey/coding/lib/src/server.h">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/server_tcp.cpp">
+		<Unit filename="/home/sergey/coding/lib/src/server_tcp.cpp">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/server_tcp.h">
+		<Unit filename="/home/sergey/coding/lib/src/server_tcp.h">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/server_udp.cpp">
+		<Unit filename="/home/sergey/coding/lib/src/server_udp.cpp">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/server_udp.h">
+		<Unit filename="/home/sergey/coding/lib/src/server_udp.h">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/xml_parser.cpp">
+		<Unit filename="/home/sergey/coding/lib/src/xml_parser.cpp">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/src/xml_parser.h">
+		<Unit filename="/home/sergey/coding/lib/src/xml_parser.h">
 			<Option target="library"/>
 		</Unit>
-		<Unit filename="/home/kovalev_s/code/learn/CMakeLists.txt">
+		<Unit filename="/home/sergey/coding/lib/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>
