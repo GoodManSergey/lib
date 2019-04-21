@@ -1,3 +1,0 @@
-/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir
-/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/edit_cache.dir
