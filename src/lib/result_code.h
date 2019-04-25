@@ -12,5 +12,6 @@ enum class result_code: int
     STORAGE_ERROR,
     AUTHOR_HAS_BOOKS,
     PARSER_ERROR,
-    OPEN_FILE_ERROR
+    OPEN_FILE_ERROR,
+    SOCKET_ERROR
 };

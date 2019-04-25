@@ -4,6 +4,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/library.dir/src/lib/file_storage.cpp.o"
   "CMakeFiles/library.dir/src/lib/json_parser.cpp.o"
   "CMakeFiles/library.dir/src/lib/library.cpp.o"
+  "CMakeFiles/library.dir/src/lib/socket_tcp.cpp.o"
+  "CMakeFiles/library.dir/src/lib/socket_udp.cpp.o"
   "CMakeFiles/library.dir/src/lib/xml_parser.cpp.o"
   "CMakeFiles/library.dir/src/server/main.cpp.o"
   "CMakeFiles/library.dir/src/server/server.cpp.o"

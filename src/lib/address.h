@@ -5,7 +5,8 @@
 #ifndef LEARN_ADDRESS_H
 #define LEARN_ADDRESS_H
 
-#include<sys/socket.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 
 struct address
@@ -13,6 +14,9 @@ struct address
     address(const sockaddr_in& address, int fd):
             m_address(address),
             m_fd(fd)
+    {}
+
+    address()
     {}
 
     address(const sockaddr_in& address):

@@ -54,6 +54,22 @@ CMakeFiles/Client.dir/src/lib/library.cpp.o: ../src/lib/result_code.h
 CMakeFiles/Client.dir/src/lib/library.cpp.o: ../src/lib/storage.h
 CMakeFiles/Client.dir/src/lib/library.cpp.o: ../src/lib/storage_data.h
 
+CMakeFiles/Client.dir/src/lib/socket_tcp.cpp.o: ../src/lib/address.h
+CMakeFiles/Client.dir/src/lib/socket_tcp.cpp.o: ../src/lib/protocol.h
+CMakeFiles/Client.dir/src/lib/socket_tcp.cpp.o: ../src/lib/result.h
+CMakeFiles/Client.dir/src/lib/socket_tcp.cpp.o: ../src/lib/result_code.h
+CMakeFiles/Client.dir/src/lib/socket_tcp.cpp.o: ../src/lib/socket.h
+CMakeFiles/Client.dir/src/lib/socket_tcp.cpp.o: ../src/lib/socket_tcp.cpp
+CMakeFiles/Client.dir/src/lib/socket_tcp.cpp.o: ../src/lib/socket_tcp.h
+
+CMakeFiles/Client.dir/src/lib/socket_udp.cpp.o: ../src/lib/address.h
+CMakeFiles/Client.dir/src/lib/socket_udp.cpp.o: ../src/lib/protocol.h
+CMakeFiles/Client.dir/src/lib/socket_udp.cpp.o: ../src/lib/result.h
+CMakeFiles/Client.dir/src/lib/socket_udp.cpp.o: ../src/lib/result_code.h
+CMakeFiles/Client.dir/src/lib/socket_udp.cpp.o: ../src/lib/socket.h
+CMakeFiles/Client.dir/src/lib/socket_udp.cpp.o: ../src/lib/socket_udp.cpp
+CMakeFiles/Client.dir/src/lib/socket_udp.cpp.o: ../src/lib/socket_udp.h
+
 CMakeFiles/Client.dir/src/lib/xml_parser.cpp.o: ../src/lib/author.h
 CMakeFiles/Client.dir/src/lib/xml_parser.cpp.o: ../src/lib/book.h
 CMakeFiles/Client.dir/src/lib/xml_parser.cpp.o: ../src/lib/parser.h

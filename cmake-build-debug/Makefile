@@ -421,6 +421,66 @@ src/lib/library.cpp.s:
 	$(MAKE) -f CMakeFiles/library.dir/build.make CMakeFiles/library.dir/src/lib/library.cpp.s
 .PHONY : src/lib/library.cpp.s
 
+src/lib/socket_tcp.o: src/lib/socket_tcp.cpp.o
+
+.PHONY : src/lib/socket_tcp.o
+
+# target to build an object file
+src/lib/socket_tcp.cpp.o:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/src/lib/socket_tcp.cpp.o
+	$(MAKE) -f CMakeFiles/library.dir/build.make CMakeFiles/library.dir/src/lib/socket_tcp.cpp.o
+.PHONY : src/lib/socket_tcp.cpp.o
+
+src/lib/socket_tcp.i: src/lib/socket_tcp.cpp.i
+
+.PHONY : src/lib/socket_tcp.i
+
+# target to preprocess a source file
+src/lib/socket_tcp.cpp.i:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/src/lib/socket_tcp.cpp.i
+	$(MAKE) -f CMakeFiles/library.dir/build.make CMakeFiles/library.dir/src/lib/socket_tcp.cpp.i
+.PHONY : src/lib/socket_tcp.cpp.i
+
+src/lib/socket_tcp.s: src/lib/socket_tcp.cpp.s
+
+.PHONY : src/lib/socket_tcp.s
+
+# target to generate assembly for a file
+src/lib/socket_tcp.cpp.s:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/src/lib/socket_tcp.cpp.s
+	$(MAKE) -f CMakeFiles/library.dir/build.make CMakeFiles/library.dir/src/lib/socket_tcp.cpp.s
+.PHONY : src/lib/socket_tcp.cpp.s
+
+src/lib/socket_udp.o: src/lib/socket_udp.cpp.o
+
+.PHONY : src/lib/socket_udp.o
+
+# target to build an object file
+src/lib/socket_udp.cpp.o:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/src/lib/socket_udp.cpp.o
+	$(MAKE) -f CMakeFiles/library.dir/build.make CMakeFiles/library.dir/src/lib/socket_udp.cpp.o
+.PHONY : src/lib/socket_udp.cpp.o
+
+src/lib/socket_udp.i: src/lib/socket_udp.cpp.i
+
+.PHONY : src/lib/socket_udp.i
+
+# target to preprocess a source file
+src/lib/socket_udp.cpp.i:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/src/lib/socket_udp.cpp.i
+	$(MAKE) -f CMakeFiles/library.dir/build.make CMakeFiles/library.dir/src/lib/socket_udp.cpp.i
+.PHONY : src/lib/socket_udp.cpp.i
+
+src/lib/socket_udp.s: src/lib/socket_udp.cpp.s
+
+.PHONY : src/lib/socket_udp.s
+
+# target to generate assembly for a file
+src/lib/socket_udp.cpp.s:
+	$(MAKE) -f CMakeFiles/Client.dir/build.make CMakeFiles/Client.dir/src/lib/socket_udp.cpp.s
+	$(MAKE) -f CMakeFiles/library.dir/build.make CMakeFiles/library.dir/src/lib/socket_udp.cpp.s
+.PHONY : src/lib/socket_udp.cpp.s
+
 src/lib/xml_parser.o: src/lib/xml_parser.cpp.o
 
 .PHONY : src/lib/xml_parser.o
@@ -599,6 +659,12 @@ help:
 	@echo "... src/lib/library.o"
 	@echo "... src/lib/library.i"
 	@echo "... src/lib/library.s"
+	@echo "... src/lib/socket_tcp.o"
+	@echo "... src/lib/socket_tcp.i"
+	@echo "... src/lib/socket_tcp.s"
+	@echo "... src/lib/socket_udp.o"
+	@echo "... src/lib/socket_udp.i"
+	@echo "... src/lib/socket_udp.s"
 	@echo "... src/lib/xml_parser.o"
 	@echo "... src/lib/xml_parser.i"
 	@echo "... src/lib/xml_parser.s"

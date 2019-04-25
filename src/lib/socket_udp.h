@@ -2,8 +2,8 @@
 // Created by kovalev_s on 25.04.19.
 //
 
-#ifndef LEARN_SOCKET_TCP_H
-#define LEARN_SOCKET_TCP_H
+#ifndef LEARN_SOCKET_UDP_H
+#define LEARN_SOCKET_UDP_H
 
 #include "socket.h"
 #include "result_code.h"
@@ -19,7 +19,7 @@
 #include <unistd.h>
 
 
-class SocketTcp: public Socket
+class SocketUdp: public Socket
 {
 public:
     result_code create_socket_fd() override ;
@@ -36,6 +36,7 @@ public:
 private:
     int m_socket;
     sockaddr_in m_address;
+
 };
 
 

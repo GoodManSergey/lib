@@ -9,6 +9,8 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/kovalev_s/code/learn/src/lib/file_storage.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/lib/file_storage.cpp.o"
   "/home/kovalev_s/code/learn/src/lib/json_parser.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/lib/json_parser.cpp.o"
   "/home/kovalev_s/code/learn/src/lib/library.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/lib/library.cpp.o"
+  "/home/kovalev_s/code/learn/src/lib/socket_tcp.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/lib/socket_tcp.cpp.o"
+  "/home/kovalev_s/code/learn/src/lib/socket_udp.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/lib/socket_udp.cpp.o"
   "/home/kovalev_s/code/learn/src/lib/xml_parser.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/lib/xml_parser.cpp.o"
   "/home/kovalev_s/code/learn/src/server/main.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/server/main.cpp.o"
   "/home/kovalev_s/code/learn/src/server/server.cpp" "/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir/src/server/server.cpp.o"
