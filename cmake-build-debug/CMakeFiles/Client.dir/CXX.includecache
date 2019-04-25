@@ -12,6 +12,14 @@ sys/socket.h
 netinet/in.h
 -
 
+/home/kovalev_s/code/learn/src/lib/message.h
+experimental/optional
+-
+string
+-
+address.h
+/home/kovalev_s/code/learn/src/lib/address.h
+
 /home/kovalev_s/code/learn/src/lib/protocol.h
 
 /home/kovalev_s/code/learn/src/lib/result.h
@@ -31,12 +39,16 @@ result.h
 /home/kovalev_s/code/learn/src/lib/result.h
 string
 -
+memory
+-
+message.h
+/home/kovalev_s/code/learn/src/lib/message.h
 
-/home/kovalev_s/code/learn/src/lib/socket_udp.cpp
-socket_udp.h
-/home/kovalev_s/code/learn/src/lib/socket_udp.h
+/home/kovalev_s/code/learn/src/lib/socket_tcp.cpp
+socket_tcp.h
+/home/kovalev_s/code/learn/src/lib/socket_tcp.h
 
-/home/kovalev_s/code/learn/src/lib/socket_udp.h
+/home/kovalev_s/code/learn/src/lib/socket_tcp.h
 socket.h
 /home/kovalev_s/code/learn/src/lib/socket.h
 result_code.h
@@ -45,8 +57,6 @@ result.h
 /home/kovalev_s/code/learn/src/lib/result.h
 protocol.h
 /home/kovalev_s/code/learn/src/lib/protocol.h
-address.h
-/home/kovalev_s/code/learn/src/lib/address.h
 string
 -
 sys/types.h
@@ -60,5 +70,7 @@ netinet/in.h
 arpa/inet.h
 -
 unistd.h
+-
+memory
 -
 

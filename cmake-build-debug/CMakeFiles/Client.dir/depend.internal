@@ -56,6 +56,7 @@ CMakeFiles/Client.dir/src/lib/library.cpp.o
  /home/kovalev_s/code/learn/src/lib/storage_data.h
 CMakeFiles/Client.dir/src/lib/socket_tcp.cpp.o
  /home/kovalev_s/code/learn/src/lib/address.h
+ /home/kovalev_s/code/learn/src/lib/message.h
  /home/kovalev_s/code/learn/src/lib/protocol.h
  /home/kovalev_s/code/learn/src/lib/result.h
  /home/kovalev_s/code/learn/src/lib/result_code.h
@@ -64,6 +65,7 @@ CMakeFiles/Client.dir/src/lib/socket_tcp.cpp.o
  /home/kovalev_s/code/learn/src/lib/socket_tcp.h
 CMakeFiles/Client.dir/src/lib/socket_udp.cpp.o
  /home/kovalev_s/code/learn/src/lib/address.h
+ /home/kovalev_s/code/learn/src/lib/message.h
  /home/kovalev_s/code/learn/src/lib/protocol.h
  /home/kovalev_s/code/learn/src/lib/result.h
  /home/kovalev_s/code/learn/src/lib/result_code.h

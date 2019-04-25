@@ -6,6 +6,8 @@
 #include "protocol.h"
 #include "result.h"
 #include <string>
+#include <memory>
+#include "message.h"
 
 
 class Socket
@@ -16,12 +18,13 @@ public:
     virtual result_code set_in_addr() = 0;
     virtual result_code set_remote_addr(const std::string& server_host) = 0;
     virtual result_code connect_socket() = 0;
-    virtual result<address> accept_socket() = 0;
+    virtual result<std::shared_ptr<Socket>> accept_socket() = 0;
     virtual result_code listen_socket() = 0;
     virtual result_code bind_socket() = 0;
-    virtual std::string recv_msg(address& socket_addr) = 0;
-    virtual result_code send_msg(std::string&& msg, address& socket_addr) = 0;
+    virtual message recv_msg() = 0;
+    virtual result_code send_msg(message&& msg) = 0;
     virtual protocol return_protocol() = 0;
+    virtual ~Socket();
 };
 
 

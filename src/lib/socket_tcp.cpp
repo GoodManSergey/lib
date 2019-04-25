@@ -48,7 +48,7 @@ result_code SocketTcp::connect_socket()
     return result_code::OK;
 }
 
-result<address> SocketTcp::accept_socket()
+result<std::shared_ptr<Socket>> SocketTcp::accept_socket()
 {
     int client_socket;
     int addr_size = sizeof(m_address);
@@ -57,7 +57,7 @@ result<address> SocketTcp::accept_socket()
         std::cout<<"Client connect error"<<std::endl;
         return result_code::SOCKET_ERROR;
     }
-    return std::move(address(std::move(client_socket)));
+    return std::move(std::static_pointer_cast<Socket>(std::make_shared<SocketTcp>(std::move(client_socket))));
 }
 
 result_code SocketTcp::listen_socket()
@@ -81,30 +81,30 @@ result_code SocketTcp::bind_socket()
     return result_code::OK;
 }
 
-std::string SocketTcp::recv_msg(address& socket_addr)
+message SocketTcp::recv_msg()
 {
     int readval = 0;
     int buffer_size = 1024;
     char buffer[1024]{0};
-    readval = read(socket_addr.m_fd, buffer, buffer_size);
+    readval = read(m_socket, buffer, buffer_size);
 
-    return std::move(buffer);
+    return std::move(std::string(buffer));
 }
 
-result_code SocketTcp::send_msg(std::string&& msg, address& socket_addr)
+result_code SocketTcp::send_msg(message&& msg)
 {
     int left;
-
-    while (msg.length() != 0)
+    std::string send_msg = msg.m_data;
+    while (send_msg.length() != 0)
     {
-        left = send(socket_addr.m_fd, msg.c_str(), msg.length(), 0);
+        left = send(m_socket, send_msg.c_str(), send_msg.length(), 0);
         if(left < 0)
         {
             return result_code::SOCKET_ERROR;
         }
         else
         {
-            msg.erase(0, left);
+            send_msg.erase(0, left);
         }
     }
 
@@ -114,4 +114,9 @@ result_code SocketTcp::send_msg(std::string&& msg, address& socket_addr)
 protocol SocketTcp::return_protocol()
 {
     return protocol::TCP;
+}
+
+SocketTcp::~SocketTcp()
+{
+    close(m_socket);
 }

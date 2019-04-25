@@ -10,6 +10,7 @@
 #include "result.h"
 #include "protocol.h"
 #include "address.h"
+#include "message.h"
 #include <string>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -17,6 +18,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <memory>
 
 
 class SocketUdp: public Socket
@@ -27,12 +29,13 @@ public:
     result_code set_in_addr() override ;
     result_code set_remote_addr(const std::string& host) override ;
     result_code connect_socket() override ;
-    result<address> accept_socket() override ;
+    result<std::shared_ptr<Socket>> accept_socket() override ;
     result_code listen_socket() override ;
     result_code bind_socket() override ;
-    std::string recv_msg(address& socket_addr) override ;
-    result_code send_msg(std::string&& msg, address& socket_addr) override ;
+    message recv_msg(address& socket_addr) override ;
+    result_code send_msg(message&& msg) override ;
     protocol return_protocol() override ;
+    ~SocketUdp();
 private:
     int m_socket;
     sockaddr_in m_address;
