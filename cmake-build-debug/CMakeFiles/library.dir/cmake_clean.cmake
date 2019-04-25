@@ -1,9 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/library.dir/src/client/client.cpp.o"
-  "CMakeFiles/library.dir/src/client/client_tcp.cpp.o"
-  "CMakeFiles/library.dir/src/client/client_udp.cpp.o"
-  "CMakeFiles/library.dir/src/client/main.cpp.o"
-  "CMakeFiles/library.dir/src/client/string_queue.cpp.o"
   "CMakeFiles/library.dir/src/lib/author.cpp.o"
   "CMakeFiles/library.dir/src/lib/book.cpp.o"
   "CMakeFiles/library.dir/src/lib/file_storage.cpp.o"

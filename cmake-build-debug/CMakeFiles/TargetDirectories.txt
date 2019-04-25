@@ -1,4 +1,4 @@
-/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/library.dir
-/home/sergey/coding/lib/cmake-build-debug/CMakeFiles/Client.dir
+/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/Client.dir
+/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/kovalev_s/code/learn/cmake-build-debug/CMakeFiles/library.dir
