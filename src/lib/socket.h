@@ -24,7 +24,7 @@ public:
     virtual message recv_msg() = 0;
     virtual result_code send_msg(message&& msg) = 0;
     virtual protocol return_protocol() = 0;
-    virtual ~Socket();
+    virtual ~Socket() = default;
 };
 
 

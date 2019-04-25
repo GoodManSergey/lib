@@ -40,9 +40,9 @@ result_code SocketUdp::connect_socket()
     return result_code::OK;
 }
 
-result<address> SocketUdp::accept_socket()
+result<std::shared_ptr<Socket>> SocketUdp::accept_socket()
 {
-    return std::move(address(std::move(m_address)));
+    return shared_from_this();
 }
 
 result_code SocketUdp::listen_socket()
@@ -61,25 +61,33 @@ result_code SocketUdp::bind_socket()
     return result_code::OK;
 }
 
-std::string SocketUdp::recv_msg(address& socket_addr)
+message SocketUdp::recv_msg()
 {
     int readval = 0;
     int buffer_size = 1024;
     char buffer[1024]{0};
+    address socket_addr;
     int size_of_addr = sizeof(socket_addr.m_address);
+
     readval = recvfrom(m_socket, (char *)buffer, buffer_size, MSG_WAITALL, (sockaddr *)&socket_addr.m_address,
             (socklen_t*)&size_of_addr);
 
-    return std::move(buffer);
+    message msg(std::move(buffer), std::move(socket_addr));
+    return std::move(msg);
 }
 
-result_code SocketUdp::send_msg(std::string&& msg, address& socket_addr)
+result_code SocketUdp::send_msg(message&& msg)
 {
-    int size_of_addr = sizeof(socket_addr.m_address);
-    sendto(m_socket, msg.c_str(), msg.length(), 0, (sockaddr *)&socket_addr.m_address, size_of_addr);
+    int size_of_addr = sizeof(msg.m_address);
+    sendto(m_socket, msg.m_data.c_str(), msg.m_data.length(), 0, (sockaddr *)&msg.m_address, size_of_addr);
 }
 
 protocol SocketUdp::return_protocol()
 {
     return protocol::UDP;
+}
+
+SocketUdp::~SocketUdp()
+{
+    close(m_socket);
 }

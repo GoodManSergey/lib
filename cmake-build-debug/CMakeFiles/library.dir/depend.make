@@ -37,6 +37,7 @@ CMakeFiles/library.dir/src/lib/library.cpp.o: ../src/lib/storage.h
 CMakeFiles/library.dir/src/lib/library.cpp.o: ../src/lib/storage_data.h
 
 CMakeFiles/library.dir/src/lib/socket_tcp.cpp.o: ../src/lib/address.h
+CMakeFiles/library.dir/src/lib/socket_tcp.cpp.o: ../src/lib/message.h
 CMakeFiles/library.dir/src/lib/socket_tcp.cpp.o: ../src/lib/protocol.h
 CMakeFiles/library.dir/src/lib/socket_tcp.cpp.o: ../src/lib/result.h
 CMakeFiles/library.dir/src/lib/socket_tcp.cpp.o: ../src/lib/result_code.h
@@ -45,6 +46,7 @@ CMakeFiles/library.dir/src/lib/socket_tcp.cpp.o: ../src/lib/socket_tcp.cpp
 CMakeFiles/library.dir/src/lib/socket_tcp.cpp.o: ../src/lib/socket_tcp.h
 
 CMakeFiles/library.dir/src/lib/socket_udp.cpp.o: ../src/lib/address.h
+CMakeFiles/library.dir/src/lib/socket_udp.cpp.o: ../src/lib/message.h
 CMakeFiles/library.dir/src/lib/socket_udp.cpp.o: ../src/lib/protocol.h
 CMakeFiles/library.dir/src/lib/socket_udp.cpp.o: ../src/lib/result.h
 CMakeFiles/library.dir/src/lib/socket_udp.cpp.o: ../src/lib/result_code.h

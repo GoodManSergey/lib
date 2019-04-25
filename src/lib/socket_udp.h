@@ -21,7 +21,7 @@
 #include <memory>
 
 
-class SocketUdp: public Socket
+class SocketUdp: public Socket, std::enable_shared_from_this<Socket>
 {
 public:
     result_code create_socket_fd() override ;
@@ -32,7 +32,7 @@ public:
     result<std::shared_ptr<Socket>> accept_socket() override ;
     result_code listen_socket() override ;
     result_code bind_socket() override ;
-    message recv_msg(address& socket_addr) override ;
+    message recv_msg() override ;
     result_code send_msg(message&& msg) override ;
     protocol return_protocol() override ;
     ~SocketUdp();
