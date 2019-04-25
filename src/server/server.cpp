@@ -1,8 +1,8 @@
 #include"server.h"
 
 
-Server::Server(std::unique_ptr<Library> lib):
-        pm_lib(std::move(lib)), m_work(true)
+Server::Server(std::unique_ptr<Library> lib, std::unique_ptr<Socket> server_socket):
+        pm_lib(std::move(lib)), m_work(true), pm_server_socket(std::move(server_socket))
     {
         m_commands["add_author"] = server_command::ADD_AUTHOR;
         m_commands["get_author_by_id"] = server_command::GET_AUTHOR_BY_ID;

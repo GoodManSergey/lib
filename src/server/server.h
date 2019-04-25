@@ -13,12 +13,13 @@
 #include<sys/socket.h>
 #include<atomic>
 #include<unistd.h>
+#include "../lib/socket.h"
 
 
 class Server
 {
     public:
-    explicit Server(std::unique_ptr<Library> lib);
+    explicit Server(std::unique_ptr<Library> lib, std::unique_ptr<Socket> server_socket);
 
     virtual ~Server() = default;
 
@@ -58,6 +59,6 @@ class Server
     std::atomic<bool> m_work;
     std::unique_ptr<Library> pm_lib;
     sockaddr_in m_address;
-    int m_server_fd;
+    std::unique_ptr<Socket> pm_server_socket;
     std::unordered_map<std::string, server_command> m_commands;
 };
