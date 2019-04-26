@@ -78,8 +78,13 @@ message SocketUdp::recv_msg()
 
 result_code SocketUdp::send_msg(message&& msg)
 {
+    if (!msg.m_address)
+    {
+        return result_code::SOCKET_ERROR;
+    }
     int size_of_addr = sizeof(msg.m_address);
     sendto(m_socket, msg.m_data.c_str(), msg.m_data.length(), 0, (sockaddr *)&msg.m_address, size_of_addr);
+    return result_code::OK;
 }
 
 protocol SocketUdp::return_protocol()
