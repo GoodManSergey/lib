@@ -10,6 +10,7 @@
 #include"storage_data.h"
 #include<iostream>
 #include<algorithm>
+#include <functional>
 
 
 class JsonParser: public Parser
