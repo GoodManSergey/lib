@@ -99,10 +99,7 @@ result_code SocketTcp::send_msg(message&& msg)
 {
     int left;
     std::string send_msg = msg.m_data;
-    /*
-     * TODO мысль отправлять "пока не отправится" здравая, но в таком исполнении сожрёт все ресурсы CPU, необходимо хотя бы
-     * иногда спать или возвращать управление основному потоку и продолжать попытки отправки позже.
-     */
+
     while (send_msg.length() != 0)
     {
         left = send(m_socket, send_msg.c_str(), send_msg.length(), 0);
@@ -113,6 +110,7 @@ result_code SocketTcp::send_msg(message&& msg)
         else
         {
             send_msg.erase(0, left);
+            sleep(1);
         }
     }
 

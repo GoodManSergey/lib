@@ -21,9 +21,6 @@ struct message
     {}
 
     std::string m_data;
-    /*
-     * TODO Зачем expermental? optional уже достаточное количество времени есть и просто в std::
-     */
     std::optional<address> m_address;
 };
 

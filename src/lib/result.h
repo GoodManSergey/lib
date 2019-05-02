@@ -13,19 +13,9 @@ struct result
         m_object(object)
     {}
 
-    /*
-     * TODO заменяется на return m_code == result::OK, if..else здесь абсолютно лишние
-     */
     operator bool()
     {
-        if (m_code == result_code::OK)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return m_code == result_code::OK;
     }
 
     result_code m_code;
