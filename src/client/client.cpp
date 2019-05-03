@@ -113,26 +113,16 @@ std::string Client::get_all_author_books_msg(int id)
 
 std::string Client::get_response()
 {
-    std::string response;
-    bool resp_gotten = false;
-    while(true)
+    while (m_work)
     {
-        m_response_mutex.lock();
-        if (m_has_response)
+        std::string msg = m_response.get();
+        if (msg.length() != 0)
         {
-            response = std::move(m_response);
-            m_has_response = false;
-            resp_gotten = true;
-        }
-        m_response_mutex.unlock();
-
-        if (resp_gotten)
-        {
-            break;
+            return std::move(msg);
         }
     }
 
-    return std::move(response);
+    return {};
 };
 
 void Client::send_to_queue(std::string&& request)

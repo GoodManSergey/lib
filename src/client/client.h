@@ -5,16 +5,18 @@
 #include <mutex>
 #include <queue>
 #include "jsoncpp/json/json.h"
+#include "string_queue.h"
+#include <atomic>
+
 
 class Client
 {
 public:
-    Client():
-            m_has_response(false)
+    Client()
     {}
 
     virtual ~Client() = default;
-    virtual void init(int server_port, const std::string& server_host) = 0;
+    void init(int server_port, const std::string& server_host);
     virtual void read_write() = 0;
 
     std::string json_to_string(const Json::Value& json);
@@ -42,11 +44,9 @@ public:
     void send_to_queue(std::string&& request);
 
 protected:
-    std::queue<std::string> m_send_queue;
-    std::string m_response;
-    bool m_has_response;
-    std::mutex m_send_queue_mutex;
-    std::mutex m_response_mutex;
+    StringQueue m_send_queue;
+    StringQueue m_response;
+    std::atomic<bool> m_work{true};
 
 };
 
