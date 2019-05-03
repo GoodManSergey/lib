@@ -5,7 +5,7 @@
 #ifndef LEARN_MESSAGE_H
 #define LEARN_MESSAGE_H
 
-#include <optional>
+#include <experimental/optional>
 #include <string>
 #include "address.h"
 
@@ -21,7 +21,7 @@ struct message
     {}
 
     std::string m_data;
-    std::optional<address> m_address;
+    std::experimental::optional<address> m_address;
 };
 
 

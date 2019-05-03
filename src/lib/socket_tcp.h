@@ -22,6 +22,7 @@
 class SocketTcp: public Socket
 {
 public:
+    SocketTcp() = default;
     SocketTcp(int fd):
     m_socket(fd)
     {}

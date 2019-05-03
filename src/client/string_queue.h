@@ -4,7 +4,6 @@
 #include <string>
 #include <mutex>
 #include <queue>
-#include <condition_variable>
 #include <atomic>
 
 
@@ -17,7 +16,6 @@ public:
 private:
     std::queue<std::string> m_queue;
     std::mutex m_msg_mutex;
-    std::condition_variable  m_cond_var;
     std::atomic<bool> m_has_msg;
 };
 

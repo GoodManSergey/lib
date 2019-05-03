@@ -20,6 +20,7 @@
 class Socket
 {
 public:
+    Socket() = default;
     virtual result_code create_socket_fd() = 0;
     virtual result_code fill_addr(int port) = 0;
     virtual result_code set_in_addr() = 0;

@@ -57,7 +57,7 @@ result<std::shared_ptr<Socket>> SocketTcp::accept_socket()
         std::cout<<"Client connect error"<<std::endl;
         return result_code::SOCKET_ERROR;
     }
-    return std::move(std::static_pointer_cast<Socket>(std::make_shared<SocketTcp>(std::move(client_socket))));
+    return std::static_pointer_cast<Socket>(std::make_shared<SocketTcp>(client_socket));
 }
 
 result_code SocketTcp::listen_socket()
