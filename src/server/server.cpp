@@ -546,5 +546,50 @@ void Server::init_socket(int port)
     pm_server_socket->create_socket_fd();
     pm_server_socket->fill_addr(port);
     pm_server_socket->set_in_addr();
-    pm_server_socket->
+    pm_server_socket->bind_socket();
+    pm_server_socket->listen_socket();
+}
+
+void Server::run()
+{
+    std::shared_ptr<Socket> client_socket;
+    while (m_work)
+    {
+        if (!m_has_connection)
+        {
+            auto accept_res = pm_server_socket->accept_socket();
+            if (!accept_res)
+            {
+                continue;
+            }
+            client_socket = accept_res.m_object;
+            m_has_connection = true;
+        }
+
+        auto recv_msg = client_socket->recv_msg();
+
+        if (recv_msg.m_data.length() == 0)
+        {
+            sleep(1);
+            continue;
+        }
+        else
+        {
+            std::string msg;
+            for (char& c : recv_msg.m_data)
+            {
+                std::cout<<c;
+                if (c == '\v')
+                {
+                    std::string resp = proc_msg(msg);
+                    std::cout<<"resp:"<<std::endl<<resp<<std::endl;
+                    message send_msg(resp, recv_msg.m_address.value());
+                    client_socket->send_msg(send_msg);
+                    msg = "";
+                    continue;
+                }
+                msg += c;
+            }
+        }
+    }
 }

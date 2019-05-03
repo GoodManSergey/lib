@@ -92,7 +92,7 @@ message SocketUdp::recv_msg()
     }
 }
 
-result_code SocketUdp::send_msg(message&& msg)
+result_code SocketUdp::send_msg(message& msg)
 {
     if (!msg.m_address)
     {

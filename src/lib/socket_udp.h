@@ -34,9 +34,9 @@ public:
     result_code listen_socket() override ;
     result_code bind_socket() override ;
     message recv_msg() override ;
-    result_code send_msg(message&& msg) override ;
+    result_code send_msg(message& msg) override ;
     protocol return_protocol() override ;
-    ~SocketUdp();
+    ~SocketUdp() override ;
 private:
     int m_socket;
     sockaddr_in m_address;

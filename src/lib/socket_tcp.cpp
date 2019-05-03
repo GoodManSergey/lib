@@ -95,7 +95,7 @@ message SocketTcp::recv_msg()
     return std::move(std::string(buffer));
 }
 
-result_code SocketTcp::send_msg(message&& msg)
+result_code SocketTcp::send_msg(message& msg)
 {
     int left;
     std::string send_msg = msg.m_data;

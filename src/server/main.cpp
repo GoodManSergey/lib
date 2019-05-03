@@ -1,6 +1,5 @@
 #include "../lib/storage.h"
 #include "../lib/library.h"
-#include "server_tcp.h"
 #include "../lib/file_storage.h"
 #include "../lib/parser.h"
 #include "../lib/xml_parser.h"
@@ -9,6 +8,7 @@
 #include <iostream>
 #include "../lib/socket.h"
 #include "../lib/socket_tcp.h"
+#include "server.h"
 
 
 std::unique_ptr<Library> lib;
@@ -27,7 +27,7 @@ int main()
     auto storage = std::make_unique<FileStorage>(std::move(parser), "FileStore.xml");
     lib = std::make_unique<Library>(std::move(storage));
     sock = std::make_unique<SocketTcp>();
-    serv = std::make_unique<Server>(std::move(lib), std::move(socket));
+    serv = std::make_unique<Server>(std::move(lib), std::move(sock));
     signal(SIGTERM, signal_handler);
     serv->init_socket(8080);
     serv->run();

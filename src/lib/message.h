@@ -11,12 +11,12 @@
 
 struct message
 {
-    message(const std::string& msg):
-    m_data(msg)
+    message(std::string msg):
+    m_data(std::move(msg))
     {}
 
-    message(const std::string& data, const address& sock_address):
-    m_data(data),
+    message(std::string data, address& sock_address):
+    m_data(std::move(data)),
     m_address(sock_address)
     {}
 

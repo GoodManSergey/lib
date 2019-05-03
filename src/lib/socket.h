@@ -30,7 +30,7 @@ public:
     virtual result_code listen_socket() = 0;
     virtual result_code bind_socket() = 0;
     virtual message recv_msg() = 0;
-    virtual result_code send_msg(message&& msg) = 0;
+    virtual result_code send_msg(message& msg) = 0;
     virtual protocol return_protocol() = 0;
     virtual ~Socket() = default;
 };
