@@ -539,6 +539,12 @@ std::string Server::proc_msg(const std::string& msg)
 void Server::stop()
 {
     m_work = false;
-    close(m_server_fd);
 }
 
+void Server::init_socket(int port)
+{
+    pm_server_socket->create_socket_fd();
+    pm_server_socket->fill_addr(port);
+    pm_server_socket->set_in_addr();
+    pm_server_socket->
+}

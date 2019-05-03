@@ -23,7 +23,7 @@ class Server
 
     virtual ~Server() = default;
 
-    virtual void init_socket(int port) = 0;
+    void init_socket(int port);
 
 	std::string json_to_string(const Json::Value& json);
 
@@ -58,7 +58,6 @@ class Server
     protected:
     std::atomic<bool> m_work;
     std::unique_ptr<Library> pm_lib;
-    sockaddr_in m_address;
     std::unique_ptr<Socket> pm_server_socket;
     std::unordered_map<std::string, server_command> m_commands;
 };

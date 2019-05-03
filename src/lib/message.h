@@ -20,6 +20,8 @@ struct message
     m_address(sock_address)
     {}
 
+    message() = default;
+
     std::string m_data;
     std::experimental::optional<address> m_address;
 };

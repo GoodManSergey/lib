@@ -19,6 +19,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <memory>
+#include <poll.h>
 
 
 class SocketUdp: public Socket, std::enable_shared_from_this<Socket>
@@ -39,6 +40,7 @@ public:
 private:
     int m_socket;
     sockaddr_in m_address;
+    pollfd m_fds[1];
 
 };
 

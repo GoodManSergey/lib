@@ -68,12 +68,28 @@ message SocketUdp::recv_msg()
     char buffer[1024]{0};
     address socket_addr;
     int size_of_addr = sizeof(socket_addr.m_address);
+    m_fds[0].fd = m_socket;
+    m_fds[0].events = POLLIN;
 
-    readval = recvfrom(m_socket, (char *)buffer, buffer_size, MSG_WAITALL, (sockaddr *)&socket_addr.m_address,
-            (socklen_t*)&size_of_addr);
+    int poll_res = ::poll(m_fds, 1, 1000);
 
-    message msg(std::move(buffer), std::move(socket_addr));
-    return std::move(msg);
+    if (poll_res == -1)
+    {
+        return {};
+    }
+    else if (poll_res == 0)
+    {
+        return {};
+    }
+    else
+    {
+
+        readval = recvfrom(m_socket, (char *) buffer, buffer_size, MSG_WAITALL, (sockaddr *) &socket_addr.m_address,
+                           (socklen_t *) &size_of_addr);
+
+        message msg(buffer, socket_addr);
+        return std::move(msg);
+    }
 }
 
 result_code SocketUdp::send_msg(message&& msg)
