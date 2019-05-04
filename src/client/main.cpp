@@ -1,14 +1,17 @@
-#include "client_tcp.h"
+#include "client.h"
+#include "../lib/socket_tcp.h"
 #include <thread>
+#include <memory>
 
 
 int main()
 {
-    ClientTCP client;
+    std::unique_ptr<Socket> sock = std::make_unique<SocketTcp>();
+    Client client(std::move(sock));
 
     client.init(8080, "127.0.0.1");
 
-    std::thread read_write(&ClientTCP::read_write, &client);
+    std::thread read_write(&Client::read_write, &client);
 
     bool exit = false;
     while (!exit)
@@ -35,7 +38,7 @@ int main()
                 std::cout<<"Enter author name"<<std::endl;
                 std::cin>>name;
                 std::string msg = client.add_author_msg(name);
-                client.send_to_queue(std::move(msg));
+                client.send_to_server(std::move(msg));
                 std::string answer = client.get_response();
                 std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
                 break;
@@ -46,7 +49,7 @@ int main()
                 std::cout<<"Enter author id"<<std::endl;
                 std::cin>>id;
                 std::string msg = client.get_author_msg(id);
-                client.send_to_queue(std::move(msg));
+                client.send_to_server(std::move(msg));
                 std::string answer = client.get_response();
                 std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
                 break;
@@ -60,7 +63,7 @@ int main()
                 std::cout<<"Enter author name"<<std::endl;
                 std::cin>>name;
                 std::string msg = client.change_author_msg(id, name);
-                client.send_to_queue(std::move(msg));
+                client.send_to_server(std::move(msg));
                 std::string answer = client.get_response();
                 std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
                 break;
@@ -71,7 +74,7 @@ int main()
                 std::cout<<"Enter author id"<<std::endl;
                 std::cin>>id;
                 std::string msg = client.delete_author_msg(id);
-                client.send_to_queue(std::move(msg));
+                client.send_to_server(std::move(msg));
                 std::string answer = client.get_response();
                 std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
                 break;
@@ -85,7 +88,7 @@ int main()
                 std::cout<<"Enter book title"<<std::endl;
                 std::cin>>title;
                 std::string msg = client.add_book_msg(author_id, title);
-                client.send_to_queue(std::move(msg));
+                client.send_to_server(std::move(msg));
                 std::string answer = client.get_response();
                 std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
                 break;
@@ -96,7 +99,7 @@ int main()
                 std::cout<<"Enter book id"<<std::endl;
                 std::cin>>id;
                 std::string msg = client.get_book_msg(id);
-                client.send_to_queue(std::move(msg));
+                client.send_to_server(std::move(msg));
                 std::string answer = client.get_response();
                 std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
                 break;
@@ -113,7 +116,7 @@ int main()
                 std::cout<<"Enter book title"<<std::endl;
                 std::cin>>title;
                 std::string msg = client.change_book_msg(id, author_id, title);
-                client.send_to_queue(std::move(msg));
+                client.send_to_server(std::move(msg));
                 std::string answer = client.get_response();
                 std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
                 break;
@@ -124,7 +127,7 @@ int main()
                 std::cout<<"Enter book id"<<std::endl;
                 std::cin>>id;
                 std::string msg = client.delete_book_msg(id);
-                client.send_to_queue(std::move(msg));
+                client.send_to_server(std::move(msg));
                 std::string answer = client.get_response();
                 std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
                 break;
@@ -135,7 +138,7 @@ int main()
                 std::cout<<"Enter author id"<<std::endl;
                 std::cin>>id;
                 std::string msg = client.get_all_author_books_msg(id);
-                client.send_to_queue(std::move(msg));
+                client.send_to_server(std::move(msg));
                 std::string answer = client.get_response();
                 std::cout<<"answer from server:"<<std::endl<<answer<<std::endl;
                 break;
