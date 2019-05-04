@@ -12,6 +12,7 @@
 #include "../lib/result_code.h"
 #include <assert.h>
 #include "../lib/message.h"
+#include <iostream>
 
 
 class Client

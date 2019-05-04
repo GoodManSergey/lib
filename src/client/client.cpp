@@ -149,13 +149,39 @@ void Client::init(int server_port, const std::string &server_host)
 
 void Client::read_write()
 {
+    address server_addr = m_server->return_address();
     while (m_work)
     {
         std::string send_msg = m_send_queue.get();
         if (send_msg.length() != 0)
         {
-            message send()
-            auto send_res = m_server->send_msg(send_msg);
+            message send(send_msg, server_addr);
+            auto send_res = m_server->send_msg(send);
+            if (send_res != result_code::OK)
+            {
+                assert(false);
+            }
+        }
+
+        message recv_msg = m_server->recv_msg();
+
+        if (recv_msg.m_data.length() == 0)
+        {
+            continue;
+        }
+        else
+        {
+            std::string msg;
+            for (char& c : recv_msg.m_data)
+            {
+                std::cout<<c;
+                if (c == '\v')
+                {
+                    proc_msg(std::move(msg));
+                    msg = "";
+                }
+                msg += c;
+            }
         }
     }
 }
