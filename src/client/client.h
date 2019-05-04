@@ -7,17 +7,23 @@
 #include "jsoncpp/json/json.h"
 #include "string_queue.h"
 #include <atomic>
+#include "../lib/socket.h"
+#include <memory>
+#include "../lib/result_code.h"
+#include <assert.h>
+#include "../lib/message.h"
 
 
 class Client
 {
 public:
-    Client()
+    Client(std::unique_ptr<Socket> socket):
+    m_server(std::move(socket))
     {}
 
-    virtual ~Client() = default;
+    ~Client() = default;
     void init(int server_port, const std::string& server_host);
-    virtual void read_write() = 0;
+    void read_write();
 
     std::string json_to_string(const Json::Value& json);
 
@@ -41,11 +47,14 @@ public:
 
     std::string get_response();
 
-    void send_to_queue(std::string&& request);
+    void send_to_server(std::string&& request);
+
+    void proc_msg(std::string&& msg);
 
 protected:
     StringQueue m_send_queue;
     StringQueue m_response;
+    std::unique_ptr<Socket> m_server;
     std::atomic<bool> m_work{true};
 
 };

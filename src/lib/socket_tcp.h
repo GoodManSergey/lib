@@ -38,6 +38,7 @@ public:
     message recv_msg() override ;
     result_code send_msg(message& msg) override ;
     protocol return_protocol() override ;
+    address return_address() override ;
     ~SocketTcp() override ;
 private:
     int m_socket{};

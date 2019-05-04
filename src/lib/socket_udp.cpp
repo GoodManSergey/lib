@@ -112,3 +112,9 @@ SocketUdp::~SocketUdp()
 {
     close(m_socket);
 }
+
+address SocketUdp::return_address()
+{
+    address addr(m_address);
+    return addr;
+}

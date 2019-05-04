@@ -20,7 +20,7 @@ std::string StringQueue::get()
     }
 }
 
-void StringQueue::add(const std::string& msg)
+void StringQueue::add(std::string&& msg)
 {
     std::lock_guard<std::mutex> lock(m_msg_mutex);
     m_queue.push(std::move(msg));

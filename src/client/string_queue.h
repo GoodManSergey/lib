@@ -10,7 +10,7 @@
 class StringQueue
 {
 public:
-    void add(const std::string& msg);
+    void add(std::string&& msg);
     std::string get();
 
 private:

@@ -126,3 +126,9 @@ SocketTcp::~SocketTcp()
 {
     close(m_socket);
 }
+
+address SocketTcp::return_address()
+{
+    address addr(m_socket);
+    return addr;
+}

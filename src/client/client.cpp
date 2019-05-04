@@ -125,9 +125,37 @@ std::string Client::get_response()
     return {};
 };
 
-void Client::send_to_queue(std::string&& request)
+void Client::send_to_server(std::string&& request)
 {
-    m_send_queue_mutex.lock();
-    m_send_queue.push(std::move(request));
-    m_send_queue_mutex.unlock();
+    m_send_queue.add(std::move(request));
 };
+
+void Client::proc_msg(std::string&& msg)
+{
+
+}
+
+void Client::init(int server_port, const std::string &server_host)
+{
+    m_server->create_socket_fd();
+    m_server->fill_addr(server_port);
+    m_server->set_remote_addr(server_host);
+    if (m_server->connect_socket() != result_code::OK)
+    {
+        assert(false);
+    }
+
+}
+
+void Client::read_write()
+{
+    while (m_work)
+    {
+        std::string send_msg = m_send_queue.get();
+        if (send_msg.length() != 0)
+        {
+            message send()
+            auto send_res = m_server->send_msg(send_msg);
+        }
+    }
+}
