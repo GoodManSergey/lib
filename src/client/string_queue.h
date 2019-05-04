@@ -11,13 +11,17 @@
 class StringQueue
 {
 public:
+    StringQueue():
+    m_has_msg(false)
+    {}
+
     void add(std::string&& msg);
     std::string get();
 
 private:
-    std::queue<std::string> m_queue{};
+    std::queue<std::string> m_queue;
     std::mutex m_msg_mutex;
-    std::atomic<bool> m_has_msg{false};
+    std::atomic<bool> m_has_msg;
 };
 
 

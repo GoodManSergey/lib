@@ -90,9 +90,25 @@ message SocketTcp::recv_msg()
     int readval = 0;
     int buffer_size = 1024;
     char buffer[1024]{0};
-    readval = read(m_socket, buffer, buffer_size);
+    m_fds[0].fd = m_socket;
+    m_fds[0].events = POLLIN;
 
-    return std::move(std::string(buffer));
+    int poll_res = ::poll(m_fds, 1, 1000);
+
+    if (poll_res == -1)
+    {
+        return {};
+    }
+    else if (poll_res == 0)
+    {
+        return {};
+    }
+    else
+    {
+        readval = read(m_socket, buffer, buffer_size);
+
+        return std::move(std::string(buffer));
+    }
 }
 
 result_code SocketTcp::send_msg(message& msg)
