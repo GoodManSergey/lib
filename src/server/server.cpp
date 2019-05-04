@@ -583,7 +583,12 @@ void Server::run()
                 {
                     std::string resp = proc_msg(msg);
                     std::cout<<"resp:"<<std::endl<<resp<<std::endl;
-                    message send_msg(resp, recv_msg.m_address.value());
+                    address addr;
+                    if (recv_msg.m_address)
+                    {
+                        addr = recv_msg.m_address.value();
+                    }
+                    message send_msg(resp, addr);
                     client_socket->send_msg(send_msg);
                     msg = "";
                     continue;
