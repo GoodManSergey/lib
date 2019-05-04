@@ -13,6 +13,7 @@
 #include <assert.h>
 #include "../lib/message.h"
 #include <iostream>
+#include <unistd.h>
 
 
 class Client

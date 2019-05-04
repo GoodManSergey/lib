@@ -5,6 +5,7 @@
 #include <mutex>
 #include <queue>
 #include <atomic>
+#include <iostream>
 
 
 class StringQueue
@@ -14,9 +15,9 @@ public:
     std::string get();
 
 private:
-    std::queue<std::string> m_queue;
+    std::queue<std::string> m_queue{};
     std::mutex m_msg_mutex;
-    std::atomic<bool> m_has_msg;
+    std::atomic<bool> m_has_msg{false};
 };
 
 

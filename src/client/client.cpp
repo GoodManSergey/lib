@@ -120,6 +120,7 @@ std::string Client::get_response()
         {
             return std::move(msg);
         }
+        sleep(1);
     }
 
     return {};
@@ -167,6 +168,7 @@ void Client::read_write()
 
         if (recv_msg.m_data.length() == 0)
         {
+            sleep(1);
             continue;
         }
         else

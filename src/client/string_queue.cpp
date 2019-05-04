@@ -10,7 +10,7 @@ std::string StringQueue::get()
         {
             m_has_msg = false;
         }
-        std::string msg = std::move(m_queue.front());
+        std::string msg = m_queue.front();
         m_queue.pop();
         return std::move(msg);
     }
@@ -23,6 +23,9 @@ std::string StringQueue::get()
 void StringQueue::add(std::string&& msg)
 {
     std::lock_guard<std::mutex> lock(m_msg_mutex);
+    std::cout<<msg;
     m_queue.push(std::move(msg));
+    std::cout<<m_queue.size();
     m_has_msg = true;
+    std::cout<<m_has_msg;
 }
