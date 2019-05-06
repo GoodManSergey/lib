@@ -12,6 +12,7 @@
 #include"result_code.h"
 #include"author.h"
 #include"book.h"
+#include <functional>
 
 
 class FileStorage: public Storage

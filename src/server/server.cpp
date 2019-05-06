@@ -1,8 +1,8 @@
 #include"server.h"
 
 
-Server::Server(std::unique_ptr<Library> lib):
-        pm_lib(std::move(lib)), m_work(true)
+Server::Server(std::unique_ptr<Library> lib, std::unique_ptr<Socket> server_socket):
+        pm_lib(std::move(lib)), m_work(true), pm_server_socket(std::move(server_socket))
     {
         m_commands["add_author"] = server_command::ADD_AUTHOR;
         m_commands["get_author_by_id"] = server_command::GET_AUTHOR_BY_ID;
@@ -539,6 +539,62 @@ std::string Server::proc_msg(const std::string& msg)
 void Server::stop()
 {
     m_work = false;
-    close(m_server_fd);
 }
 
+void Server::init_socket(int port)
+{
+    pm_server_socket->create_socket_fd();
+    pm_server_socket->fill_addr(port);
+    pm_server_socket->set_in_addr();
+    pm_server_socket->bind_socket();
+    pm_server_socket->listen_socket();
+}
+
+void Server::run()
+{
+    std::shared_ptr<Socket> client_socket;
+    while (m_work)
+    {
+        if (!m_has_connection)
+        {
+            auto accept_res = pm_server_socket->accept_socket();
+            if (!accept_res)
+            {
+                continue;
+            }
+            client_socket = accept_res.m_object;
+            m_has_connection = true;
+        }
+
+        auto recv_msg = client_socket->recv_msg();
+
+        if (recv_msg.m_data.length() == 0)
+        {
+            sleep(1);
+            continue;
+        }
+        else
+        {
+            std::string msg;
+            for (char& c : recv_msg.m_data)
+            {
+                std::cout<<c;
+                if (c == '\v')
+                {
+                    std::string resp = proc_msg(msg);
+                    std::cout<<"resp:"<<std::endl<<resp<<std::endl;
+                    address addr;
+                    if (recv_msg.m_address)
+                    {
+                        addr = recv_msg.m_address.value();
+                    }
+                    message send_msg(resp, addr);
+                    client_socket->send_msg(send_msg);
+                    msg = "";
+                    continue;
+                }
+                msg += c;
+            }
+        }
+    }
+}

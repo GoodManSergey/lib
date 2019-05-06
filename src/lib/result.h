@@ -15,14 +15,7 @@ struct result
 
     operator bool()
     {
-        if (m_code == result_code::OK)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return m_code == result_code::OK;
     }
 
     result_code m_code;
