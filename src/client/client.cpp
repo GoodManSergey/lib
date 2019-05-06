@@ -133,7 +133,14 @@ void Client::send_to_server(std::string&& request)
 
 void Client::proc_msg(std::string&& msg)
 {
-
+    if (msg == "ping")
+    {
+        m_send_queue.add("pong");
+    }
+    else
+    {
+        m_response.add(std::move(msg));
+    }
 }
 
 void Client::init(int server_port, const std::string &server_host)
