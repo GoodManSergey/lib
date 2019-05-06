@@ -29,6 +29,7 @@ int main()
     sock = std::make_unique<SocketTcp>();
     serv = std::make_unique<Server>(std::move(lib), std::move(sock));
     signal(SIGTERM, signal_handler);
+    signal(SIGPIPE, SIG_IGN);
     serv->init_socket(8080);
     serv->run();
     
