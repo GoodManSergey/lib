@@ -62,4 +62,5 @@ class Server
     std::unique_ptr<Socket> pm_server_socket;
     std::unordered_map<std::string, server_command> m_commands;
     bool m_has_connection{false};
+    time_t m_ping_timer;
 };

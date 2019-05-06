@@ -581,6 +581,11 @@ void Server::run()
                 std::cout<<c;
                 if (c == '\v')
                 {
+                    if (msg == "pong")
+                    {
+                        msg = "";
+                        continue;
+                    }
                     std::string resp = proc_msg(msg);
                     std::cout<<"resp:"<<std::endl<<resp<<std::endl;
                     address addr;
@@ -589,11 +594,27 @@ void Server::run()
                         addr = recv_msg.m_address.value();
                     }
                     message send_msg(resp, addr);
-                    client_socket->send_msg(send_msg);
+                    auto send_res = client_socket->send_msg(send_msg);
+                    if (send_res != result_code::OK)
+                    {
+                        m_has_connection = false;
+                    }
                     msg = "";
                     continue;
                 }
                 msg += c;
+            }
+        }
+
+        if (m_has_connection && m_ping_timer < time(NULL))
+        {
+            address addr = client_socket->return_address();
+            std::string ping("ping\v");
+            message send_msg(ping, addr);
+            auto send_res = client_socket->send_msg(send_msg);
+            if (send_res != result_code::OK)
+            {
+                m_has_connection = false;
             }
         }
     }
