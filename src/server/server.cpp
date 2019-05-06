@@ -571,7 +571,6 @@ void Server::run()
         if (recv_msg.m_data.length() == 0)
         {
             sleep(1);
-            continue;
         }
         else
         {
@@ -605,9 +604,10 @@ void Server::run()
                 msg += c;
             }
         }
-
+        std::cout<<"pinger: "<< m_ping_timer<<" time: "<<time(NULL)<<std::endl;
         if (m_has_connection && m_ping_timer < time(NULL))
         {
+            m_ping_timer = time(NULL) + 10;
             address addr = client_socket->return_address();
             std::string ping("ping\v");
             message send_msg(ping, addr);
