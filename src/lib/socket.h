@@ -30,8 +30,14 @@ public:
     virtual result_code listen_socket() = 0;
     virtual result_code bind_socket() = 0;
     virtual message recv_msg() = 0;
+    /*
+     * TODO обычно методы возвращающие какое-либо состояние объекта имеют название get_... и зовутся геттерами (getter).
+     */
     virtual address return_address() = 0;
     virtual result_code send_msg(message& msg) = 0;
+    /*
+     * TODO метод return_protocol вообще нигде и не используется, посему подлежит удалению
+     */
     virtual protocol return_protocol() = 0;
     virtual ~Socket() = default;
 };

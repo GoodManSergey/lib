@@ -150,9 +150,12 @@ void Client::init(int server_port, const std::string &server_host)
     m_server->set_remote_addr(server_host);
     if (m_server->connect_socket() != result_code::OK)
     {
+        /*
+         * TODO Зачем падать то сразу? Ошибка подключения к удалённому серверу вполне себе прогнозируема и не должна приводить к падению.
+         * Нужно сделать так чтобы программа либо просто завершалась с сообщением что соединение не возможно либо периодически пыталась прицепиться ещё раз.
+         */
         assert(false);
     }
-
 }
 
 void Client::read_write()

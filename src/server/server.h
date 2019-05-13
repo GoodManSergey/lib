@@ -24,6 +24,10 @@ class Server
 
     virtual ~Server() = default;
 
+    /*
+     * TODO этот метод по-идее должен бы возвращать ошибку, например что не получилось забиндить сокет на нужный адрес.
+     * в данной же реализации даже при возникновении подобной ошибки снаружи будет непонятно что что-то не так, но вот работать ничего не будет.
+     */
     void init_socket(int port);
 
 	std::string json_to_string(const Json::Value& json);
@@ -57,6 +61,10 @@ class Server
     void stop();
 
     protected:
+	/*
+	 * TODO Докопаюсь и до орфографии =) Смешаны несколько разные правила именования переменных
+	 * префикс pm_ используется там же где и m_, тогда уж все поля надо было пометить префиксом pm_ (а лучше наоборот).
+	 */
     std::atomic<bool> m_work;
     std::unique_ptr<Library> pm_lib;
     std::unique_ptr<Socket> pm_server_socket;

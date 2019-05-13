@@ -30,6 +30,7 @@ struct address
     {}
 
     sockaddr_in m_address;
+    /* TODO зачем здесь поле m_fd? */
     int m_fd;
 };
 

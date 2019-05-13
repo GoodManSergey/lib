@@ -543,6 +543,9 @@ void Server::stop()
 
 void Server::init_socket(int port)
 {
+	/*
+	 * TODO Как раз всё то о чём я писал в комментарии в socket.h на 13ой строке, все эти вызовы можно(нужно) заменить одним
+	 */
     pm_server_socket->create_socket_fd();
     pm_server_socket->fill_addr(port);
     pm_server_socket->set_in_addr();
@@ -555,6 +558,10 @@ void Server::run()
     std::shared_ptr<Socket> client_socket;
     while (m_work)
     {
+        /*
+         * TODO Вместо проверки флага m_has_connection проще проверять умный указатель client_socket -- если в нём что-то есть
+         * то соединение присутствует, если нет, то нет.
+         */
         if (!m_has_connection)
         {
             auto accept_res = pm_server_socket->accept_socket();
@@ -604,16 +611,27 @@ void Server::run()
                 msg += c;
             }
         }
+        /*
+         * TODO В C++11 проще пользоваться утилитами для работы со временем из chrono.
+         * Кроме того не стоит много раз вызывать функцию получения текущего времени, предпочтительнее вызвать её один раз и запомнить результат
+         */
         std::cout<<"pinger: "<< m_ping_timer<<" time: "<<time(NULL)<<std::endl;
         if (m_has_connection && m_ping_timer < time(NULL))
         {
             m_ping_timer = time(NULL) + 10;
+            /*
+             * TODO Я так понимаю, что в случае UDP реализация сокета вернёт не совсем тот адрес что нам нужно
+             */
             address addr = client_socket->return_address();
             std::string ping("ping\v");
             message send_msg(ping, addr);
             auto send_res = client_socket->send_msg(send_msg);
             if (send_res != result_code::OK)
             {
+                /*
+                 * TODO Ты не сбрасываешь client_socket после детектирования разрыва соединения, что приводит к неконсистентному состоянию (несоответсвие значения флага m_has_connection и значения client_socket)
+                 * и вносит путаницу, кроме того, деструктор сокета может освобождать какие-либо ресурсы
+                 */
                 m_has_connection = false;
             }
         }

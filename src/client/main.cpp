@@ -6,9 +6,15 @@
 
 int main()
 {
+	/*
+	 * TODO та же ситуация что и с инициализацией сервера.
+	 */
     std::unique_ptr<Socket> sock = std::make_unique<SocketTcp>();
     Client client(std::move(sock));
 
+    /*
+     * TODO если я правильно понимаю эта запись значит что сервер работает только с клиентами с этой же машины WUT?
+     */
     client.init(8080, "127.0.0.1");
 
     std::thread read_write(&Client::read_write, &client);

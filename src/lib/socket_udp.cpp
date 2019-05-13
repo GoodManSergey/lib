@@ -63,6 +63,9 @@ result_code SocketUdp::bind_socket()
 
 message SocketUdp::recv_msg()
 {
+    /*
+     * TODO то же самое что и в socket_tcp.cpp
+     */
     int readval = 0;
     int buffer_size = 1024;
     char buffer[1024]{0};

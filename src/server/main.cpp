@@ -11,6 +11,9 @@
 #include "server.h"
 
 
+/*
+ * TODO из всех них в глобальной области видимости нужен только serv.
+ */
 std::unique_ptr<Library> lib;
 std::unique_ptr<Server> serv;
 std::unique_ptr<Socket> sock;
@@ -26,6 +29,9 @@ int main()
     auto parser = std::make_unique<XmlParser>();
     auto storage = std::make_unique<FileStorage>(std::move(parser), "FileStore.xml");
     lib = std::make_unique<Library>(std::move(storage));
+    /*
+     * TODO зачем передавать в сервер неинициализированный сокет? Пусть создаёт его сам (например в методе init_socket).
+     */
     sock = std::make_unique<SocketTcp>();
     serv = std::make_unique<Server>(std::move(lib), std::move(sock));
     signal(SIGTERM, signal_handler);

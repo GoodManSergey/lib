@@ -56,6 +56,7 @@ public:
 protected:
     StringQueue m_send_queue;
     StringQueue m_response;
+    /* TODO сервер в клиенте? O.o я надеюсь тут опечатка и имелось в виду m_socket */
     std::unique_ptr<Socket> m_server;
     std::atomic<bool> m_work{true};
 
