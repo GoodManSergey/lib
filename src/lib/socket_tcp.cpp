@@ -120,33 +120,28 @@ message SocketTcp::recv_msg()
 
 result_code SocketTcp::send_msg(message& msg)
 {
-    int left;
+    int left = 0;
+    int rc = 0;
     std::string send_msg = msg.m_data;
 
-    while (send_msg.length() != 0)
+    while (send_msg.length() != left)
     {
-        left = send(m_socket, send_msg.c_str(), send_msg.length(), 0);
-        if(left < 0)
+        rc = send(m_socket, send_msg.c_str() - left, send_msg.length() - left, 0);
+        if(rc < 0)
         {
             return result_code::SOCKET_ERROR;
         }
         else
         {
-            /*
-             * TODO в данном случае сильно проще и дешевле не стирать часть сообщения каждый раз после частичной отправки,
-             * а указывать в качестве буффера функции send только ту часть которая нужна (используя арифметику указателей).
-             */
-            send_msg.erase(0, left);
-            sleep(1);
+            left += rc;
+            if (rc == 0)
+            {
+                sleep(1);
+            }
         }
     }
 
     return result_code::OK;
-}
-
-protocol SocketTcp::return_protocol()
-{
-    return protocol::TCP;
 }
 
 SocketTcp::~SocketTcp()
@@ -154,8 +149,8 @@ SocketTcp::~SocketTcp()
     close(m_socket);
 }
 
-address SocketTcp::return_address()
+address SocketTcp::get_address()
 {
-    address addr(m_socket);
-    return addr;
+    address sock_addr;
+    return sock_addr;
 }

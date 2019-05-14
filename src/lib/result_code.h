@@ -13,5 +13,6 @@ enum class result_code: int
     AUTHOR_HAS_BOOKS,
     PARSER_ERROR,
     OPEN_FILE_ERROR,
-    SOCKET_ERROR
+    SOCKET_ERROR,
+    INIT_ERROR
 };

@@ -106,17 +106,12 @@ result_code SocketUdp::send_msg(message& msg)
     return result_code::OK;
 }
 
-protocol SocketUdp::return_protocol()
-{
-    return protocol::UDP;
-}
-
 SocketUdp::~SocketUdp()
 {
     close(m_socket);
 }
 
-address SocketUdp::return_address()
+address SocketUdp::get_address()
 {
     address addr(m_address);
     return addr;

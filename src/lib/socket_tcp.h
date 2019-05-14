@@ -8,7 +8,6 @@
 #include "socket.h"
 #include "result_code.h"
 #include "result.h"
-#include "protocol.h"
 #include <string>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -38,8 +37,7 @@ public:
     result_code bind_socket() override ;
     message recv_msg() override ;
     result_code send_msg(message& msg) override ;
-    protocol return_protocol() override ;
-    address return_address() override ;
+    address get_address() override ;
     ~SocketTcp() override ;
 private:
     int m_socket{};

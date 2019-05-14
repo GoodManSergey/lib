@@ -143,38 +143,36 @@ void Client::proc_msg(std::string&& msg)
     }
 }
 
-void Client::init(int server_port, const std::string &server_host)
+result_code Client::init(int server_port, const std::string &server_host)
 {
-    m_server->create_socket_fd();
-    m_server->fill_addr(server_port);
-    m_server->set_remote_addr(server_host);
-    if (m_server->connect_socket() != result_code::OK)
+    pm_socket->create_socket_fd();
+    pm_socket->fill_addr(server_port);
+    pm_socket->set_remote_addr(server_host);
+    if (pm_socket->connect_socket() != result_code::OK)
     {
-        /*
-         * TODO Зачем падать то сразу? Ошибка подключения к удалённому серверу вполне себе прогнозируема и не должна приводить к падению.
-         * Нужно сделать так чтобы программа либо просто завершалась с сообщением что соединение не возможно либо периодически пыталась прицепиться ещё раз.
-         */
-        assert(false);
+        return result_code::INIT_ERROR;
     }
+
+    return result_code::OK;
 }
 
 void Client::read_write()
 {
-    address server_addr = m_server->return_address();
+    address server_addr = pm_socket->get_address();
     while (m_work)
     {
         std::string send_msg = m_send_queue.get();
         if (send_msg.length() != 0)
         {
             message send(send_msg, server_addr);
-            auto send_res = m_server->send_msg(send);
+            auto send_res = pm_socket->send_msg(send);
             if (send_res != result_code::OK)
             {
                 assert(false);
             }
         }
 
-        message recv_msg = m_server->recv_msg();
+        message recv_msg = pm_socket->recv_msg();
 
         if (recv_msg.m_data.length() == 0)
         {

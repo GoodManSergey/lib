@@ -11,12 +11,7 @@
 #include "server.h"
 
 
-/*
- * TODO из всех них в глобальной области видимости нужен только serv.
- */
-std::unique_ptr<Library> lib;
 std::unique_ptr<Server> serv;
-std::unique_ptr<Socket> sock;
 
 void signal_handler(int signal)
 {
@@ -26,6 +21,8 @@ void signal_handler(int signal)
 
 int main()
 {
+    std::unique_ptr<Library> lib;
+    std::unique_ptr<Socket> sock;
     auto parser = std::make_unique<XmlParser>();
     auto storage = std::make_unique<FileStorage>(std::move(parser), "FileStore.xml");
     lib = std::make_unique<Library>(std::move(storage));

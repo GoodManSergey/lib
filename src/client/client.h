@@ -20,11 +20,11 @@ class Client
 {
 public:
     Client(std::unique_ptr<Socket> socket):
-    m_server(std::move(socket))
+    pm_socket(std::move(socket))
     {}
 
     ~Client() = default;
-    void init(int server_port, const std::string& server_host);
+    result_code init(int server_port, const std::string& server_host);
     void read_write();
 
     std::string json_to_string(const Json::Value& json);
@@ -56,8 +56,7 @@ public:
 protected:
     StringQueue m_send_queue;
     StringQueue m_response;
-    /* TODO сервер в клиенте? O.o я надеюсь тут опечатка и имелось в виду m_socket */
-    std::unique_ptr<Socket> m_server;
+    std::unique_ptr<Socket> pm_socket;
     std::atomic<bool> m_work{true};
 
 };

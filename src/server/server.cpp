@@ -556,13 +556,10 @@ void Server::init_socket(int port)
 void Server::run()
 {
     std::shared_ptr<Socket> client_socket;
+    address client_addr;
     while (m_work)
     {
-        /*
-         * TODO Вместо проверки флага m_has_connection проще проверять умный указатель client_socket -- если в нём что-то есть
-         * то соединение присутствует, если нет, то нет.
-         */
-        if (!m_has_connection)
+        if (!client_socket)
         {
             auto accept_res = pm_server_socket->accept_socket();
             if (!accept_res)
@@ -570,7 +567,6 @@ void Server::run()
                 continue;
             }
             client_socket = accept_res.m_object;
-            m_has_connection = true;
         }
 
         auto recv_msg = client_socket->recv_msg();
@@ -594,16 +590,16 @@ void Server::run()
                     }
                     std::string resp = proc_msg(msg);
                     std::cout<<"resp:"<<std::endl<<resp<<std::endl;
-                    address addr;
                     if (recv_msg.m_address)
                     {
-                        addr = recv_msg.m_address.value();
+                        client_addr = recv_msg.m_address.value();
                     }
-                    message send_msg(resp, addr);
+                    message send_msg(resp, client_addr);
                     auto send_res = client_socket->send_msg(send_msg);
                     if (send_res != result_code::OK)
                     {
-                        m_has_connection = false;
+                        client_socket.reset();
+                        break;
                     }
                     msg = "";
                     continue;
@@ -615,24 +611,16 @@ void Server::run()
          * TODO В C++11 проще пользоваться утилитами для работы со временем из chrono.
          * Кроме того не стоит много раз вызывать функцию получения текущего времени, предпочтительнее вызвать её один раз и запомнить результат
          */
-        std::cout<<"pinger: "<< m_ping_timer<<" time: "<<time(NULL)<<std::endl;
-        if (m_has_connection && m_ping_timer < time(NULL))
+        auto current_time = time(NULL);
+        if (client_socket && m_ping_timer < current_time)
         {
-            m_ping_timer = time(NULL) + 10;
-            /*
-             * TODO Я так понимаю, что в случае UDP реализация сокета вернёт не совсем тот адрес что нам нужно
-             */
-            address addr = client_socket->return_address();
+            m_ping_timer = current_time + 10;
             std::string ping("ping\v");
-            message send_msg(ping, addr);
+            message send_msg(ping, client_addr);
             auto send_res = client_socket->send_msg(send_msg);
             if (send_res != result_code::OK)
             {
-                /*
-                 * TODO Ты не сбрасываешь client_socket после детектирования разрыва соединения, что приводит к неконсистентному состоянию (несоответсвие значения флага m_has_connection и значения client_socket)
-                 * и вносит путаницу, кроме того, деструктор сокета может освобождать какие-либо ресурсы
-                 */
-                m_has_connection = false;
+                client_socket.reset();
             }
         }
     }

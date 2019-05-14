@@ -61,14 +61,9 @@ class Server
     void stop();
 
     protected:
-	/*
-	 * TODO Докопаюсь и до орфографии =) Смешаны несколько разные правила именования переменных
-	 * префикс pm_ используется там же где и m_, тогда уж все поля надо было пометить префиксом pm_ (а лучше наоборот).
-	 */
     std::atomic<bool> m_work;
     std::unique_ptr<Library> pm_lib;
     std::unique_ptr<Socket> pm_server_socket;
     std::unordered_map<std::string, server_command> m_commands;
-    bool m_has_connection{false};
     time_t m_ping_timer;
 };

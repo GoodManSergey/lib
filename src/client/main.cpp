@@ -2,6 +2,7 @@
 #include "../lib/socket_tcp.h"
 #include <thread>
 #include <memory>
+#include "../lib/result_code.h"
 
 
 int main()
@@ -12,10 +13,12 @@ int main()
     std::unique_ptr<Socket> sock = std::make_unique<SocketTcp>();
     Client client(std::move(sock));
 
-    /*
-     * TODO если я правильно понимаю эта запись значит что сервер работает только с клиентами с этой же машины WUT?
-     */
-    client.init(8080, "127.0.0.1");
+    auto init_res = client.init(8080, "127.0.0.1");
+    if (init_res != result_code::OK)
+    {
+        std::cout<<"connect to server error"<<std::endl;
+        exit(0);
+    }
 
     std::thread read_write(&Client::read_write, &client);
 
