@@ -17,7 +17,7 @@ public:
     std::string get();
 
 private:
-    std::queue<std::string> m_queue{};
+    std::queue<std::string> m_queue;
     std::mutex m_msg_mutex;
 };
 

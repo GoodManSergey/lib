@@ -11,7 +11,21 @@ result_code SocketTcp::create_socket_fd()
         std::cout<<"Create socket FD error"<<std::endl;
         return result_code::SOCKET_ERROR;
     }
-    return result_code::SOCKET_ERROR;
+
+    int flags;
+    const int opt = 1;
+    auto opt_size = sizeof(opt);
+    setsockopt(m_socket, SOL_TCP, TCP_NODELAY, &opt, opt_size);
+    setsockopt(m_socket, SOL_SOCKET, SO_KEEPALIVE, &opt, opt_size);
+    setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &opt, opt_size);
+    flags = fcntl(m_socket, F_GETFL, 0);
+    if (flags != -1)
+    {
+        return result_code::SOCKET_ERROR;
+    }
+    fcntl(m_socket, F_SETFL, flags | O_NONBLOCK);
+
+    return result_code::OK;
 }
 
 result_code SocketTcp::fill_addr(int port)
@@ -90,50 +104,27 @@ message SocketTcp::recv_msg()
     int readval = 0;
     int buffer_size = 1024;
     char buffer[1024]{0};
-    m_fds[0].fd = m_socket;
-    m_fds[0].events = POLLIN;
 
-    /*
-     * TODO poll в таком исполнении абсолютно ни к чему и приведёт только к увеличени количества системных вызовов
-     * (что отрицательно скажется на производительности, особенно на какой-нибудь виртуалке), нужно просто использовать неблокирующий сокет.
-     */
-    int poll_res = ::poll(m_fds, 1, 1000);
-
-    if (poll_res == -1)
-    {
-        return {};
-    }
-    else if (poll_res == 0)
-    {
-        return {};
-    }
-    else
-    {
-    	/*
-    	 * TODO функция до сих пор возвращает куски сообщений, а не целые, хотя завёрнуты они в структуру которая называется message >.\
-    	 */
-        readval = read(m_socket, buffer, buffer_size);
-
-        return std::move(std::string(buffer));
-    }
+    readval = read(m_socket, buffer, buffer_size);
+    return std::move(std::string(buffer));
 }
 
 result_code SocketTcp::send_msg(message& msg)
 {
-    int left = 0;
+    int current_pos = 0;
     int rc = 0;
     std::string send_msg = msg.m_data;
 
-    while (send_msg.length() != left)
+    while (send_msg.length() != current_pos)
     {
-        rc = send(m_socket, send_msg.c_str() - left, send_msg.length() - left, 0);
+        rc = send(m_socket, send_msg.c_str() + current_pos, send_msg.length() - current_pos, 0);
         if(rc < 0)
         {
             return result_code::SOCKET_ERROR;
         }
         else
         {
-            left += rc;
+            current_pos += rc;
             if (rc == 0)
             {
                 sleep(1);

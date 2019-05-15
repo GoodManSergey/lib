@@ -12,7 +12,13 @@ result_code SocketUdp::create_socket_fd()
         std::cout<<"Create socket FD error"<<std::endl;
         return result_code::SOCKET_ERROR;
     }
-    return result_code::SOCKET_ERROR;
+
+    struct timeval read_timeout;
+    read_timeout.tv_sec = 0;
+    read_timeout.tv_usec = 10;
+    setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &read_timeout, sizeof read_timeout);;
+
+    return result_code::OK;
 }
 
 result_code SocketUdp::fill_addr(int port)
@@ -63,36 +69,17 @@ result_code SocketUdp::bind_socket()
 
 message SocketUdp::recv_msg()
 {
-    /*
-     * TODO то же самое что и в socket_tcp.cpp
-     */
     int readval = 0;
     int buffer_size = 1024;
     char buffer[1024]{0};
     address socket_addr;
     int size_of_addr = sizeof(socket_addr.m_address);
-    m_fds[0].fd = m_socket;
-    m_fds[0].events = POLLIN;
 
-    int poll_res = ::poll(m_fds, 1, 1000);
+    readval = recvfrom(m_socket, (char *) buffer, buffer_size, MSG_WAITALL, (sockaddr *) &socket_addr.m_address,
+            (socklen_t *) &size_of_addr);
 
-    if (poll_res == -1)
-    {
-        return {};
-    }
-    else if (poll_res == 0)
-    {
-        return {};
-    }
-    else
-    {
-
-        readval = recvfrom(m_socket, (char *) buffer, buffer_size, MSG_WAITALL, (sockaddr *) &socket_addr.m_address,
-                           (socklen_t *) &size_of_addr);
-
-        message msg(buffer, socket_addr);
-        return std::move(msg);
-    }
+    message msg(buffer, socket_addr);
+    return std::move(msg);
 }
 
 result_code SocketUdp::send_msg(message& msg)

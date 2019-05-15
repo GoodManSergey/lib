@@ -14,9 +14,11 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netinet/tcp.h>
 #include <unistd.h>
 #include <memory>
 #include <poll.h>
+#include <fcntl.h>
 
 
 class SocketTcp: public Socket
@@ -42,7 +44,6 @@ public:
 private:
     int m_socket{};
     sockaddr_in m_address{};
-    pollfd m_fds[1];
 };
 
 
