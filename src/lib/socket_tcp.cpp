@@ -13,11 +13,11 @@ result_code SocketTcp::create_socket_fd()
     }
 
     int flags;
-    const int opt = 1;
+    /*const int opt = 1;
     auto opt_size = sizeof(opt);
     setsockopt(m_socket, SOL_TCP, TCP_NODELAY, &opt, opt_size);
     setsockopt(m_socket, SOL_SOCKET, SO_KEEPALIVE, &opt, opt_size);
-    setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &opt, opt_size);
+    setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &opt, opt_size);*/
     flags = fcntl(m_socket, F_GETFL, 0);
     if (flags != -1)
     {
