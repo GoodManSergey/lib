@@ -168,17 +168,7 @@ void Client::read_write()
         }
         else
         {
-            std::string msg;
-            for (char& c : recv_msg.m_data)
-            {
-                std::cout<<c;
-                if (c == '\v')
-                {
-                    proc_msg(std::move(msg));
-                    msg = "";
-                }
-                msg += c;
-            }
+            proc_msg(std::move(recv_msg.m_data));
         }
     }
 }
