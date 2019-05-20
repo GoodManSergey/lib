@@ -20,14 +20,9 @@ class Socket
 {
 public:
     Socket() = default;
-    virtual result_code create_socket_fd() = 0;
-    virtual result_code fill_addr(int port) = 0;
-    virtual result_code set_in_addr() = 0;
-    virtual result_code set_remote_addr(const std::string& server_host) = 0;
-    virtual result_code connect_socket() = 0;
+    virtual result_code bind_socket(int port) = 0;
+    virtual result_code connect_socket(const std::string& host, int port) = 0;
     virtual result<std::shared_ptr<Socket>> accept_socket() = 0;
-    virtual result_code listen_socket() = 0;
-    virtual result_code bind_socket() = 0;
     virtual message recv_msg() = 0;
     virtual address get_address() = 0;
     virtual result_code send_msg(message& msg) = 0;

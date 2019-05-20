@@ -52,13 +52,32 @@ result_code SocketTcp::set_remote_addr(const std::string& host)
     return result_code::OK;
 }
 
-result_code SocketTcp::connect_socket()
+result_code SocketTcp::connect_socket(const std::string& host, int port)
 {
+    auto create_res = this->create_socket_fd();
+    if (create_res != result_code::OK)
+    {
+        return create_res;
+    }
+
+    auto fill_addr_res = this->fill_addr(port);
+    if (fill_addr_res != result_code::OK)
+    {
+        return fill_addr_res;
+    }
+
+    auto set_rm_addr_res = this->set_remote_addr(host);
+    if (set_rm_addr_res != result_code::OK)
+    {
+        return set_rm_addr_res;
+    }
+
     if (connect(m_socket, (sockaddr *)&m_address, sizeof(m_address)) < 0)
     {
         std::cout<<"connect"<<std::endl;
         return result_code::SOCKET_ERROR;
     }
+
     return result_code::OK;
 }
 
@@ -84,15 +103,34 @@ result_code SocketTcp::listen_socket()
     return result_code::OK;
 }
 
-result_code SocketTcp::bind_socket()
+result_code SocketTcp::bind_socket(int port)
 {
+    auto create_res = this->create_socket_fd();
+    if(create_res != result_code::OK)
+    {
+        return create_res;
+    }
+
+    auto fill_addr_res = this->fill_addr(port);
+    if(fill_addr_res != result_code::OK)
+    {
+        return fill_addr_res;
+    }
+
+    auto set_in_addr_res = this->set_in_addr();
+    if (set_in_addr_res != result_code::OK)
+    {
+        return set_in_addr_res;
+    }
+
     int addr_size = sizeof(m_address);
     if (bind(m_socket, (sockaddr*)&m_address, (socklen_t)addr_size) < 0)
     {
         std::cout<<"bind error"<<std::endl;
         return result_code::SOCKET_ERROR;
     }
-    return result_code::OK;
+
+    return this->listen_socket();
 }
 
 /*
