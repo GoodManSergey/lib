@@ -9,6 +9,7 @@
 #include "result_code.h"
 #include "result.h"
 #include <string>
+#include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <iostream>
@@ -48,6 +49,10 @@ public:
 private:
     int m_socket{};
     sockaddr_in m_address{};
+    int m_buffer_size = 1024;
+    char m_buffer[1024]{0};
+    int m_buffer_iter{0};
+    std::string msg;
 };
 
 

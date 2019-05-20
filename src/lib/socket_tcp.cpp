@@ -133,18 +133,32 @@ result_code SocketTcp::bind_socket(int port)
     return this->listen_socket();
 }
 
-/*
- * TODO эта функция прочитает лишь часть сообщения, поскольку в данном проекте определён один формат сообщений будет гораздо
- * удобнее переделать её так чтобы она всегда возвращала полученное полностью сообщение.
- */
 message SocketTcp::recv_msg()
 {
-    int readval = 0;
-    int buffer_size = 1024;
-    char buffer[1024]{0};
+    if (m_buffer_iter >= strlen(m_buffer))
+    {
+        m_buffer_iter = 0;
+        int readval = 0;
+        readval = read(m_socket, m_buffer, m_buffer_size);
+    }
 
-    readval = read(m_socket, buffer, buffer_size);
-    return std::move(std::string(buffer));
+    for (;m_buffer_iter < strlen(m_buffer); m_buffer_iter++)
+    {
+        if (m_buffer[m_buffer_iter] == '\v')
+        {
+            std::string buf_msg = std::move(msg);
+            msg = "";
+            m_buffer_iter++;
+
+            return std::move(buf_msg);
+        }
+        else
+        {
+            msg += m_buffer[m_buffer_iter];
+        }
+    }
+
+    return std::move(std::string(""));
 }
 
 result_code SocketTcp::send_msg(message& msg)
