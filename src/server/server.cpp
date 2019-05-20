@@ -563,36 +563,21 @@ void Server::run()
         {
             sleep(1);
         }
-        else
+        else if (recv_msg.m_data != "pong")
         {
-            std::string msg;
-            for (char& c : recv_msg.m_data)
+
+            std::string resp = proc_msg(recv_msg.m_data);
+            std::cout<<"resp:"<<std::endl<<resp<<std::endl;
+            if (recv_msg.m_address)
             {
-                std::cout<<c;
-                if (c == '\v')
-                {
-                    if (msg == "pong")
-                    {
-                        msg = "";
-                        continue;
-                    }
-                    std::string resp = proc_msg(msg);
-                    std::cout<<"resp:"<<std::endl<<resp<<std::endl;
-                    if (recv_msg.m_address)
-                    {
-                        client_addr = recv_msg.m_address.value();
-                    }
-                    message send_msg(resp, client_addr);
-                    auto send_res = client_socket->send_msg(send_msg);
-                    if (send_res != result_code::OK)
-                    {
-                        client_socket.reset();
-                        break;
-                    }
-                    msg = "";
-                    continue;
-                }
-                msg += c;
+                client_addr = recv_msg.m_address.value();
+            }
+            message send_msg(resp, client_addr);
+            auto send_res = client_socket->send_msg(send_msg);
+            if (send_res != result_code::OK)
+            {
+                client_socket.reset();
+                break;
             }
         }
 
