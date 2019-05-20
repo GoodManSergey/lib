@@ -41,8 +41,26 @@ result_code SocketUdp::set_remote_addr(const std::string& host)
     return result_code::OK;
 }
 
-result_code SocketUdp::connect_socket()
+result_code SocketUdp::connect_socket(const std::string& host, int port)
 {
+    auto create_res = this->create_socket_fd();
+    if (create_res != result_code::OK)
+    {
+        return create_res;
+    }
+
+    auto fill_addr_res = this->fill_addr(port);
+    if (fill_addr_res != result_code::OK)
+    {
+        return fill_addr_res;
+    }
+
+    auto set_rm_addr_res = this->set_remote_addr(host);
+    if (set_rm_addr_res != result_code::OK)
+    {
+        return set_rm_addr_res;
+    }
+
     return result_code::OK;
 }
 
@@ -51,13 +69,26 @@ result<std::shared_ptr<Socket>> SocketUdp::accept_socket()
     return shared_from_this();
 }
 
-result_code SocketUdp::listen_socket()
+result_code SocketUdp::bind_socket(int port)
 {
-    return result_code::OK;
-}
+    auto create_res = this->create_socket_fd();
+    if (create_res != result_code::OK)
+    {
+        return create_res;
+    }
 
-result_code SocketUdp::bind_socket()
-{
+    auto fill_addr_res = this->fill_addr(port);
+    if (fill_addr_res != result_code::OK)
+    {
+        return fill_addr_res;
+    }
+
+    auto set_in_addr_res = this->set_in_addr();
+    if (set_in_addr_res != result_code::OK)
+    {
+        return set_in_addr_res;
+    }
+
     int addr_size = sizeof(m_address);
     if (bind(m_socket, (sockaddr*)&m_address, (socklen_t)addr_size) < 0)
     {

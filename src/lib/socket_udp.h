@@ -25,18 +25,22 @@
 class SocketUdp: public Socket, std::enable_shared_from_this<Socket>
 {
 public:
-    result_code create_socket_fd() override ;
-    result_code fill_addr(int port) override ;
-    result_code set_in_addr() override ;
-    result_code set_remote_addr(const std::string& host) override ;
-    result_code connect_socket() override ;
+    result_code connect_socket(const std::string& host, int port) override ;
+    result_code bind_socket(int port) override ;
+
+private:
+    result_code create_socket_fd();
+    result_code fill_addr(int port);
+    result_code set_in_addr();
+    result_code set_remote_addr(const std::string& host);
+
+public:
     result<std::shared_ptr<Socket>> accept_socket() override ;
-    result_code listen_socket() override ;
-    result_code bind_socket() override ;
     message recv_msg() override ;
     result_code send_msg(message& msg) override ;
     address get_address() override ;
     ~SocketUdp() override ;
+
 private:
     int m_socket;
     sockaddr_in m_address;
