@@ -25,12 +25,6 @@ class Server
 
     virtual ~Server() = default;
 
-    /*
-     * TODO этот метод по-идее должен бы возвращать ошибку, например что не получилось забиндить сокет на нужный адрес.
-     * в данной же реализации даже при возникновении подобной ошибки снаружи будет непонятно что что-то не так, но вот работать ничего не будет.
-     */
-    void init_socket(int port);
-
 	std::string json_to_string(const Json::Value& json);
 
 	std::string add_author(const Json::Value& data);

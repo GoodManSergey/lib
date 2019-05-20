@@ -9,6 +9,7 @@
 #include "../lib/socket.h"
 #include "../lib/socket_tcp.h"
 #include "server.h"
+#include "../lib/result_code.h"
 
 
 std::unique_ptr<Server> serv;
@@ -26,14 +27,17 @@ int main()
     auto parser = std::make_unique<XmlParser>();
     auto storage = std::make_unique<FileStorage>(std::move(parser), "FileStore.xml");
     lib = std::make_unique<Library>(std::move(storage));
-    /*
-     * TODO зачем передавать в сервер неинициализированный сокет? Пусть создаёт его сам (например в методе init_socket).
-     */
     sock = std::make_unique<SocketTcp>();
+    auto sock_bind_res = sock->bind_socket(8080);
+    if (sock_bind_res != result_code::OK)
+    {
+        std::cout<<"sock init error"<<std::endl;
+        exit(-1);
+    }
+
     serv = std::make_unique<Server>(std::move(lib), std::move(sock));
     signal(SIGTERM, signal_handler);
     signal(SIGPIPE, SIG_IGN);
-    serv->init_socket(8080);
     serv->run();
     
     return 0;

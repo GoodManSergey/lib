@@ -7,18 +7,15 @@
 
 int main()
 {
-	/*
-	 * TODO та же ситуация что и с инициализацией сервера.
-	 */
     std::unique_ptr<Socket> sock = std::make_unique<SocketTcp>();
-    Client client(std::move(sock));
-
-    auto init_res = client.init(8080, "127.0.0.1");
-    if (init_res != result_code::OK)
+    auto sock_connect_res = sock->connect_socket("127.0.0.1", 8080);
+    if (sock_connect_res != result_code::OK)
     {
-        std::cout<<"connect to server error"<<std::endl;
-        exit(0);
+        std::cout<<"sock cinit error"<<std::endl;
+        exit(-1);
     }
+
+    Client client(std::move(sock));
 
     std::thread read_write(&Client::read_write, &client);
 

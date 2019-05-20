@@ -143,19 +143,6 @@ void Client::proc_msg(std::string&& msg)
     }
 }
 
-result_code Client::init(int server_port, const std::string &server_host)
-{
-    pm_socket->create_socket_fd();
-    pm_socket->fill_addr(server_port);
-    pm_socket->set_remote_addr(server_host);
-    if (pm_socket->connect_socket() != result_code::OK)
-    {
-        return result_code::INIT_ERROR;
-    }
-
-    return result_code::OK;
-}
-
 void Client::read_write()
 {
     address server_addr = pm_socket->get_address();

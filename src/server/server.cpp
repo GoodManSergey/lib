@@ -541,18 +541,6 @@ void Server::stop()
     m_work = false;
 }
 
-void Server::init_socket(int port)
-{
-	/*
-	 * TODO Как раз всё то о чём я писал в комментарии в socket.h на 13ой строке, все эти вызовы можно(нужно) заменить одним
-	 */
-    pm_server_socket->create_socket_fd();
-    pm_server_socket->fill_addr(port);
-    pm_server_socket->set_in_addr();
-    pm_server_socket->bind_socket();
-    pm_server_socket->listen_socket();
-}
-
 void Server::run()
 {
     std::shared_ptr<Socket> client_socket;

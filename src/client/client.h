@@ -24,7 +24,6 @@ public:
     {}
 
     ~Client() = default;
-    result_code init(int server_port, const std::string& server_host);
     void read_write();
 
     std::string json_to_string(const Json::Value& json);
