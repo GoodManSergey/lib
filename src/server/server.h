@@ -15,6 +15,7 @@
 #include<unistd.h>
 #include "../lib/socket.h"
 #include "../lib/message.h"
+#include <chrono>
 
 
 class Server
@@ -65,5 +66,5 @@ class Server
     std::unique_ptr<Library> pm_lib;
     std::unique_ptr<Socket> pm_server_socket;
     std::unordered_map<std::string, server_command> m_commands;
-    time_t m_ping_timer;
+    std::chrono::time_point<std::chrono::system_clock> m_ping_timer;
 };

@@ -607,13 +607,11 @@ void Server::run()
                 msg += c;
             }
         }
-        /*
-         * TODO В C++11 проще пользоваться утилитами для работы со временем из chrono.
-         */
-        auto current_time = time(NULL);
+
+        auto current_time = std::chrono::system_clock::now();
         if (client_socket && m_ping_timer < current_time)
         {
-            m_ping_timer = current_time + 10;
+            m_ping_timer = current_time + std::chrono::seconds(10);
             std::string ping("ping\v");
             message send_msg(ping, client_addr);
             auto send_res = client_socket->send_msg(send_msg);
