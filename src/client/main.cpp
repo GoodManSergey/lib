@@ -17,6 +17,9 @@ int main()
 
     Client client(std::move(sock));
 
+    /* TODO не критично но thread лучше сделать полем Client'а, иначе в будущем ты теряешь возможность создавать
+     * несколько клиентских сессий сразу.
+     * */
     std::thread read_write(&Client::read_write, &client);
 
     bool exit = false;
@@ -32,6 +35,7 @@ int main()
         std::cout<<"8.Delete book"<<std::endl;
         std::cout<<"9.Get all author books"<<std::endl;
 
+        /* TODO опечатка правильно будет choice =) */
         int choise = 0;
 
         std::cin>>choise;

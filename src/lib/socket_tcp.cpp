@@ -13,6 +13,9 @@ result_code SocketTcp::create_socket_fd()
     }
 
     int flags;
+    /*TODO старайся не оставлять в коде другой закомментированный код -- это усложняет чтение, сейчас ничего,
+     * но когда его становится много, если как-нибудь напомнишь мне я постараюсь найти и показать тебе проект где это прям катастрофа
+     */
     /*const int opt = 1;
     auto opt_size = sizeof(opt);
     setsockopt(m_socket, SOL_TCP, TCP_NODELAY, &opt, opt_size);
@@ -133,6 +136,13 @@ result_code SocketTcp::bind_socket(int port)
     return this->listen_socket();
 }
 
+/*
+ * TODO не могу объяснить что именно не так, но стилистически какой-то сложный для восприятия метод получился, хотя вроде бы всё должно работать
+ * (для примера я попробовал написать внизу этот же метод, мне кажется он вышел более прозрачным)
+ * В твоей же реализации отсутствует одна важная достаточно вещь -- m_msg у тебя может увеличиваться бесконечно,
+ * что может привести к выеданию приложением всей RAM если из сети мы будем получать какие-то левые данные (а сеть она такая, вдруг наше приложение будут атаковать злые хацкеры (уу-у-у))
+ * Кроме того, ты вообще не смотришь на то что вернул read(), соотвественно никак не обрабатываешь ошибки возвращаемые им, это не очень правильно.
+ */
 message SocketTcp::recv_msg()
 {
     if (m_buffer_iter >= strlen(m_buffer))
@@ -160,6 +170,75 @@ message SocketTcp::recv_msg()
 
     return std::move(std::string(""));
 }
+
+
+/*
+
+
+std::deque<message> m_Messages;
+std::vector<char> m_RecvBuffer(512);
+size_t m_RecvBufferOffset = 0;
+
+std::optional<message> SocketTcp::recv_msg_2() {
+    if (!m_Messages.empty())
+    {
+        message msg = m_Messages.front();
+        m_Messages.pop_front();
+        return msg;
+    }
+
+    char buffer[512];
+    int rc = read(m_socket, buffer, 512);
+    if (rc <= 0) {
+        // Обработка ошибок
+    }
+
+    size_t old_size = m_RecvBuffer.size();
+    size_t desired_size = rc + m_RecvBufferOffset;
+    if (desired_size > 1024 * 1024)
+    {
+        // нельзя увеличивать буффер бесконечно, нужно выбрать опеределённый (достаточно большой) лимит на размер
+        // сообщения иначе из вне достаточно легко будет уронить приложение.
+    }
+
+    if (desired_size > old_size)
+    {
+        m_RecvBuffer.resize(rc + m_RecvBufferOffset);
+    }
+
+    memcpy(m_RecvBuffer.data() + m_RecvBufferOffset, buffer, rc);
+
+    size_t offset = 0;
+    for (size_t i = offset; i < m_RecvBuffer.size(); i++)
+    {
+        if (m_RecvBuffer[i] == '\v')
+        {
+            std::string message_string(m_RecvBuffer.begin() + offset, m_RecvBuffer.begin() + i + offset);
+            m_Messages.push_back(message(message_string));
+
+            offset = i;
+        }
+    }
+
+    if (offset != 0)
+    {
+        int remains = m_RecvBuffer.size() - offset;
+        memcpy(m_RecvBuffer.data(), m_RecvBuffer.data() + offset, remains);
+        m_RecvBuffer.resize(remains);
+    }
+
+    if (!m_Messages.empty())
+    {
+        message msg = m_Messages.front();
+        m_Messages.pop_front();
+        return msg;
+    }
+    else
+    {
+        return std::optional<message>();
+    }
+}
+*/
 
 result_code SocketTcp::send_msg(message& msg)
 {

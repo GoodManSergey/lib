@@ -12,6 +12,7 @@ std::string StringQueue::get()
     }
     else
     {
+        /*TODO не проще возвращать optional? Интерфейс снаружи станет более понятным для человека который это впервые видит */
         return std::move(std::string(""));
     }
 }
