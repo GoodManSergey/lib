@@ -21,6 +21,7 @@ result_code SocketTcp::create_socket_fd()
     flags = fcntl(m_socket, F_GETFL, 0);
     if (flags != -1)
     {
+        std::cout<<"non-block error"<<std::endl;
         return result_code::SOCKET_ERROR;
     }
     fcntl(m_socket, F_SETFL, flags | O_NONBLOCK);
