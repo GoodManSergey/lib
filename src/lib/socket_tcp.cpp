@@ -22,7 +22,7 @@ result_code SocketTcp::create_socket_fd()
     setsockopt(m_socket, SOL_SOCKET, SO_KEEPALIVE, &opt, opt_size);
     setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &opt, opt_size);*/
     flags = fcntl(m_socket, F_GETFL, 0);
-    if (flags != -1)
+    if (flags == -1)
     {
         std::cout<<"non-block error"<<std::endl;
         return result_code::SOCKET_ERROR;
@@ -76,13 +76,16 @@ result_code SocketTcp::connect_socket(const std::string& host, int port)
         return set_rm_addr_res;
     }
 
-    if (connect(m_socket, (sockaddr *)&m_address, sizeof(m_address)) < 0)
+    for (int i = 0; i < 10; i++)
     {
-        std::cout<<"connect"<<std::endl;
-        return result_code::SOCKET_ERROR;
+        if (connect(m_socket, (sockaddr *) &m_address, sizeof(m_address)) >= 0)
+        {
+            return result_code::OK;
+        }
     }
 
-    return result_code::OK;
+    std::cout << "connect error" << std::endl;
+    return result_code::SOCKET_ERROR;
 }
 
 result<std::shared_ptr<Socket>> SocketTcp::accept_socket()

@@ -11,7 +11,7 @@ int main()
     auto sock_connect_res = sock->connect_socket("127.0.0.1", 8080);
     if (sock_connect_res != result_code::OK)
     {
-        std::cout<<"sock cinit error"<<std::endl;
+        std::cout<<"sock init error"<<std::endl;
         exit(-1);
     }
 
