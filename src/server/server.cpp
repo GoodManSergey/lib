@@ -553,9 +553,11 @@ void Server::run()
             auto accept_res = pm_server_socket->accept_socket();
             if (!accept_res)
             {
+                sleep(1);
                 continue;
             }
             client_socket = accept_res.m_object;
+            m_ping_timer = std::chrono::system_clock::now() + std::chrono::seconds(10);
         }
 
         auto recv_msg = client_socket->recv_msg();
@@ -587,7 +589,6 @@ void Server::run()
         {
             m_ping_timer = current_time + std::chrono::seconds(10);
             std::string ping("ping\v");
-            std::cout<<"send ping"<<std::endl;
             message send_msg(ping, client_addr);
             auto send_res = client_socket->send_msg(send_msg);
             if (send_res != result_code::OK)

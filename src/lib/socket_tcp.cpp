@@ -149,7 +149,7 @@ message SocketTcp::recv_msg()
         m_buffer_iter = 0;
         int readval = 0;
         memset(m_buffer, 0, m_buffer_size);
-        readval = read(m_socket, m_buffer, m_buffer_size);
+        readval = recv(m_socket, m_buffer, m_buffer_size, MSG_DONTWAIT);
     }
 
     for (;m_buffer_iter < strlen(m_buffer); m_buffer_iter++)
