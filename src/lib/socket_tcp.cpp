@@ -94,7 +94,7 @@ result<std::shared_ptr<Socket>> SocketTcp::accept_socket()
     int addr_size = sizeof(m_address);
     if ((client_socket = accept(m_socket, (sockaddr*)&m_address, (socklen_t*)&addr_size)) < 0)
     {
-        std::cout<<"Client connect error"<<std::endl;
+        //std::cout<<"Client connect error"<<std::endl;
         return result_code::SOCKET_ERROR;
     }
     return std::static_pointer_cast<Socket>(std::make_shared<SocketTcp>(client_socket));

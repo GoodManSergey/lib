@@ -135,7 +135,7 @@ void Client::proc_msg(std::string&& msg)
 {
     if (msg == "ping")
     {
-        m_send_queue.add("pong");
+        //m_send_queue.add("pong\v");
     }
     else
     {

@@ -586,6 +586,7 @@ void Server::run()
         {
             m_ping_timer = current_time + std::chrono::seconds(10);
             std::string ping("ping\v");
+            std::cout<<"send ping"<<std::endl;
             message send_msg(ping, client_addr);
             auto send_res = client_socket->send_msg(send_msg);
             if (send_res != result_code::OK)
