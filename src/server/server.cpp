@@ -442,6 +442,7 @@ std::string Server::proc_msg(const std::string& msg)
     {
         Json::Value root;
         Json::Reader reader;
+        std::cout<<"req from client: "<<msg<<std::endl;
 
         if (!reader.parse(msg.c_str(), root))
         {

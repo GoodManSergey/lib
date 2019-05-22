@@ -141,10 +141,14 @@ result_code SocketTcp::bind_socket(int port)
  */
 message SocketTcp::recv_msg()
 {
+    std::cout<<m_buffer<<std::endl;
+    std::cout<<"buffer iter: "<<m_buffer_iter<<std::endl;
+    std::cout<<"buffer len: "<<strlen(m_buffer)<<std::endl;
     if (m_buffer_iter >= strlen(m_buffer))
     {
         m_buffer_iter = 0;
         int readval = 0;
+        memset(m_buffer, 0, m_buffer_size);
         readval = read(m_socket, m_buffer, m_buffer_size);
     }
 
@@ -155,7 +159,6 @@ message SocketTcp::recv_msg()
             std::string buf_msg = std::move(msg);
             msg = "";
             m_buffer_iter++;
-
             return std::move(buf_msg);
         }
         else
@@ -163,7 +166,7 @@ message SocketTcp::recv_msg()
             msg += m_buffer[m_buffer_iter];
         }
     }
-
+    memset(m_buffer, 0, sizeof(m_buffer));
     return std::move(std::string(""));
 }
 

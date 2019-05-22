@@ -153,7 +153,7 @@ int main()
                 break;
             }
             default:
-                std::cout<<"bad choise"<<std::endl;
+                std::cout<<"bad choice"<<std::endl;
                 exit = true;
                 break;
 
