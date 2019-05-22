@@ -35,12 +35,11 @@ int main()
         std::cout<<"8.Delete book"<<std::endl;
         std::cout<<"9.Get all author books"<<std::endl;
 
-        /* TODO опечатка правильно будет choice =) */
-        int choise = 0;
+        int choice = 0;
 
-        std::cin>>choise;
+        std::cin>>choice;
 
-        switch(choise)
+        switch(choice)
         {
             case 1:
             {

@@ -13,14 +13,6 @@ result_code SocketTcp::create_socket_fd()
     }
 
     int flags;
-    /*TODO старайся не оставлять в коде другой закомментированный код -- это усложняет чтение, сейчас ничего,
-     * но когда его становится много, если как-нибудь напомнишь мне я постараюсь найти и показать тебе проект где это прям катастрофа
-     */
-    /*const int opt = 1;
-    auto opt_size = sizeof(opt);
-    setsockopt(m_socket, SOL_TCP, TCP_NODELAY, &opt, opt_size);
-    setsockopt(m_socket, SOL_SOCKET, SO_KEEPALIVE, &opt, opt_size);
-    setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &opt, opt_size);*/
     flags = fcntl(m_socket, F_GETFL, 0);
     if (flags == -1)
     {
