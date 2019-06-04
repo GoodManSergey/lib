@@ -5,24 +5,25 @@
 #include<jsoncpp/json/json.h>
 #include"server_command.h"
 #include"server_status.h"
-#include"book.h"
-#include"author.h"
-#include"library.h"
+#include"../lib/book.h"
+#include"../lib/author.h"
+#include"../lib/library.h"
 #include<vector>
 #include<netinet/in.h>
 #include<sys/socket.h>
 #include<atomic>
 #include<unistd.h>
+#include "../lib/socket.h"
+#include "../lib/message.h"
+#include <chrono>
 
 
 class Server
 {
     public:
-    explicit Server(std::unique_ptr<Library> lib);
+    Server(std::unique_ptr<Library> lib, std::unique_ptr<Socket> server_socket);
 
     virtual ~Server() = default;
-
-    virtual void init_socket(int port) = 0;
 
 	std::string json_to_string(const Json::Value& json);
 
@@ -50,14 +51,14 @@ class Server
 
     std::string proc_msg(const std::string& msg);
 
-    virtual void run() = 0;
+    void run();
 
     void stop();
 
     protected:
     std::atomic<bool> m_work;
     std::unique_ptr<Library> pm_lib;
-    sockaddr_in m_address;
-    int m_server_fd;
+    std::unique_ptr<Socket> pm_server_socket;
     std::unordered_map<std::string, server_command> m_commands;
+    std::chrono::time_point<std::chrono::system_clock> m_ping_timer;
 };

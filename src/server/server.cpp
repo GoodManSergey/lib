@@ -1,8 +1,8 @@
 #include"server.h"
 
 
-Server::Server(std::unique_ptr<Library> lib):
-        pm_lib(std::move(lib)), m_work(true)
+Server::Server(std::unique_ptr<Library> lib, std::unique_ptr<Socket> server_socket):
+        pm_lib(std::move(lib)), m_work(true), pm_server_socket(std::move(server_socket))
     {
         m_commands["add_author"] = server_command::ADD_AUTHOR;
         m_commands["get_author_by_id"] = server_command::GET_AUTHOR_BY_ID;
@@ -442,6 +442,7 @@ std::string Server::proc_msg(const std::string& msg)
     {
         Json::Value root;
         Json::Reader reader;
+        std::cout<<"req from client: "<<msg<<std::endl;
 
         if (!reader.parse(msg.c_str(), root))
         {
@@ -539,6 +540,61 @@ std::string Server::proc_msg(const std::string& msg)
 void Server::stop()
 {
     m_work = false;
-    close(m_server_fd);
 }
 
+void Server::run()
+{
+    std::shared_ptr<Socket> client_socket;
+    address client_addr;
+    while (m_work)
+    {
+        if (!client_socket)
+        {
+            auto accept_res = pm_server_socket->accept_socket();
+            if (!accept_res)
+            {
+                sleep(1);
+                continue;
+            }
+            client_socket = accept_res.m_object;
+            m_ping_timer = std::chrono::system_clock::now() + std::chrono::seconds(10);
+        }
+
+        auto recv_msg = client_socket->recv_msg();
+
+        if (recv_msg.m_data.length() == 0)
+        {
+            sleep(1);
+        }
+        else if (recv_msg.m_data != "pong")
+        {
+
+            std::string resp = proc_msg(recv_msg.m_data);
+            std::cout<<"resp:"<<std::endl<<resp<<std::endl;
+            if (recv_msg.m_address)
+            {
+                client_addr = recv_msg.m_address.value();
+            }
+            message send_msg(resp, client_addr);
+            auto send_res = client_socket->send_msg(send_msg);
+            if (send_res != result_code::OK)
+            {
+                client_socket.reset();
+                break;
+            }
+        }
+
+        auto current_time = std::chrono::system_clock::now();
+        if (client_socket && m_ping_timer < current_time)
+        {
+            m_ping_timer = current_time + std::chrono::seconds(10);
+            std::string ping("ping\v");
+            message send_msg(ping, client_addr);
+            auto send_res = client_socket->send_msg(send_msg);
+            if (send_res != result_code::OK)
+            {
+                client_socket.reset();
+            }
+        }
+    }
+}
